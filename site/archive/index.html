@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Archived reports</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f7f8fa; --card: #ffffff; --ink: #1b1f24; --muted: #5b6472;
+  --line: #e2e5ea; --accent: #0b6bcb; --good: #1a7f37; --warn: #9a6700; --bad: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #10141a; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
+          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+h1 { font-size: 26px; margin: 0 0 6px; }
+h2 { font-size: 19px; margin: 34px 0 10px; }
+h3 { font-size: 16px; margin: 22px 0 8px; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted); }
+.badge.live { color: var(--good); border-color: var(--good); font-weight: 600; }
+.badge.offline { color: var(--warn); border-color: var(--warn); font-weight: 600; }
+.badge.fallback { color: var(--bad); border-color: var(--bad); font-weight: 600; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
+.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; margin-top: 12px; }
+.panel.warnings { border-left: 3px solid var(--warn); }
+.panel.warnings li { color: var(--warn); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 8px; }
+input, select, button { font: inherit; color: var(--ink); background: var(--card);
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
+button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 13.5px; }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
+th { position: sticky; top: 0; background: var(--card); cursor: pointer; white-space: nowrap; }
+th .dir { color: var(--muted); font-size: 11px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.filters th { cursor: default; padding: 4px; }
+tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
+  border: 1px solid var(--line); color: var(--muted); }
+.prov-measured { color: var(--good); border-color: var(--good); }
+.prov-reference { color: var(--warn); border-color: var(--warn); }
+.prov-free { color: var(--accent); border-color: var(--accent); }
+.prov-fallback, .prov-none, .prov-mixed { color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--ink); font-size: 11px; }
+.chart .axis { stroke: var(--line); }
+.chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
+.chart .frontier { fill: none; stroke: var(--accent); stroke-width: 2; }
+.chart .point { fill: var(--accent); }
+.chart .point-free { fill: var(--warn); }
+.chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
+.chart .legend-box { fill: var(--card); stroke: var(--line); }
+footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
+ul.links { padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Archived reports</h1><p class="sub">One dated report per run, newest first. <a href="../index.html">Back to the current report</a>.</p><table><thead><tr><th>Date</th><th>Generated</th><th>Mode</th><th>Summary model</th><th>Report</th><th>Snapshot</th></tr></thead><tbody><tr><td>2026-10-02</td><td>2026-10-02T14:33:26.603695+02:00</td><td>live</td><td>deterministic</td><td><a href="2026-10-02.html">report</a></td><td><a href="2026-10-02.json">snapshot</a></td></tr></tbody></table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Methodology</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --bg: #f7f8fa; --card: #ffffff; --ink: #1b1f24; --muted: #5b6472;
+  --line: #e2e5ea; --accent: #0b6bcb; --good: #1a7f37; --warn: #9a6700; --bad: #b3261e;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #10141a; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
+          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 15px/1.55 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+h1 { font-size: 26px; margin: 0 0 6px; }
+h2 { font-size: 19px; margin: 34px 0 10px; }
+h3 { font-size: 16px; margin: 22px 0 8px; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 999px; font-size: 12px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted); }
+.badge.live { color: var(--good); border-color: var(--good); font-weight: 600; }
+.badge.offline { color: var(--warn); border-color: var(--warn); font-weight: 600; }
+.badge.fallback { color: var(--bad); border-color: var(--bad); font-weight: 600; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
+.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; margin-top: 12px; }
+.panel.warnings { border-left: 3px solid var(--warn); }
+.panel.warnings li { color: var(--warn); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 8px; }
+input, select, button { font: inherit; color: var(--ink); background: var(--card);
+  border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
+button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 13.5px; }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
+th { position: sticky; top: 0; background: var(--card); cursor: pointer; white-space: nowrap; }
+th .dir { color: var(--muted); font-size: 11px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.filters th { cursor: default; padding: 4px; }
+tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
+.tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
+  border: 1px solid var(--line); color: var(--muted); }
+.prov-measured { color: var(--good); border-color: var(--good); }
+.prov-reference { color: var(--warn); border-color: var(--warn); }
+.prov-free { color: var(--accent); border-color: var(--accent); }
+.prov-fallback, .prov-none, .prov-mixed { color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart text { fill: var(--ink); font-size: 11px; }
+.chart .axis { stroke: var(--line); }
+.chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
+.chart .frontier { fill: none; stroke: var(--accent); stroke-width: 2; }
+.chart .point { fill: var(--accent); }
+.chart .point-free { fill: var(--warn); }
+.chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
+.chart .legend-box { fill: var(--card); stroke: var(--line); }
+footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
+ul.links { padding-left: 18px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Methodology</h1>
+<p class="sub">Generated 2026-10-02T14:33:26.603695+02:00 (Europe/Warsaw) in live mode. This page describes exactly how the numbers on the dashboard are produced and where each rate came from.</p>
+<h2>1. Quality</h2>
+<p>The AA Intelligence Index (Artificial Analysis) is the only quality input. It is normalized onto 0-100 with <span class="code">Q = clamp(100 * (s - min) / (max - min), 0, 100)</span>, and a model without a current matched index is published with rates and no score rather than with an estimate. The Coding Index is display-only: it never affects cost, efficiency, or selection, and there is no minimum-quality gate. Source: <a href="https://artificialanalysis.ai/">artificialanalysis.ai</a>.</p>
+<h2>2. Prices</h2>
+<p>Rates are US dollars per one million tokens. Every rate field on the dashboard carries its provenance, and the three rate sources are described below.</p>
+<h3>Measured rates (primary)</h3>
+<p>For each ClinePass model the per-class rates are recovered from this account's own billing rows in the last 30 days (2026-09-03 to 2026-10-02). ClinePass bills one reference cost per request, so input, output, and cache read are fitted jointly by non-negative least squares on</p><p><span class="code">costUsd / 10^8 = (fresh_input * P_in + completion * P_out + cached * P_cache) / 10^6</span></p><p>where <span class="code">fresh_input = promptTokens - cachedTokens</span>. A fit is used only when all of these hold: at least 12 usable rows; the token-mix matrix has rank 3 with a condition number at most 1000000.0; the fitted input and output rates are strictly positive; the model total reconciles within 0.01; and the per-row RMS residual is within max(0.02 of the mean row cost, 2e-05 USD) to absorb integer rounding of <span class="code">costUsd</span>. A model whose fit is rejected falls back to the reference table, and the report says so.</p>
+<h3>Reference rates (fallback)</h3>
+<p>Cline ClinePass reference pricing, retrieved 2026-10-02 from <a href="https://docs.cline.bot/getting-started/clinepass">https://docs.cline.bot/getting-started/clinepass</a>, fills in models whose fit cannot be estimated and the cache-write class, which usage rows do not report separately. Measured and reference classes are never mixed inside one model, and a fallback value is never described as a measured current rate.</p>
+<h3>Free models</h3>
+<p>Models in the catalog's free list carry declared zero rates with provenance <span class="code">catalog-free</span>. Free usage is documented as unavailable through the Cline API, so no billing rows are expected and the zero price cannot be confirmed from billing; it is a rotating promotion that can disappear.</p>
+<h2>3. Task cost and efficiency</h2>
+<p><span class="code">C = (T_cache * P_cache + T_in * P_in + T_write * P_write + T_out * P_out) / 10^6 * V</span>, where V is the per-model verbosity multiplier from <span class="code">scoring_config.json</span>. A missing cache-read or cache-write rate uses the input rate; an explicitly reported zero cache rate means free cache tokens. Missing or zero base input/output rates make the cost unavailable, except for a catalog-free model where zero is a declared promotion rather than missing data.</p>
+<table><thead><tr><th>Profile</th><th class="num">Cache read</th><th class="num">Fresh input</th><th class="num">Cache write</th><th class="num">Output</th><th>Penalty</th></tr></thead><tbody><tr><td>Planning</td><td>200,000</td><td>30,000</td><td>10,000</td><td>8,000</td><td>5</td></tr><tr><td>Execution</td><td>400,000</td><td>40,000</td><td>20,000</td><td>15,000</td><td>8</td></tr></tbody></table>
+<p>Efficiency is <span class="code">E = Q - penalty * log2(cost / median)</span> per profile, with the median taken over every discovered model that has a positive cost for that profile; quality never contributes to the median. Efficiency points are not dollars or credits. Zero-cost (free) models get no efficiency value, are excluded from both medians, and are marked free in the table.</p>
+<h2>4. Pareto, chart, and free models</h2>
+<p>Per profile, a model is Pareto-optimal when no other model has equal-or-higher quality and equal-or-lower cost with at least one strict improvement. Best-value cards pick the highest efficiency among that profile's Pareto models; there is no quality threshold, so a best-value card always names the best paid model, while free models dominate on price.</p><p>The chart shows one point per eligible model, using the mean of its available profile costs on a logarithmic axis against the Intelligence Index, with a single non-dominated frontier and an annotation for every frontier model. A zero cost has no place on a logarithmic axis, so free models are drawn in the band on the left and stay in the non-dominated set.</p>
+<h2>5. Change detection</h2>
+<p>The delta compares catalog additions and removals, AA quality changes, per-class rate changes above 0.01, and observed blended-rate drift above 0.1. It does not compare every rate field, efficiency rank, or Pareto or recommendation shift. The summary is capped at 100 words and must not invent missing values; if no narrative model can be used, a deterministic summary is published instead, and the dashboard names whichever produced it.</p>
+<h2>6. This run</h2>
+<p>Catalog discovery: <span class="code">recommended-models</span>. Usage rows normalised: 6395, dropped as inconsistent: 22, inside the rate window: 5268. Models discovered: 18, priced: 17, benchmarked: 16, with measured rates: 3, free: 4.</p>
+<h2>7. Verification</h2>
+<p>The offline pipeline and its tests establish parser, rate-fitting, scoring, rendering, archive, and fixture behaviour only. An offline run uses fixtures, never touches Cline, Artificial Analysis, or OpenRouter, and must never be presented as a live evaluation.</p><pre class="code">python -m pip install -r requirements.txt
+python -m unittest discover -s tests -v
+python -m src.run --offline</pre>
+
+</div>
+</body>
+</html>

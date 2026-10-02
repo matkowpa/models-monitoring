@@ -1,0 +1,1804 @@
+{
+  "schema_version": 1,
+  "report": {
+    "generated_at": "2026-10-02T14:33:26.603695+02:00",
+    "date": "2026-10-02",
+    "weekday": "Friday",
+    "timezone": "Europe/Warsaw",
+    "mode": "live",
+    "title": "ClinePass Models Monitoring",
+    "catalog": {
+      "source": "recommended-models",
+      "reason": null,
+      "endpoint": "https://api.cline.bot/api/v1/ai/cline/recommended-models",
+      "model_count": 18
+    },
+    "narrative": {
+      "summary": "First recorded snapshot; there is no earlier snapshot to compare against.",
+      "model": null,
+      "source": "deterministic",
+      "attempts": [
+        "cline-pass/deepseek-v4.1-flash: empty reply",
+        "cline-pass/glm-5.3-flash: empty reply",
+        "cline-pass/kimi-k3: empty reply"
+      ]
+    },
+    "rate_window": {
+      "days": 30,
+      "end": "2026-10-02",
+      "start": "2026-09-03"
+    },
+    "money_scales": {
+      "cost_usd": 100000000,
+      "credit_usd": 1000000
+    },
+    "warnings": [],
+    "previous_snapshot": null
+  },
+  "account": {
+    "user_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
+    "balance": {
+      "userId": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
+      "balance": 4469139
+    },
+    "plan": {
+      "planHistoryId": "iph-01M3SDXBAV1RN1RWK9SVYK1606",
+      "userId": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
+      "plan": {
+        "id": "pln-01KSJCW4BF730CP27KRA82CFDN",
+        "name": "Cline Pass (Monthly)[Internal]",
+        "displayName": "Cline Pass (Monthly)",
+        "description": "Cline Pass brings agentic coding to programmers around the world. Offering generous limits and reliable access to the most capable open-source models, so you can build with powerful agents without worrying about cost or availability.",
+        "type": "individual",
+        "interval": "Monthly",
+        "pricePerSeatCents": 999,
+        "priceId": "price_1Tk52FJvJ1E14BGMhDWMHlmv",
+        "maxSeats": 1000000,
+        "features": {
+          "fee_dollars": 0.61,
+          "free_seats": 0,
+          "included": [
+            "Low cost subscription pricing",
+            "Generous limits and reliable access",
+            "Built for as many programmers as possible",
+            "Includes DeepSeek V4.1 Flash, Muse Spark 1.3 Contributor, GLM-5.3, Kimi K3, Qwen3.8 Max, DeepSeek V4 Pro, GLM-5.3-Flash, Qwen3.7 Plus, Qwen3.7 Max, MiniMax-M3, MiMo-V2.5-Pro, and MiMo-V2.5"
+          ]
+        },
+        "entitlements": {
+          "cline_pass": {
+            "enabled": true,
+            "inferenceCapThreshold": {
+              "last5HoursUsageCostUSDPerUser": 1000000000,
+              "last7daysUsageCostUSDPerUser": 2500000000,
+              "last30daysUsageCostUSDPerUser": 5000000000
+            }
+          }
+        },
+        "isActive": true,
+        "createdAt": "2026-05-26T09:34:05.877169Z",
+        "updatedAt": "2026-09-21T10:11:10.680596Z"
+      },
+      "subscriptionId": "sub_1UAVcqJvJ1E14BGMzjC43zJc",
+      "currentPeriodStart": "2026-09-30T13:51:44Z",
+      "currentPeriodEnd": "2026-10-31T13:51:44Z"
+    },
+    "usage_limits": {
+      "limits": [
+        {
+          "type": "five_hour",
+          "percentUsed": 2,
+          "resetsAt": "2026-10-02T17:18:46.479201157Z"
+        },
+        {
+          "type": "weekly",
+          "percentUsed": 3,
+          "resetsAt": "2026-10-09T07:13:19.481049646Z"
+        },
+        {
+          "type": "monthly",
+          "percentUsed": 3,
+          "resetsAt": "2026-10-30T19:06:35.483066326Z"
+        }
+      ]
+    },
+    "balance_usd": 4.469139,
+    "plan_name": "Cline Pass (Monthly)"
+  },
+  "reference_rates": {
+    "source_name": "Cline ClinePass reference pricing",
+    "source_url": "https://docs.cline.bot/getting-started/clinepass",
+    "retrieved_at": "2026-10-02",
+    "currency": "USD",
+    "unit": "per 1M tokens"
+  },
+  "observation": {
+    "rows_total": 6395,
+    "rows_dropped": 22,
+    "rows_in_window": 5268,
+    "pages": 33,
+    "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
+    "fit_rejections": {
+      "cline-pass/deepseek-v4.1-flash": "per-row RMS residual 6.90836e-05 USD exceeds the allowed 3.58457e-05 USD",
+      "cline-pass/mimo-v2.6-flash": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/mimo-v2.6-pro": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/qwen3.8-max": "1 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/muse-spark-1.3-contributor": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/kimi-k3": "6 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000828205 USD exceeds the allowed 8.98991e-05 USD",
+      "cline-pass/qwen3.7-max": "2 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/minimax-m3": "3 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/mimo-v2.5-pro": "1 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/mimo-v2.5": "2 usable ClinePass rows in the window, minimum is 12"
+    },
+    "aa_matches": 16,
+    "catalog_ids": [
+      "cline-pass/deepseek-v4.1-flash",
+      "cline-pass/mimo-v2.6-flash",
+      "cline-pass/mimo-v2.6-pro",
+      "cline-pass/glm-5.3",
+      "cline-pass/deepseek-v4-pro",
+      "cline-pass/qwen3.8-max",
+      "cline-pass/muse-spark-1.3-contributor",
+      "cline-pass/kimi-k3",
+      "cline-pass/glm-5.3-flash",
+      "cline-pass/qwen3.7-max",
+      "cline-pass/qwen3.7-plus",
+      "cline-pass/minimax-m3",
+      "cline-pass/mimo-v2.5-pro",
+      "cline-pass/mimo-v2.5",
+      "cline-free/deepseek-v4.1-flash",
+      "stealth/space-bunny-alpha",
+      "cline-free/mimo-v2.6-flash",
+      "cline-free/muse-spark-1.3-contributor"
+    ]
+  },
+  "stats": {
+    "discovered": 18,
+    "priced": 17,
+    "benchmarked": 16,
+    "measured_rates": 3,
+    "free_models": 4,
+    "highest_quality": {
+      "id": "cline-pass/muse-spark-1.3-contributor",
+      "name": "Meta: Muse Spark 1.3 Contributor",
+      "quality": 48.1
+    },
+    "lowest_cost": {
+      "id": "cline-free/deepseek-v4.1-flash",
+      "name": "DeepSeek: DeepSeek V4.1 Flash",
+      "cost_usd": 0.0,
+      "free": true
+    }
+  },
+  "medians": {
+    "planning": 0.060460008,
+    "execution": 0.104850015
+  },
+  "best_value": {
+    "planning": null,
+    "execution": null
+  },
+  "chart": {
+    "points": [
+      {
+        "id": "cline-pass/deepseek-v4.1-flash",
+        "name": "DeepSeek: DeepSeek V4.1 Flash",
+        "quality": 39.5,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0306,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/mimo-v2.6-flash",
+        "name": "Xiaomi: MiMo-V2.6-Flash",
+        "quality": 37.9,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.01106,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/glm-5.3",
+        "name": "Z.ai: GLM 5.3",
+        "quality": 44.8,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.21846000000000002,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/deepseek-v4-pro",
+        "name": "DeepSeek: DeepSeek V4 Pro 0423",
+        "quality": 36.0,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.157425,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/muse-spark-1.3-contributor",
+        "name": "Meta: Muse Spark 1.3 Contributor",
+        "quality": 48.1,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0079,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/kimi-k3",
+        "name": "MoonshotAI: Kimi K3",
+        "quality": 43.6,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.474375,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/glm-5.3-flash",
+        "name": "Z.ai: GLM 5.3 Flash",
+        "quality": 41.8,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.02225,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/qwen3.7-max",
+        "name": "Qwen: Qwen3.7 Max",
+        "quality": 29.5,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.370625,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/qwen3.7-plus",
+        "name": "Qwen: Qwen3.7 Plus",
+        "quality": 25.2,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0826550115,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/minimax-m3",
+        "name": "MiniMax: MiniMax M3",
+        "quality": 29.2,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.046799999999999994,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/mimo-v2.5-pro",
+        "name": "Xiaomi: MiMo-V2.5-Pro",
+        "quality": 26.0,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.13137,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/mimo-v2.5",
+        "name": "Xiaomi: MiMo-V2.5",
+        "quality": 25.2,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.01106,
+        "frontier": false
+      }
+    ],
+    "free_band": [
+      {
+        "id": "cline-free/deepseek-v4.1-flash",
+        "name": "DeepSeek: DeepSeek V4.1 Flash",
+        "quality": 39.5,
+        "free": true,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0,
+        "frontier": false
+      },
+      {
+        "id": "cline-free/mimo-v2.6-flash",
+        "name": "Xiaomi: MiMo-V2.6-Flash",
+        "quality": 37.9,
+        "free": true,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0,
+        "frontier": false
+      },
+      {
+        "id": "cline-free/muse-spark-1.3-contributor",
+        "name": "Meta: Muse Spark 1.3 Contributor",
+        "quality": 48.1,
+        "free": true,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0,
+        "frontier": true
+      }
+    ]
+  },
+  "models": [
+    {
+      "id": "cline-pass/deepseek-v4.1-flash",
+      "slug": "deepseek-v4.1-flash",
+      "name": "DeepSeek: DeepSeek V4.1 Flash",
+      "catalog_name": "cline-pass/deepseek-v4.1-flash",
+      "description": "Smarter and more efficient, with 1M context window",
+      "free": false,
+      "family": "deepseek",
+      "context_window": 1048576,
+      "openrouter_id": "deepseek/deepseek-v4.1-flash",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.3,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 1.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.006,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.3,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "per-row RMS residual 6.90836e-05 USD exceeds the allowed 3.58457e-05 USD",
+          "rates": {
+            "input": 0.150029,
+            "output": 0.600055,
+            "cache_read": 0.003
+          },
+          "rows": 895,
+          "rows_in_window": 895,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": 1.8,
+          "rms_residual_usd": 6.908e-05,
+          "allowed_rms_residual_usd": 3.585e-05,
+          "total_reconciliation_error": 0.001445
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 39.5,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "DeepSeek V4.1 Flash (Max)",
+        "aa_slug": "deepseek-v4-1-flash",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0228,
+        "execution": 0.0384
+      },
+      "efficiency": {
+        "planning": 46.53473672735697,
+        "execution": 51.0931908141565
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.48,
+      "observed_blended_usd_per_mtok": 0.015095,
+      "observed_rows": 895,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/mimo-v2.6-flash",
+      "slug": "mimo-v2.6-flash",
+      "name": "Xiaomi: MiMo-V2.6-Flash",
+      "catalog_name": "cline-pass/mimo-v2.6-flash",
+      "description": null,
+      "free": false,
+      "family": "mimo",
+      "context_window": 1048576,
+      "openrouter_id": "xiaomi/mimo-v2.6-flash",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.14,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 0.28,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0028,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.14,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 37.9,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "MiMo-V2.6-Flash",
+        "aa_slug": "mimo-v2-6-flash",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0084,
+        "execution": 0.013720000000000001
+      },
+      "efficiency": {
+        "planning": 52.13759968428688,
+        "execution": 61.371797449642145
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.16800000000000004,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/mimo-v2.6-pro",
+      "slug": "mimo-v2.6-pro",
+      "name": "Xiaomi: MiMo-V2.6-Pro",
+      "catalog_name": "cline-pass/mimo-v2.6-pro",
+      "description": null,
+      "free": false,
+      "family": "mimo",
+      "context_window": 1048576,
+      "openrouter_id": "xiaomi/mimo-v2.6-pro",
+      "rates": {
+        "input": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "output": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "cache_read": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "cache_write": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 46.3,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "MiMo-V2.6-Pro",
+        "aa_slug": "mimo-v2-6-pro",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": null,
+        "execution": null
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": null,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": false
+    },
+    {
+      "id": "cline-pass/glm-5.3",
+      "slug": "glm-5.3",
+      "name": "Z.ai: GLM 5.3",
+      "catalog_name": "cline-pass/glm-5.3",
+      "description": "Z-AI's new top open-weights model",
+      "free": false,
+      "family": "glm",
+      "context_window": 1048576,
+      "openrouter_id": "z-ai/glm-5.3",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 1.4,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 508,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.993
+        },
+        "output": {
+          "usd_per_mtok": 4.4,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 508,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.993
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.26,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 508,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.993
+        },
+        "cache_write": {
+          "usd_per_mtok": 1.4,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "measured",
+          "reason": null,
+          "rates": {
+            "input": 1.4,
+            "output": 4.4,
+            "cache_read": 0.26
+          },
+          "rows": 508,
+          "rows_in_window": 519,
+          "dropped_rows": 11,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": 1.993,
+          "rms_residual_usd": 0.0,
+          "allowed_rms_residual_usd": 0.00075203,
+          "total_reconciliation_error": 0.0
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 44.8,
+        "coding_index": 74.8,
+        "coding_index_display_only": true,
+        "aa_name": "GLM-5.3 (Max)",
+        "aa_slug": "glm-5-3",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.15752,
+        "execution": 0.27940000000000004
+      },
+      "efficiency": {
+        "planning": 37.89259029310972,
+        "execution": 33.48796037665004
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 2.0,
+      "observed_blended_usd_per_mtok": 0.637459,
+      "observed_rows": 633,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/deepseek-v4-pro",
+      "slug": "deepseek-v4-pro",
+      "name": "DeepSeek: DeepSeek V4 Pro 0423",
+      "catalog_name": "cline-pass/deepseek-v4-pro",
+      "description": "Frontier reasoning and coding with 1M context window",
+      "free": false,
+      "family": "deepseek",
+      "context_window": 1024000,
+      "openrouter_id": "deepseek/deepseek-v4-pro",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 1.65,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 120,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.573
+        },
+        "output": {
+          "usd_per_mtok": 4.95,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 120,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.573
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.06,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 120,
+          "rms_residual_usd": 0.0,
+          "condition_number": 1.573
+        },
+        "cache_write": {
+          "usd_per_mtok": 1.65,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "measured",
+          "reason": null,
+          "rates": {
+            "input": 1.65,
+            "output": 4.95,
+            "cache_read": 0.06
+          },
+          "rows": 120,
+          "rows_in_window": 120,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": 1.573,
+          "rms_residual_usd": 0.0,
+          "allowed_rms_residual_usd": 0.00032424,
+          "total_reconciliation_error": 0.0
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 36.0,
+        "coding_index": 68.8,
+        "coding_index_display_only": true,
+        "aa_name": "DeepSeek V4 Pro 0813 (Max)",
+        "aa_slug": "deepseek-v4-pro",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.1176,
+        "execution": 0.19725
+      },
+      "efficiency": {
+        "planning": 31.20082507399886,
+        "execution": 28.70641414071918
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 2.31,
+      "observed_blended_usd_per_mtok": 0.13748,
+      "observed_rows": 120,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/qwen3.8-max",
+      "slug": "qwen3.8-max",
+      "name": "cline-pass/qwen3.8-max",
+      "catalog_name": "cline-pass/qwen3.8-max",
+      "description": "Qwen's New SOTA coding model",
+      "free": false,
+      "family": "qwen",
+      "context_window": null,
+      "openrouter_id": null,
+      "rates": {
+        "input": {
+          "usd_per_mtok": 2.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 6.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.25,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 2.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "1 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 1,
+          "rows_in_window": 1,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": null,
+      "cost_usd": {
+        "planning": 0.183,
+        "execution": 0.32
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 2.8000000000000003,
+      "observed_blended_usd_per_mtok": 4.710396,
+      "observed_rows": 1,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/muse-spark-1.3-contributor",
+      "slug": "muse-spark-1.3-contributor",
+      "name": "Meta: Muse Spark 1.3 Contributor",
+      "catalog_name": "cline-pass/muse-spark-1.3-contributor",
+      "description": null,
+      "free": false,
+      "family": "muse",
+      "context_window": 1048576,
+      "openrouter_id": "meta/muse-spark-1.3-contributor",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.1,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 0.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.002,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.1,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 48.1,
+        "coding_index": 75.8,
+        "coding_index_display_only": true,
+        "aa_name": "Muse Spark 1.3 (Max)",
+        "aa_slug": "muse-spark-1-3",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.006,
+        "execution": 0.0098
+      },
+      "efficiency": {
+        "planning": 64.76473382013809,
+        "execution": 75.45521206700408
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.12000000000000002,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/kimi-k3",
+      "slug": "kimi-k3",
+      "name": "MoonshotAI: Kimi K3",
+      "catalog_name": "cline-pass/kimi-k3",
+      "description": "Leading open weights model (reliability might be unstable and will consume usage faster than others)",
+      "free": false,
+      "family": "kimi",
+      "context_window": 1048576,
+      "openrouter_id": "moonshotai/kimi-k3",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 3.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 15.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.3,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 3.0,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "6 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 6,
+          "rows_in_window": 6,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 43.6,
+        "coding_index": 76.2,
+        "coding_index_display_only": true,
+        "aa_name": "Kimi K3 (Max)",
+        "aa_slug": "kimi-k3",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.345,
+        "execution": 0.60375
+      },
+      "efficiency": {
+        "planning": 31.037283565416217,
+        "execution": 23.395006271041765
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 5.4,
+      "observed_blended_usd_per_mtok": 6.186452,
+      "observed_rows": 6,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/glm-5.3-flash",
+      "slug": "glm-5.3-flash",
+      "name": "Z.ai: GLM 5.3 Flash",
+      "catalog_name": "cline-pass/glm-5.3-flash",
+      "description": "Latest natively multimodal model in the GLM-5 series",
+      "free": false,
+      "family": "glm",
+      "context_window": 1048575,
+      "openrouter_id": "z-ai/glm-5.3-flash",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.15,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 0.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.03,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.15,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "per-row RMS residual 0.000828205 USD exceeds the allowed 8.98991e-05 USD",
+          "rates": {
+            "input": 0.145857,
+            "output": 0.450955,
+            "cache_read": 0.030351
+          },
+          "rows": 1806,
+          "rows_in_window": 1815,
+          "dropped_rows": 9,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": 1.486,
+          "rms_residual_usd": 0.00082821,
+          "allowed_rms_residual_usd": 8.99e-05,
+          "total_reconciliation_error": 0.008394
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 41.8,
+        "coding_index": 71.5,
+        "coding_index_display_only": true,
+        "aa_name": "GLM 5.3 Flash",
+        "aa_slug": "glm-5-3-flash",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.016,
+        "execution": 0.0285
+      },
+      "efficiency": {
+        "planning": 51.38954632374387,
+        "execution": 56.83434594750891
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.22,
+      "observed_blended_usd_per_mtok": 0.052769,
+      "observed_rows": 1885,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/qwen3.7-max",
+      "slug": "qwen3.7-max",
+      "name": "Qwen: Qwen3.7 Max",
+      "catalog_name": "cline-pass/qwen3.7-max",
+      "description": "Flagship agent model with 1M context window",
+      "free": false,
+      "family": "qwen",
+      "context_window": 1000000,
+      "openrouter_id": "qwen/qwen3.7-max",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 2.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 7.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 3.125,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "2 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 2,
+          "rows_in_window": 2,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 29.5,
+        "coding_index": 66.0,
+        "coding_index_display_only": true,
+        "aa_name": "Qwen3.7 Max",
+        "aa_slug": "qwen3-7-max",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.26625,
+        "execution": 0.475
+      },
+      "efficiency": {
+        "planning": 18.80635774817787,
+        "execution": 12.063196435080364
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 3.5,
+      "observed_blended_usd_per_mtok": 11.827839,
+      "observed_rows": 2,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/qwen3.7-plus",
+      "slug": "qwen3.7-plus",
+      "name": "Qwen: Qwen3.7 Plus",
+      "catalog_name": "cline-pass/qwen3.7-plus",
+      "description": "Fast multimodal agent model with vision and video input",
+      "free": false,
+      "family": "qwen",
+      "context_window": 1000000,
+      "openrouter_id": "qwen/qwen3.7-plus",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.67,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 47,
+          "rms_residual_usd": 0.0,
+          "condition_number": 2.074
+        },
+        "output": {
+          "usd_per_mtok": 2.670001,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 47,
+          "rms_residual_usd": 0.0,
+          "condition_number": 2.074
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.07,
+          "provenance": "measured",
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "rows": 47,
+          "rms_residual_usd": 0.0,
+          "condition_number": 2.074
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "measured",
+          "reason": null,
+          "rates": {
+            "input": 0.67,
+            "output": 2.670001,
+            "cache_read": 0.07
+          },
+          "rows": 47,
+          "rows_in_window": 47,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": 2.074,
+          "rms_residual_usd": 0.0,
+          "allowed_rms_residual_usd": 0.00051017,
+          "total_reconciliation_error": 0.0
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 25.2,
+        "coding_index": 55.9,
+        "coding_index_display_only": true,
+        "aa_name": "Qwen3.7 Plus",
+        "aa_slug": "qwen3-7-plus",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.060460008,
+        "execution": 0.104850015
+      },
+      "efficiency": {
+        "planning": 25.2,
+        "execution": 25.2
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 1.0700002,
+      "observed_blended_usd_per_mtok": 0.134307,
+      "observed_rows": 47,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/minimax-m3",
+      "slug": "minimax-m3",
+      "name": "MiniMax: MiniMax M3",
+      "catalog_name": "cline-pass/minimax-m3",
+      "description": "Frontier coding and agent model with 1M context window",
+      "free": false,
+      "family": "minimax",
+      "context_window": 524288,
+      "openrouter_id": "minimax/minimax-m3",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.3,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 1.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.06,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.3,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "3 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 3,
+          "rows_in_window": 3,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 29.2,
+        "coding_index": 58.6,
+        "coding_index_display_only": true,
+        "aa_name": "MiniMax-M3",
+        "aa_slug": "minimax-m3",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0336,
+        "execution": 0.06
+      },
+      "efficiency": {
+        "planning": 33.43759968428688,
+        "execution": 35.6423412959587
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.48,
+      "observed_blended_usd_per_mtok": 0.493342,
+      "observed_rows": 3,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/mimo-v2.5-pro",
+      "slug": "mimo-v2.5-pro",
+      "name": "Xiaomi: MiMo-V2.5-Pro",
+      "catalog_name": "cline-pass/mimo-v2.5-pro",
+      "description": "Top open model for long autonomous coding runs",
+      "free": false,
+      "family": "mimo",
+      "context_window": 1048576,
+      "openrouter_id": "xiaomi/mimo-v2.5-pro",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 1.74,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 3.48,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0145,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 1.74,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "1 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 1,
+          "rows_in_window": 1,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 26.0,
+        "coding_index": 60.2,
+        "coding_index_display_only": true,
+        "aa_name": "MiMo-V2.5-Pro (Reasoning)",
+        "aa_slug": "mimo-v2-5-pro",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.10034,
+        "execution": 0.1624
+      },
+      "efficiency": {
+        "planning": 22.34578115879601,
+        "execution": 20.950203482444337
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 2.088,
+      "observed_blended_usd_per_mtok": 0.179823,
+      "observed_rows": 1,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/mimo-v2.5",
+      "slug": "mimo-v2.5",
+      "name": "Xiaomi: MiMo-V2.5",
+      "catalog_name": "cline-pass/mimo-v2.5",
+      "description": "Fast and efficient MiMo for everyday coding",
+      "free": false,
+      "family": "mimo",
+      "context_window": 1048576,
+      "openrouter_id": "xiaomi/mimo-v2.5",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.14,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 0.28,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0028,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.14,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "2 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 2,
+          "rows_in_window": 2,
+          "dropped_rows": 0,
+          "window_start": "2026-09-03",
+          "window_end": "2026-10-02",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 25.2,
+        "coding_index": 56.8,
+        "coding_index_display_only": true,
+        "aa_name": "MiMo-V2.5",
+        "aa_slug": "mimo-v2-5-0424",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0084,
+        "execution": 0.013720000000000001
+      },
+      "efficiency": {
+        "planning": 39.43759968428688,
+        "execution": 48.67179744964214
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.16800000000000004,
+      "observed_blended_usd_per_mtok": 0.054011,
+      "observed_rows": 2,
+      "priced": true
+    },
+    {
+      "id": "cline-free/deepseek-v4.1-flash",
+      "slug": "deepseek-v4.1-flash",
+      "name": "DeepSeek: DeepSeek V4.1 Flash",
+      "catalog_name": "Deepseek-v4.1-Flash",
+      "description": "Fast and efficient with 1M context window",
+      "free": true,
+      "family": "deepseek",
+      "context_window": 1048576,
+      "openrouter_id": "deepseek/deepseek-v4.1-flash",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "output": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "catalog_free": true,
+        "fit": null,
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 39.5,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "DeepSeek V4.1 Flash (Max)",
+        "aa_slug": "deepseek-v4-1-flash",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0,
+        "execution": 0.0
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.0,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    },
+    {
+      "id": "stealth/space-bunny-alpha",
+      "slug": "stealth/space-bunny-alpha",
+      "name": "Space Bunny Alpha",
+      "catalog_name": "space-bunny-alpha",
+      "description": "Blazing-fast inference with 1M context",
+      "free": true,
+      "family": "stealth",
+      "context_window": 1000000,
+      "openrouter_id": "stealth/space-bunny-alpha",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "output": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "catalog_free": true,
+        "fit": null,
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": null,
+      "cost_usd": {
+        "planning": 0.0,
+        "execution": 0.0
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.0,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    },
+    {
+      "id": "cline-free/mimo-v2.6-flash",
+      "slug": "mimo-v2.6-flash",
+      "name": "Xiaomi: MiMo-V2.6-Flash",
+      "catalog_name": "Mimo V2.6 Flash",
+      "description": "Mixture-of-Experts architecture with 309B total parameters",
+      "free": true,
+      "family": "mimo",
+      "context_window": 1048576,
+      "openrouter_id": "xiaomi/mimo-v2.6-flash",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "output": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "catalog_free": true,
+        "fit": null,
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 37.9,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "MiMo-V2.6-Flash",
+        "aa_slug": "mimo-v2-6-flash",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0,
+        "execution": 0.0
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.0,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    },
+    {
+      "id": "cline-free/muse-spark-1.3-contributor",
+      "slug": "muse-spark-1.3-contributor",
+      "name": "Meta: Muse Spark 1.3 Contributor",
+      "catalog_name": "Muse Spark 1.3 Contributor",
+      "description": "Meta\u2019s multimodal reasoning model for experimentation, learning, and early-stage agentic, multi-agent, and coding workflows.",
+      "free": true,
+      "family": "muse",
+      "context_window": 1048576,
+      "openrouter_id": "meta/muse-spark-1.3-contributor",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "output": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.0,
+          "provenance": "catalog-free"
+        },
+        "catalog_free": true,
+        "fit": null,
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 48.1,
+        "coding_index": 75.8,
+        "coding_index_display_only": true,
+        "aa_name": "Muse Spark 1.3 (Max)",
+        "aa_slug": "muse-spark-1-3",
+        "retrieved_at": "2026-10-02T14:33:26.603695+02:00"
+      },
+      "cost_usd": {
+        "planning": 0.0,
+        "execution": 0.0
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": true,
+        "execution": true
+      },
+      "blended_input_output_usd_per_mtok": 0.0,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true
+    }
+  ],
+  "changes": {
+    "has_previous": false,
+    "first_run": true,
+    "catalog_added": [],
+    "catalog_removed": [],
+    "quality_changed": {},
+    "rate_changed": {},
+    "observed_blend_changed": {}
+  },
+  "summary": "First recorded snapshot; there is no earlier snapshot to compare against."
+}

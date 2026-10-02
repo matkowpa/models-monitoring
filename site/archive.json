@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "date": "2026-10-02",
+      "generated_at": "2026-10-02T14:33:26.603695+02:00",
+      "mode": "live",
+      "narrative_model": "deterministic",
+      "report": "2026-10-02.html",
+      "snapshot": "2026-10-02.json",
+      "counts": {
+        "catalog_added": 0,
+        "catalog_removed": 0,
+        "quality_changed": 0,
+        "rate_changed": 0,
+        "observed_blend_changed": 0
+      }
+    }
+  ]
+}
