@@ -752,18 +752,16 @@ def _badges(snapshot, config):
 
 def _best_value_card(label, winner, profile_label):
     if not winner:
-        return _card(label, '<span class="muted">n/a</span>', "no eligible Pareto model")
-    return _card(
-        label,
-        escape(winner.get("name")),
-        "%s: %s points, task cost %s, quality %s"
-        % (
-            profile_label,
-            fmt_points(winner.get("efficiency")),
-            fmt_usd(winner.get("cost_usd")),
-            fmt_points(winner.get("quality"), 1),
-        ),
+        return _card(label, '<span class="muted">n/a</span>', "no eligible model")
+    note = "%s: %s points, task cost %s, quality %s" % (
+        profile_label,
+        fmt_points(winner.get("efficiency")),
+        fmt_usd(winner.get("cost_usd")),
+        fmt_points(winner.get("quality"), 1),
     )
+    if winner.get("basis") == "highest_efficiency_paid":
+        note += " - best paid model; the Pareto set here is dominated by $0 free models"
+    return _card(label, escape(winner.get("name")), note)
 
 
 def _stat_cards(snapshot, config):

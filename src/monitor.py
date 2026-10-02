@@ -981,6 +981,20 @@ def score_models(entries, rates_by_id, quality_by_id, metadata_by_id, observatio
             for record in records
             if record["pareto"][name] and record["efficiency"].get(name) is not None
         ]
+        if not candidates:
+            # Catalog-free models have no efficiency value, so when they are the
+            # only Pareto members (a $0 model dominates every paid one) the card
+            # still has to attractively name the best paid model, which is what
+            # the methodology promises. The Pareto flag remains the data, so the
+            # card's own basis is recorded and rendered.
+            candidates = [
+                record
+                for record in records
+                if not record["free"] and record["efficiency"].get(name) is not None
+            ]
+            basis = "highest_efficiency_paid"
+        else:
+            basis = "highest_efficiency_pareto"
         candidates.sort(key=lambda record: (-record["efficiency"][name], record["cost_usd"][name]))
         if not candidates:
             best_value[name] = None
@@ -992,6 +1006,7 @@ def score_models(entries, rates_by_id, quality_by_id, metadata_by_id, observatio
             "efficiency": round(winner["efficiency"][name], 2),
             "cost_usd": round(winner["cost_usd"][name], 6),
             "quality": (winner["quality"] or {}).get("intelligence_index"),
+            "basis": basis,
         }
 
     return _with_chart(records, profiles, medians, best_value)

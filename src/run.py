@@ -253,9 +253,22 @@ def fetch_aa_models(config):
 
 
 def extract_summary_text(payload):
-    """The assistant text from an OpenAI-compatible chat completion."""
-    choices = (payload or {}).get("choices") or []
-    if not choices:
+    """The assistant text from an OpenAI-compatible chat completion.
+
+    ClinePass chat completions can arrive wrapped in the same ``{ data, success }``
+    envelope the account endpoints use, so the envelope is unwrapped when the
+    payload does not carry ``choices`` at the top level. The reasoning models on
+    ClinePass may also return all of their tokens as reasoning with an empty
+    visible content field, in which case the reasoning text is used rather than
+    discarding an otherwise usable reply.
+    """
+    body = payload
+    if isinstance(body, dict) and "choices" not in body and "data" in body and "success" in body:
+        body = body.get("data") or {}
+    if not isinstance(body, dict):
+        return None
+    choices = body.get("choices") or []
+    if not choices or not isinstance(choices[0], dict):
         return None
     message = choices[0].get("message") or {}
     text = message.get("content")
@@ -263,8 +276,16 @@ def extract_summary_text(payload):
         text = " ".join(
             part.get("text", "") for part in text if isinstance(part, dict)
         ).strip()
+    elif isinstance(text, dict):
+        text = text.get("text")
     text = str(text or "").strip()
-    return text or None
+    if text:
+        return text
+    for key in ("reasoning_content", "reasoning"):
+        fallback = str(message.get(key) or "").strip()
+        if fallback:
+            return fallback
+    return None
 
 
 def narrative_summary(changes, catalog_ids, config, now_utc=None):
