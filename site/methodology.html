@@ -32,8 +32,8 @@ a { color: var(--accent); }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
 .card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
-.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
+.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; margin-top: 12px; }
 .panel.warnings { border-left: 3px solid var(--warn); }
@@ -42,13 +42,26 @@ a { color: var(--accent); }
 input, select, button { font: inherit; color: var(--ink); background: var(--card);
   border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
 button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 13.5px; }
-th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
-th { position: sticky; top: 0; background: var(--card); cursor: pointer; white-space: nowrap; }
-th .dir { color: var(--muted); font-size: 11px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); font-size: 13.5px; }
+#models { min-width: 1180px; }
+/* The wrapper is the table's own scrollport: horizontal for the wide column set,
+   and vertical so the two sticky header rows have something to stick to (a
+   wrapper with only horizontal overflow would not let them stick at all). */
+.table-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--card); }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top;
+  overflow-wrap: anywhere; }
+th { background: var(--card); white-space: nowrap; }
+#models thead th[data-key] { position: sticky; top: 0; z-index: 2; cursor: pointer; }
+#models thead th[data-key] .dir { color: var(--muted); font-size: 11px; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.filters th { cursor: default; padding: 4px; }
-tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
+/* The filter row tucks slightly under the sortable header row so no gap can
+   appear between them while scrolling; the header row has the higher z-index. */
+#models tr.filters th { position: sticky; top: 2rem; z-index: 1; cursor: default; padding: 4px;
+  border-bottom: 1px solid var(--line); }
+#models tr.filters input { width: 100%; min-width: 72px; padding: 4px 6px; font-size: 12px; }
+#models tbody tr:hover td { background: var(--bg); }
+#models tbody tr[hidden] { display: none; }
 .tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
   border: 1px solid var(--line); color: var(--muted); }
 .prov-measured { color: var(--good); border-color: var(--good); }
@@ -58,8 +71,11 @@ tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
-.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-.chart svg { width: 100%; height: auto; display: block; }
+pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; margin: 10px 0; }
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  overflow-x: auto; }
+.chart svg { width: 100%; min-width: 700px; height: auto; display: block; }
 .chart text { fill: var(--ink); font-size: 11px; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
@@ -75,7 +91,7 @@ ul.links { padding-left: 18px; }
 <body>
 <div class="wrap">
 <h1>Methodology</h1>
-<p class="sub">Generated 2026-10-02T14:33:26.603695+02:00 (Europe/Warsaw) in live mode. This page describes exactly how the numbers on the dashboard are produced and where each rate came from.</p>
+<p class="sub">Generated 2026-10-02T15:26:28.454132+02:00 (Europe/Warsaw) in live mode. This page describes exactly how the numbers on the dashboard are produced and where each rate came from.</p>
 <h2>1. Quality</h2>
 <p>The AA Intelligence Index (Artificial Analysis) is the only quality input. It is normalized onto 0-100 with <span class="code">Q = clamp(100 * (s - min) / (max - min), 0, 100)</span>, and a model without a current matched index is published with rates and no score rather than with an estimate. The Coding Index is display-only: it never affects cost, efficiency, or selection, and there is no minimum-quality gate. Source: <a href="https://artificialanalysis.ai/">artificialanalysis.ai</a>.</p>
 <h2>2. Prices</h2>
@@ -88,14 +104,14 @@ ul.links { padding-left: 18px; }
 <p>Models in the catalog's free list carry declared zero rates with provenance <span class="code">catalog-free</span>. Free usage is documented as unavailable through the Cline API, so no billing rows are expected and the zero price cannot be confirmed from billing; it is a rotating promotion that can disappear.</p>
 <h2>3. Task cost and efficiency</h2>
 <p><span class="code">C = (T_cache * P_cache + T_in * P_in + T_write * P_write + T_out * P_out) / 10^6 * V</span>, where V is the per-model verbosity multiplier from <span class="code">scoring_config.json</span>. A missing cache-read or cache-write rate uses the input rate; an explicitly reported zero cache rate means free cache tokens. Missing or zero base input/output rates make the cost unavailable, except for a catalog-free model where zero is a declared promotion rather than missing data.</p>
-<table><thead><tr><th>Profile</th><th class="num">Cache read</th><th class="num">Fresh input</th><th class="num">Cache write</th><th class="num">Output</th><th>Penalty</th></tr></thead><tbody><tr><td>Planning</td><td>200,000</td><td>30,000</td><td>10,000</td><td>8,000</td><td>5</td></tr><tr><td>Execution</td><td>400,000</td><td>40,000</td><td>20,000</td><td>15,000</td><td>8</td></tr></tbody></table>
+<div class="table-wrap"><table><thead><tr><th>Profile</th><th class="num">Cache read</th><th class="num">Fresh input</th><th class="num">Cache write</th><th class="num">Output</th><th>Penalty</th></tr></thead><tbody><tr><td>Planning</td><td>200,000</td><td>30,000</td><td>10,000</td><td>8,000</td><td>5</td></tr><tr><td>Execution</td><td>400,000</td><td>40,000</td><td>20,000</td><td>15,000</td><td>8</td></tr></tbody></table></div>
 <p>Efficiency is <span class="code">E = Q - penalty * log2(cost / median)</span> per profile, with the median taken over every discovered model that has a positive cost for that profile; quality never contributes to the median. Efficiency points are not dollars or credits. Zero-cost (free) models get no efficiency value, are excluded from both medians, and are marked free in the table.</p>
 <h2>4. Pareto, chart, and free models</h2>
 <p>Per profile, a model is Pareto-optimal when no other model has equal-or-higher quality and equal-or-lower cost with at least one strict improvement. Best-value cards pick the highest efficiency among that profile's Pareto models; there is no quality threshold, so a best-value card always names the best paid model, while free models dominate on price.</p><p>The chart shows one point per eligible model, using the mean of its available profile costs on a logarithmic axis against the Intelligence Index, with a single non-dominated frontier and an annotation for every frontier model. A zero cost has no place on a logarithmic axis, so free models are drawn in the band on the left and stay in the non-dominated set.</p>
 <h2>5. Change detection</h2>
 <p>The delta compares catalog additions and removals, AA quality changes, per-class rate changes above 0.01, and observed blended-rate drift above 0.1. It does not compare every rate field, efficiency rank, or Pareto or recommendation shift. The summary is capped at 100 words and must not invent missing values; if no narrative model can be used, a deterministic summary is published instead, and the dashboard names whichever produced it.</p>
 <h2>6. This run</h2>
-<p>Catalog discovery: <span class="code">recommended-models</span>. Usage rows normalised: 6395, dropped as inconsistent: 22, inside the rate window: 5268. Models discovered: 18, priced: 17, benchmarked: 16, with measured rates: 3, free: 4.</p>
+<p>Catalog discovery: <span class="code">recommended-models</span>. Usage rows normalised: 6454, dropped as inconsistent: 22, inside the rate window: 5327. Models discovered: 18, priced: 17, benchmarked: 16, with measured rates: 3, free: 4.</p>
 <h2>7. Verification</h2>
 <p>The offline pipeline and its tests establish parser, rate-fitting, scoring, rendering, archive, and fixture behaviour only. An offline run uses fixtures, never touches Cline, Artificial Analysis, or OpenRouter, and must never be presented as a live evaluation.</p><pre class="code">python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v

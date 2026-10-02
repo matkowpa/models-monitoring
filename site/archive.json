@@ -3,9 +3,9 @@
   "entries": [
     {
       "date": "2026-10-02",
-      "generated_at": "2026-10-02T14:33:26.603695+02:00",
+      "generated_at": "2026-10-02T15:26:28.454132+02:00",
       "mode": "live",
-      "narrative_model": "deterministic",
+      "narrative_model": "cline-pass/deepseek-v4.1-flash",
       "report": "2026-10-02.html",
       "snapshot": "2026-10-02.json",
       "counts": {

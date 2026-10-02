@@ -32,8 +32,8 @@ a { color: var(--accent); }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
 .card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
-.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
+.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; margin-top: 12px; }
 .panel.warnings { border-left: 3px solid var(--warn); }
@@ -42,13 +42,26 @@ a { color: var(--accent); }
 input, select, button { font: inherit; color: var(--ink); background: var(--card);
   border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
 button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 13.5px; }
-th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
-th { position: sticky; top: 0; background: var(--card); cursor: pointer; white-space: nowrap; }
-th .dir { color: var(--muted); font-size: 11px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); font-size: 13.5px; }
+#models { min-width: 1180px; }
+/* The wrapper is the table's own scrollport: horizontal for the wide column set,
+   and vertical so the two sticky header rows have something to stick to (a
+   wrapper with only horizontal overflow would not let them stick at all). */
+.table-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--card); }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top;
+  overflow-wrap: anywhere; }
+th { background: var(--card); white-space: nowrap; }
+#models thead th[data-key] { position: sticky; top: 0; z-index: 2; cursor: pointer; }
+#models thead th[data-key] .dir { color: var(--muted); font-size: 11px; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.filters th { cursor: default; padding: 4px; }
-tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
+/* The filter row tucks slightly under the sortable header row so no gap can
+   appear between them while scrolling; the header row has the higher z-index. */
+#models tr.filters th { position: sticky; top: 2rem; z-index: 1; cursor: default; padding: 4px;
+  border-bottom: 1px solid var(--line); }
+#models tr.filters input { width: 100%; min-width: 72px; padding: 4px 6px; font-size: 12px; }
+#models tbody tr:hover td { background: var(--bg); }
+#models tbody tr[hidden] { display: none; }
 .tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
   border: 1px solid var(--line); color: var(--muted); }
 .prov-measured { color: var(--good); border-color: var(--good); }
@@ -58,8 +71,11 @@ tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
-.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-.chart svg { width: 100%; height: auto; display: block; }
+pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; margin: 10px 0; }
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  overflow-x: auto; }
+.chart svg { width: 100%; min-width: 700px; height: auto; display: block; }
 .chart text { fill: var(--ink); font-size: 11px; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
@@ -74,7 +90,7 @@ ul.links { padding-left: 18px; }
 </head>
 <body>
 <div class="wrap">
-<h1>Archived reports</h1><p class="sub">One dated report per run, newest first. <a href="../index.html">Back to the current report</a>.</p><table><thead><tr><th>Date</th><th>Generated</th><th>Mode</th><th>Summary model</th><th>Report</th><th>Snapshot</th></tr></thead><tbody><tr><td>2026-10-02</td><td>2026-10-02T14:33:26.603695+02:00</td><td>live</td><td>deterministic</td><td><a href="2026-10-02.html">report</a></td><td><a href="2026-10-02.json">snapshot</a></td></tr></tbody></table>
+<h1>Archived reports</h1><p class="sub">One dated report per run, newest first. <a href="../index.html">Back to the current report</a>.</p><div class="table-wrap"><table><thead><tr><th>Date</th><th>Generated</th><th>Mode</th><th>Summary model</th><th>Report</th><th>Snapshot file</th></tr></thead><tbody><tr><td>2026-10-02</td><td>2026-10-02T15:26:28.454132+02:00</td><td>live</td><td>cline-pass/deepseek-v4.1-flash</td><td><a href="2026-10-02.html">report</a></td><td><span class="code">2026-10-02.json</span></td></tr></tbody></table></div>
 
 </div>
 </body>
