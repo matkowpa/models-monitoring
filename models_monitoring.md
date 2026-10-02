@@ -31,7 +31,7 @@ Primary ownership is `src/monitor.py` for data parsing and scoring, `src/run.py`
 
 For each mapped model, let $Q$ be its AA Intelligence Index on the published 0–100 scale. If the API reports a different declared scale, normalize it using its bounds:
 
-$$Q = \operatorname{clamp}\left(100 \times \frac{s-s_{min}}{s_{max}-s_{min}}, 0, 100\right)$$
+$$Q = \mathrm{clamp}\left(100 \times \frac{s-s_{min}}{s_{max}-s_{min}}, 0, 100\right)$$
 
 where $s$ is the returned score. The active feed is expected to provide the AA Intelligence Index on 0–100, so the normalized value is effectively the published score. A model without a current matched Intelligence Index has no quality or efficiency score and cannot be recommended. The API retrieval date is recorded as retrieval metadata; it is not represented as the date that AA evaluated the model.
 
