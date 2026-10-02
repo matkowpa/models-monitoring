@@ -24,8 +24,8 @@
   },
   "narrative": {
     "models": [
-      "cline-pass/deepseek-v4.1-flash",
       "cline-pass/glm-5.3-flash",
+      "cline-pass/deepseek-v4.1-flash",
       "cline-pass/kimi-k3"
     ],
     "max_words": 100,
