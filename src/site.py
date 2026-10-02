@@ -129,8 +129,8 @@ a { color: var(--accent); }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
 .card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; }
-.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
+.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; margin-top: 12px; }
 .panel.warnings { border-left: 3px solid var(--warn); }
@@ -139,13 +139,26 @@ a { color: var(--accent); }
 input, select, button { font: inherit; color: var(--ink); background: var(--card);
   border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; }
 button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-table { width: 100%; border-collapse: collapse; background: var(--card); font-size: 13.5px; }
-th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
-th { position: sticky; top: 0; background: var(--card); cursor: pointer; white-space: nowrap; }
-th .dir { color: var(--muted); font-size: 11px; }
+table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); font-size: 13.5px; }
+#models { min-width: 1180px; }
+/* The wrapper is the table's own scrollport: horizontal for the wide column set,
+   and vertical so the two sticky header rows have something to stick to (a
+   wrapper with only horizontal overflow would not let them stick at all). */
+.table-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--card); }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top;
+  overflow-wrap: anywhere; }
+th { background: var(--card); white-space: nowrap; }
+#models thead th[data-key] { position: sticky; top: 0; z-index: 2; cursor: pointer; }
+#models thead th[data-key] .dir { color: var(--muted); font-size: 11px; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-tr.filters th { cursor: default; padding: 4px; }
-tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
+/* The filter row tucks slightly under the sortable header row so no gap can
+   appear between them while scrolling; the header row has the higher z-index. */
+#models tr.filters th { position: sticky; top: 2rem; z-index: 1; cursor: default; padding: 4px;
+  border-bottom: 1px solid var(--line); }
+#models tr.filters input { width: 100%; min-width: 72px; padding: 4px 6px; font-size: 12px; }
+#models tbody tr:hover td { background: var(--bg); }
+#models tbody tr[hidden] { display: none; }
 .tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
   border: 1px solid var(--line); color: var(--muted); }
 .prov-measured { color: var(--good); border-color: var(--good); }
@@ -155,8 +168,11 @@ tr.filters input { width: 100%; padding: 4px 6px; font-size: 12px; }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
 .code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
-.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
-.chart svg { width: 100%; height: auto; display: block; }
+pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; margin: 10px 0; }
+.chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
+  overflow-x: auto; }
+.chart svg { width: 100%; min-width: 700px; height: auto; display: block; }
 .chart text { fill: var(--ink); font-size: 11px; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
@@ -171,12 +187,17 @@ ul.links { padding-left: 18px; }
 
 CHART_WIDTH = 940
 CHART_HEIGHT = 470
-CHART_LEFT = 78
+CHART_LEFT = 104
 CHART_RIGHT = 918
 CHART_TOP = 26
 CHART_BOTTOM = 396
-FREE_BAND_LEFT = 12
-FREE_BAND_RIGHT = 62
+# The free band is drawn to the left of the y-axis labels so a zero-cost marker,
+# the tick labels, and the rotated axis title cannot overlap each other.
+FREE_BAND_LEFT = 30
+FREE_BAND_RIGHT = 70
+AXIS_TITLE_X = 12
+ANNOTATION_MIN_Y = CHART_TOP + 12
+ANNOTATION_MAX_Y = CHART_BOTTOM - 8
 LOG_TICK_CANDIDATES = (
     0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5,
     1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0,
@@ -276,8 +297,8 @@ def render_chart(report, config=None):
         % ((CHART_LEFT + CHART_RIGHT) // 2, CHART_BOTTOM + 40)
     )
     parts.append(
-        '<text transform="translate(18,%d) rotate(-90)" text-anchor="middle">AA Intelligence '
-        "Index</text>" % ((CHART_TOP + CHART_BOTTOM) // 2)
+        '<text transform="translate(%d,%d) rotate(-90)" text-anchor="middle">AA Intelligence '
+        "Index</text>" % (AXIS_TITLE_X, (CHART_TOP + CHART_BOTTOM) // 2)
     )
 
     parts.append(_chart_series(points, band, x_pos, y_pos))
@@ -288,6 +309,7 @@ def render_chart(report, config=None):
 def _chart_series(points, band, x_pos, y_pos):
     """Marks, frontier line, annotations, the free band, and the in-plot legend."""
     parts = []
+    band_center = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
     if band:
         parts.append(
             '<rect class="band" x="%d" y="%d" width="%d" height="%d" data-role="free-band"/>'
@@ -299,8 +321,8 @@ def _chart_series(points, band, x_pos, y_pos):
             )
         )
         parts.append(
-            '<text x="%d" y="%d" text-anchor="middle" data-role="free-band-label">$0 free</text>'
-            % ((FREE_BAND_LEFT + FREE_BAND_RIGHT) // 2, CHART_TOP - 10)
+            '<text x="%.1f" y="%d" text-anchor="middle" data-role="free-band-label">$0 free</text>'
+            % (band_center, CHART_TOP - 10)
         )
 
     frontier_points = sorted(
@@ -327,9 +349,15 @@ def _chart_series(points, band, x_pos, y_pos):
         )
         parts.append("</g>")
         if point.get("frontier"):
-            label_y = y + (16 if index % 2 == 0 else -10)
+            # Keep labels inside the plot area so they cannot collide with the
+            # x tick labels or the axis title below the chart.
+            label_y = max(ANNOTATION_MIN_Y, min(ANNOTATION_MAX_Y, y + (16 if index % 2 == 0 else -10)))
             anchor = "start" if x < (CHART_LEFT + CHART_RIGHT) / 2 else "end"
             offset = 9 if anchor == "start" else -9
+            if anchor == "start":
+                offset = min(offset, float(CHART_RIGHT - x - 4))
+            else:
+                offset = max(offset, float(CHART_LEFT - x + 4))
             parts.append(
                 '<text data-role="annotation" data-model-id="%s" x="%.1f" y="%.1f" '
                 'text-anchor="%s">%s</text>'
@@ -343,7 +371,7 @@ def _chart_series(points, band, x_pos, y_pos):
             )
 
     for point in band:
-        x = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
+        x = band_center
         y = y_pos(point["quality"])
         parts.append(
             '<g data-role="point" data-model-id="%s" data-frontier="%s" data-free="true">'
@@ -357,7 +385,12 @@ def _chart_series(points, band, x_pos, y_pos):
         parts.append("</g>")
         parts.append(
             '<text data-role="annotation" data-model-id="%s" x="%.1f" y="%.1f" '
-            'text-anchor="middle">$0 (free)</text>' % (escape(point["id"]), x, y - 10)
+            'text-anchor="middle">$0 (free)</text>'
+            % (
+                escape(point["id"]),
+                x,
+                max(ANNOTATION_MIN_Y, min(ANNOTATION_MAX_Y, y - 10)),
+            )
         )
 
     legend_x = CHART_RIGHT - 186
@@ -555,12 +588,12 @@ def render_table(report, config=None):
     return "".join(
         controls
         + [
-            '<table id="models"><thead>',
+            '<div class="table-wrap"><table id="models"><thead>',
             *header,
             *filters,
             "</thead><tbody>",
             *[_model_row(model) for model in models],
-            "</tbody></table>",
+            "</tbody></table></div>",
         ]
     )
 
@@ -849,8 +882,14 @@ def _change_panel(snapshot, config):
     )
 
 
-def render_dashboard(snapshot, config, archive_entries=None):
-    """The current dashboard: counts, best values, chart, table, and links."""
+def render_dashboard(snapshot, config, archive_entries=None, depth=0):
+    """The current dashboard: counts, best values, chart, table, and links.
+
+    ``depth`` is the directory depth of the page inside the site tree (0 for
+    ``index.html``, 1 for a dated report under ``archive/``) so relative links
+    resolve from wherever the page is published.
+    """
+    up = "../" * int(depth)
     report_meta = snapshot.get("report") or {}
     title = report_meta.get("title") or (config.get("report") or {}).get("title") or "ClinePass Models Monitoring"
     body = [
@@ -882,8 +921,8 @@ def render_dashboard(snapshot, config, archive_entries=None):
     body.append("<h2>Methodology and history</h2>")
     body.append(
         '<p>Full methodology, provenance rules, and verification notes: '
-        '<a href="methodology.html">methodology.html</a>. Quality source: '
-        '<a href="https://artificialanalysis.ai/">Artificial Analysis</a>.</p>'
+        '<a href="%smethodology.html">methodology.html</a>. Quality source: '
+        '<a href="https://artificialanalysis.ai/">Artificial Analysis</a>.</p>' % up
     )
     entries = archive_entries or []
     if entries:
@@ -1011,9 +1050,9 @@ def _methodology_scoring(config):
         "the input rate; an explicitly reported zero cache rate means free cache tokens. Missing or "
         "zero base input/output rates make the cost unavailable, except for a catalog-free model where "
         "zero is a declared promotion rather than missing data.</p>",
-        '<table><thead><tr><th>Profile</th><th class="num">Cache read</th>'
+        '<div class="table-wrap"><table><thead><tr><th>Profile</th><th class="num">Cache read</th>'
         '<th class="num">Fresh input</th><th class="num">Cache write</th>'
-        '<th class="num">Output</th><th>Penalty</th></tr></thead><tbody>%s</tbody></table>'
+        '<th class="num">Output</th><th>Penalty</th></tr></thead><tbody>%s</tbody></table></div>'
         % profile_rows,
         '<p>Efficiency is <span class="code">E = Q - penalty * log2(cost / median)</span> per profile, '
         "with the median taken over every discovered model that has a positive cost for that profile; "
@@ -1085,7 +1124,7 @@ def render_archive_index(snapshot, config, archive_entries):
         )
     rows = "".join(
         '<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td><a href="%s">report</a></td>'
-        '<td><a href="%s">snapshot</a></td></tr>'
+        '<td><span class="code">%s</span></td></tr>'
         % (
             escape(entry.get("date")),
             escape(entry.get("generated_at")),
@@ -1100,8 +1139,9 @@ def render_archive_index(snapshot, config, archive_entries):
         "<h1>Archived reports</h1>"
         '<p class="sub">One dated report per run, newest first. '
         '<a href="../index.html">Back to the current report</a>.</p>'
-        "<table><thead><tr><th>Date</th><th>Generated</th><th>Mode</th><th>Summary model</th>"
-        "<th>Report</th><th>Snapshot</th></tr></thead><tbody>%s</tbody></table>"
+        '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Generated</th><th>Mode</th>'
+        "<th>Summary model</th><th>Report</th><th>Snapshot file</th></tr></thead><tbody>%s</tbody>"
+        "</table></div>"
     ) % rows
     return page("Archived reports", body)
 
@@ -1207,7 +1247,7 @@ def write_site(site_dir, snapshot, config, archive_entries):
     written.append(site / "index.html")
 
     dated = archive_dir / ("%s.html" % day)
-    dated.write_text(render_dashboard(snapshot, config, []), encoding="utf-8")
+    dated.write_text(render_dashboard(snapshot, config, [], depth=1), encoding="utf-8")
     written.append(dated)
 
     methodology = site / "methodology.html"
