@@ -115,7 +115,7 @@ No efficiency is produced if the current AA quality, positive task cost, or a va
 
 ### 3.4 Pareto and Combined Chart
 
-For each profile, a model is Pareto-optimal if it has a quality score and that profile's task cost and no other model has both equal-or-higher quality and equal-or-lower cost with at least one strict improvement. The profile Pareto booleans are calculated separately for planning and execution. Best-value cards select the highest efficiency among that profile's Pareto models; there is no quality threshold. Because catalog-free models have no efficiency value, a best-value card always names the best paid model for that profile; when free models are present, the lowest-cost figure shows $0 and the free models are flagged so the paid recommendation is not mistaken for the cheapest option available.
+For each profile, a model is Pareto-optimal if it has a quality score and that profile's task cost and no other model has both equal-or-higher quality and equal-or-lower cost with at least one strict improvement. The profile Pareto booleans are calculated separately for planning and execution. Best-value cards select the highest efficiency among that profile's Pareto models; there is no quality threshold. Because catalog-free models have no efficiency value, a best-value card always names the best paid model for that profile; when free models are present, the lowest-cost figure shows \$0 and the free models are flagged so the paid recommendation is not mistaken for the cheapest option available.
 
 The single cost-efficiency chart plots each eligible model once:
 
