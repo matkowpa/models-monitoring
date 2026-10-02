@@ -196,6 +196,39 @@ class ScoreModelsTests(unittest.TestCase):
             )
             self.assertTrue(point["frontier"], model_id)
 
+    def test_a_top_quality_free_model_does_not_empty_the_paid_frontier(self):
+        # Live-run regression: the catalog-free model has the highest quality at
+        # $0, which dominates every paid model when free models join the chart
+        # dominance check. The plotted frontier must stay non-empty so the
+        # Pareto curve keeps rendering; the free model stays non-dominated too.
+        entries = [
+            {"id": "cline-pass/strong", "slug": "strong", "name": "Strong", "free": False},
+            {"id": "cline-pass/worse", "slug": "worse", "name": "Worse", "free": False},
+            {"id": "cline-free/champ", "slug": "champ", "name": "Champ", "free": True},
+        ]
+        report = monitor.score_models(
+            entries,
+            {
+                "cline-pass/strong": rates(4.0, 8.0, 4.0, 4.0),
+                "cline-pass/worse": rates(8.0, 16.0, 8.0, 8.0),
+                "cline-free/champ": rates(0.0, 0.0, 0.0, 0.0, free=True),
+            },
+            {
+                "cline-pass/strong": {"intelligence_index": 80.0},
+                "cline-pass/worse": {"intelligence_index": 40.0},
+                "cline-free/champ": {"intelligence_index": 95.0},
+            },
+            {},
+            {},
+            self.config,
+        )
+        chart = report["chart"]
+        plotted = {point["id"]: point for point in chart["points"]}
+        self.assertTrue(plotted["cline-pass/strong"]["frontier"], "the paid champion stays on the frontier")
+        self.assertFalse(plotted["cline-pass/worse"]["frontier"])
+        band = {point["id"]: point for point in chart["free_band"]}
+        self.assertTrue(band["cline-free/champ"]["frontier"])
+
     def test_average_cost_is_the_mean_of_the_available_profile_costs(self):
         entries = [{"id": "cline-pass/cheap", "slug": "cheap", "name": "Cheap", "free": False}]
         report = monitor.score_models(

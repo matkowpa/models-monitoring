@@ -1037,7 +1037,17 @@ def _with_chart(records, profiles, medians, best_value):
         point["cost"] = sum(positive) / len(positive)
         plotted.append(point)
 
-    frontier = pareto_members(plotted + free_band)
+    # The single frontier must always be visible, so the plotted (paid) models
+    # form their own non-dominated set: a catalog-free model can have the top
+    # quality at a $0 cost that no paid model can reach, which would otherwise
+    # dominate the whole plotted cloud and leave the chart with no curve.
+    # Free models keep their own non-dominated flags, judged against the full
+    # set (nothing can be cheaper than $0, so they are never dominated by a
+    # paid model, only by a better free one).
+    frontier = pareto_members(plotted)
+    combined = pareto_members(plotted + free_band)
+    for point in free_band:
+        frontier[point["id"]] = bool(combined.get(point["id"]))
     for point in plotted + free_band:
         point["frontier"] = bool(frontier.get(point["id"]))
 

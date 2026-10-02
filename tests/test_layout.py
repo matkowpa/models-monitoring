@@ -176,13 +176,17 @@ class ChartGeometryTests(FixtureTestCase):
         path = re.search(r'<path class="frontier" data-role="frontier" d="([^"]+)"', self.svg)
         self.assertIsNotNone(path, "the frontier renders as a stepped path")
         segments = re.findall(r"[ML] ([\d.]+),([\d.]+)", path.group(1))
-        self.assertGreaterEqual(len(segments), 1)
+        self.assertGreaterEqual(len(segments), 3, "the curve spans the plot with edge extensions")
         for x, y in segments:
             self.assertGreaterEqual(float(x), site.CHART_LEFT)
             self.assertLessEqual(float(x), site.CHART_RIGHT)
             self.assertGreaterEqual(float(y), site.CHART_TOP)
             self.assertLessEqual(float(y), site.CHART_BOTTOM)
         self.assertIn('data-role="frontier-area"', self.svg)
+        # The curve always starts at the left edge and ends at the right edge,
+        # so even a single-frontier-member week draws a visible line.
+        self.assertLessEqual(float(segments[0][0]), site.CHART_LEFT)
+        self.assertGreaterEqual(float(segments[-1][0]), site.CHART_RIGHT)
 
     def test_frontier_and_best_value_points_are_colored(self):
         self.assertIn("point-frontier", self.svg)

@@ -378,15 +378,23 @@ def _chart_series(points, band, x_pos, y_pos, best_ids=None):
     if frontier_points:
         # A Pareto frontier in quality-vs-cost space reads as a staircase: each
         # step moves right (more cost) to reach a higher quality, so connect the
-        # ordered members with horizontal-then-vertical segments.
-        path = ["M %.1f,%.1f" % (x_pos(frontier_points[0]["cost"]), y_pos(frontier_points[0]["quality"]))]
+        # ordered members with horizontal-then-vertical segments. The curve is
+        # extended to both plot edges so a one-member frontier still draws a
+        # visible line: to the left, nothing paid is cheaper than the cheapest
+        # frontier member; to the right, no paid model at any higher cost beats
+        # the top frontier quality.
+        path = [
+            "M %d,%.1f" % (CHART_LEFT, y_pos(frontier_points[0]["quality"])),
+            "L %.1f,%.1f" % (x_pos(frontier_points[0]["cost"]), y_pos(frontier_points[0]["quality"])),
+        ]
         for previous, current in zip(frontier_points, frontier_points[1:]):
             path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(previous["quality"])))
             path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(current["quality"])))
+        path.append("L %d,%.1f" % (CHART_RIGHT, y_pos(frontier_points[-1]["quality"])))
         parts.append('<path class="frontier" data-role="frontier" d="%s"/>' % "".join(path))
         area = list(path)
-        area.append("L %.1f,%d" % (x_pos(frontier_points[-1]["cost"]), CHART_BOTTOM))
-        area.append("L %.1f,%d" % (x_pos(frontier_points[0]["cost"]), CHART_BOTTOM))
+        area.append("L %d,%d" % (CHART_RIGHT, CHART_BOTTOM))
+        area.append("L %d,%d" % (CHART_LEFT, CHART_BOTTOM))
         area.append("Z")
         parts.append('<path class="frontier-area" data-role="frontier-area" d="%s"/>' % "".join(area))
 

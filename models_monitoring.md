@@ -122,8 +122,8 @@ The single cost-efficiency chart plots each eligible model once:
 - Vertical axis: AA Intelligence Index $Q$.
 - Horizontal axis: arithmetic mean of available planning and execution task costs in USD, on a logarithmic scale. If only one profile cost is available, that available cost is plotted.
 - Marks: one point per model with a quality score and at least one positive profile cost. Frontier members are drawn green and best-value winners gold.
-- Free models: a zero cost has no place on a logarithmic axis, so catalog-free models are drawn as labeled `$0 (free)` markers in a band along the left edge of the plot, with a note. They remain members of the non-dominated set, because no model can be cheaper.
-- Pareto / efficient-frontier curve: the non-dominated set computed using the plotted average cost and $Q$ is connected left-to-right with a stepped (staircase) curve; frontier models are labeled. The curve is not two separate profile frontiers.
+- Free models: a zero cost has no place on a logarithmic axis, so catalog-free models are drawn as labeled `$0 (free)` markers in a band along the left edge of the plot, with a note. They remain members of the non-dominated set, because no model can be cheaper; they carry their own frontier flags in the snapshot but do not join the plotted curve.
+- Pareto / efficient-frontier curve: the non-dominated set of the plotted (paid) models, computed from the plotted average cost and $Q$, is connected left-to-right with a stepped (staircase) curve and extended to both plot edges, so the curve renders even when the frontier has a single member; frontier models are labeled. Catalog-free models never suppress the plotted curve, even when one of them holds the top quality at $0. The curve is not two separate profile frontiers.
 - Legend: lower-right within the chart plot.
 
 This combined chart frontier is distinct from the profile-specific Pareto flags used for planning/execution best-value recommendations. The comparison table remains the detailed place to compare each profile independently.
