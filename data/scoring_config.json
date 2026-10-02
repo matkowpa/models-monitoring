@@ -1,0 +1,80 @@
+{
+  "cline": {
+    "api_base_url": "https://api.cline.bot",
+    "recommended_models_path": "/api/v1/ai/cline/recommended-models",
+    "chat_completions_path": "/api/v1/chat/completions",
+    "api_key_env": "CLINE_API_KEY",
+    "user_id_env": "CLINE_USER_ID",
+    "usage_page_limit": 1000,
+    "daily_window_days": 31,
+    "request_timeout_seconds": 30,
+    "max_retries": 2
+  },
+  "artificial_analysis": {
+    "endpoint": "https://artificialanalysis.ai/api/v2/data/llms/models",
+    "api_key_env": "ARTIFICIAL_ANALYSIS_API_KEY",
+    "header_name": "x-api-key",
+    "intelligence_index_key": "artificial_analysis_intelligence_index",
+    "coding_index_key": "artificial_analysis_coding_index",
+    "index_scale": { "min": 0, "max": 100 }
+  },
+  "openrouter": {
+    "endpoint": "https://openrouter.ai/api/v1/models",
+    "api_key_env": "OPENROUTER_API_KEY"
+  },
+  "narrative": {
+    "models": [
+      "cline-pass/deepseek-v4.1-flash",
+      "cline-pass/glm-5.3-flash",
+      "cline-pass/kimi-k3"
+    ],
+    "max_words": 100,
+    "max_tokens": 400
+  },
+  "rate_window_days": 30,
+  "rate_fit": {
+    "min_rows": 12,
+    "max_condition_number": 1000000.0,
+    "max_total_reconciliation_error": 0.01,
+    "rms_residual_ratio": 0.02,
+    "rms_residual_floor_usd": 0.00002
+  },
+  "money_scales": {
+    "cost_usd": 100000000,
+    "credit_usd": 1000000
+  },
+  "change_detection": {
+    "material_rate_change_ratio": 0.01,
+    "observed_blend_change_ratio": 0.1
+  },
+  "profiles": {
+    "planning": {
+      "label": "Planning",
+      "cache_read_tokens": 200000,
+      "fresh_input_tokens": 30000,
+      "cache_write_tokens": 10000,
+      "output_tokens": 8000,
+      "penalty": 5
+    },
+    "execution": {
+      "label": "Execution",
+      "cache_read_tokens": 400000,
+      "fresh_input_tokens": 40000,
+      "cache_write_tokens": 20000,
+      "output_tokens": 15000,
+      "penalty": 8
+    }
+  },
+  "verbosity_multipliers": {
+    "cline-pass/glm-5.3": 1.1,
+    "cline-pass/kimi-k3": 1.15
+  },
+  "report": {
+    "title": "ClinePass Models Monitoring",
+    "timezone": "Europe/Warsaw",
+    "pages_base_url": "https://matkowpa.github.io/models-monitoring/",
+    "archive_limit": 26,
+    "schedule_hours": [6, 7],
+    "schedule_weekday": 0
+  }
+}

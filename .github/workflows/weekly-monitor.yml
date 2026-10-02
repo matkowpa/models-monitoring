@@ -1,0 +1,87 @@
+name: Weekly ClinePass models monitor
+
+# GitHub schedules in UTC, so both Warsaw candidates run and the application
+# decides: it proceeds only when Warsaw local time is Monday 06:00-07:59 and no
+# snapshot exists yet for that date (see src/run.py: should_run_scheduled).
+on:
+  schedule:
+    - cron: '0 4 * * 1'   # 06:00 Europe/Warsaw during CEST
+    - cron: '0 5 * * 1'   # 06:00 Europe/Warsaw during CET
+  workflow_dispatch:
+
+permissions:
+  contents: write   # commit data/history and site
+  pages: write      # publish the Pages artifact
+  id-token: write   # verify the deployment originates from this workflow
+
+concurrency:
+  group: weekly-monitor
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      skipped: ${{ steps.monitor.outputs.skipped }}
+    env:
+      TZ: Europe/Warsaw
+      CLINE_API_KEY: ${{ secrets.CLINE_API_KEY }}
+      ARTIFICIAL_ANALYSIS_API_KEY: ${{ secrets.ARTIFICIAL_ANALYSIS_API_KEY }}
+      CLINE_USER_ID: ${{ vars.CLINE_USER_ID }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run offline test suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Run the monitor
+        id: monitor
+        run: |
+          python -m src.run | tee run.log
+          if grep -q '^SCHEDULE_SKIPPED' run.log; then
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skipped=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit report history and site
+        if: steps.monitor.outputs.skipped == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history site
+          if git diff --cached --quiet; then
+            echo "no report changes to commit"
+          else
+            git commit -m "Weekly report $(date -u +%F)"
+            git push
+          fi
+
+      - name: Upload the Pages artifact
+        if: steps.monitor.outputs.skipped == 'false'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.skipped != 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

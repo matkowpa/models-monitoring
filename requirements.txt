@@ -1,0 +1,7 @@
+# No third-party runtime dependencies.
+#
+# The pipeline is standard library only (urllib, json, zoneinfo, statistics,
+# unittest) on purpose: the weekly workflow installs nothing that can drift,
+# and the offline pipeline runs with no network access at all. This file exists
+# so the documented setup step - "python -m pip install -r requirements.txt" -
+# stays valid.

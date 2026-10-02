@@ -1,0 +1,32 @@
+{
+  "data": {
+    "planHistoryId": "planhist-fixture",
+    "userId": "usr-fixture",
+    "plan": {
+      "id": "plan-clinepass",
+      "name": "cline-pass",
+      "displayName": "ClinePass",
+      "description": "Flat monthly subscription",
+      "type": "subscription",
+      "interval": "month",
+      "pricePerSeatCents": 999,
+      "entitlements": {
+        "cline_pass": {
+          "enabled": true,
+          "inferenceCapThreshold": {
+            "last5HoursUsageCostUSDPerUser": 5.0,
+            "last7daysUsageCostUSDPerUser": 25.0,
+            "last30daysUsageCostUSDPerUser": 80.0
+          }
+        }
+      },
+      "isActive": true,
+      "createdAt": "2026-01-05T00:00:00Z",
+      "updatedAt": "2026-09-01T00:00:00Z"
+    },
+    "subscriptionId": "sub-fixture",
+    "currentPeriodStart": "2026-09-01T00:00:00Z",
+    "currentPeriodEnd": "2026-10-01T00:00:00Z"
+  },
+  "success": true
+}

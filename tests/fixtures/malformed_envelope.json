@@ -1,0 +1,6 @@
+{
+  "note": "Offline fixture: a failure envelope. success=false and data=null are failures, not empty results, and must raise instead of yielding zero rows.",
+  "data": null,
+  "error": "unauthorized",
+  "success": false
+}

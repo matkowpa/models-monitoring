@@ -1,0 +1,52 @@
+{
+  "note": "Ground-truth measured rates used to generate usage_page_*.json: input, output, cache read in USD per 1M tokens. The offline fit must recover these.",
+  "reference_scale": 100000000,
+  "window_end": "2026-10-02",
+  "rates": {
+    "glm-5.3": [
+      1.55,
+      4.85,
+      0.29
+    ],
+    "glm-5.3-flash": [
+      0.17,
+      0.55,
+      0.033
+    ],
+    "kimi-k3": [
+      3.3,
+      16.5,
+      0.33
+    ],
+    "deepseek-v4.1-flash": [
+      0.33,
+      1.32,
+      0.0066
+    ],
+    "mimo-v2.5": [
+      0.155,
+      0.31,
+      0.0031
+    ],
+    "qwen3.8-max": [
+      2.2,
+      6.6,
+      0.275
+    ],
+    "qwen3.7-max": [
+      2.75,
+      8.25,
+      0.55
+    ],
+    "minimax-m3": [
+      0.33,
+      1.32,
+      0.066
+    ],
+    "deepseek-v4-pro": [
+      1.45,
+      4.36,
+      0.048
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "data": {
+    "limits": [
+      { "type": "five_hour", "percentUsed": 12.5, "resetsAt": "2026-10-02T11:00:00Z" },
+      { "type": "weekly", "percentUsed": 41.0, "resetsAt": "2026-10-05T00:00:00Z" },
+      { "type": "monthly", "percentUsed": 63.4, "resetsAt": "2026-11-01T00:00:00Z" }
+    ]
+  },
+  "success": true
+}

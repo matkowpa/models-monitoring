@@ -1,2 +1,10 @@
 # Local scratch notes
 TODOs.txt
+
+# Offline pipeline output (fixture runs; never published)
+site-offline/
+data/history/*.offline.json
+
+# Python bytecode
+__pycache__/
+*.pyc
