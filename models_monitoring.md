@@ -121,16 +121,16 @@ The single cost-efficiency chart plots each eligible model once:
 
 - Vertical axis: AA Intelligence Index $Q$.
 - Horizontal axis: arithmetic mean of available planning and execution task costs in USD, on a logarithmic scale. If only one profile cost is available, that available cost is plotted.
-- Marks: one point per model with a quality score and at least one positive profile cost.
+- Marks: one point per model with a quality score and at least one positive profile cost. Frontier members are drawn green and best-value winners gold.
 - Free models: a zero cost has no place on a logarithmic axis, so catalog-free models are drawn as labeled `$0 (free)` markers in a band along the left edge of the plot, with a note. They remain members of the non-dominated set, because no model can be cheaper.
-- Single frontier: the non-dominated set computed using the plotted average cost and $Q$; frontier models are labeled. The curve is not two separate profile frontiers.
+- Pareto / efficient-frontier curve: the non-dominated set computed using the plotted average cost and $Q$ is connected left-to-right with a stepped (staircase) curve; frontier models are labeled. The curve is not two separate profile frontiers.
 - Legend: lower-right within the chart plot.
 
 This combined chart frontier is distinct from the profile-specific Pareto flags used for planning/execution best-value recommendations. The comparison table remains the detailed place to compare each profile independently.
 
 ## 4. Report, Interactions, and History
 
-The generated static dashboard includes discovered/priced/benchmarked counts, highest quality, planning and execution best value, weekly change summary, the combined cost-quality chart, the sortable/filterable model table, methodology, and historical report links. The table includes model/family, AA quality, informational Coding Index, Cline billing input/output/cache-read/cache-write rates in USD per million with their source, planning/execution task cost in USD, planning/execution efficiency points, and AA evidence metadata. Header sorting, per-column filters, model search, family selection, and quick filters including **Benchmarked & Priced** and **Measured rates** are implemented in the generated page.
+The generated static dashboard includes discovered/priced/benchmarked counts, highest quality, planning and execution best value, weekly change summary, the combined cost-quality chart with its Pareto / efficient-frontier curve, the sortable model table, methodology, and historical report links. The table includes model/family, AA quality, informational Coding Index, Cline billing input/output/cache-read/cache-write rates in USD per million with their source, planning/execution task cost in USD, planning/execution efficiency points, and AA evidence metadata. Header sorting, model search, family selection, and quick filters including **Benchmarked & Priced**, **Measured rates**, **Frontier**, **Best value**, and **Free models** are implemented in the generated page.
 
 Top planning/execution comparison fields are not benchmark-derived dimensions in the current scoring design; the earlier capability matrix and component-benchmark planner/executor rankings were removed from the active report. This preserves the single AA quality measure while retaining separate planning/execution cost and efficiency columns.
 

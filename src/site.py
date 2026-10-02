@@ -104,12 +104,14 @@ def rate_window_text(model):
 CSS = """
 :root {
   color-scheme: light dark;
-  --bg: #f7f8fa; --card: #ffffff; --ink: #1b1f24; --muted: #5b6472;
+  --bg: #f4f6f9; --card: #ffffff; --ink: #161b22; --muted: #5b6472;
   --line: #e2e5ea; --accent: #0b6bcb; --good: #1a7f37; --warn: #9a6700; --bad: #b3261e;
+  --violet: #8250df; --pill: #edf1f5; --frontier: #1a7f37; --best: #9a6700;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #10141a; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
-          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149; }
+  :root { --bg: #0e1218; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
+          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149;
+          --violet: #b392f0; --pill: #222b37; --frontier: #4ac26b; --best: #d4a72c; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
@@ -126,11 +128,46 @@ a { color: var(--accent); }
 .badge.live { color: var(--good); border-color: var(--good); font-weight: 600; }
 .badge.offline { color: var(--warn); border-color: var(--warn); font-weight: 600; }
 .badge.fallback { color: var(--bad); border-color: var(--bad); font-weight: 600; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
-.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
+/* Card grids share the same spacing: stat, story, and profile cards below. */
+.cards, .story-grid, .best-grid { display: grid; gap: 12px; }
+.cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.story-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 12px; }
+.best-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 12px; }
+.card, .story, .best { background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 16px; }
+.card .k, .story .k, .best .k { color: var(--muted); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .06em; font-weight: 600; }
+.card .v { font-size: 22px; font-weight: 650; margin-top: 2px; overflow-wrap: anywhere; }
+.card .n, .best .n, .story p { color: var(--muted); font-size: 13px; margin: 4px 0 0;
+  overflow-wrap: anywhere; }
+.story h3, .best h3 { font-size: 15px; margin: 6px 0 4px; }
+.hero { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px; margin-bottom: 4px; }
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 7px 14px; border-radius: 999px; font-size: 13px;
+  font-weight: 600; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  text-decoration: none; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 4px; }
+.toolbar .spacer { flex: 1 1 auto; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; }
+.eyebrow { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em;
+  margin: 26px 0 2px; font-weight: 700; }
+.winner { border-top: 3px solid var(--good); }
+.winner.plan { border-top-color: var(--accent); }
+.winner.exec { border-top-color: var(--violet); }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px;
+  font-weight: 700; background: var(--pill); color: var(--muted); border: 1px solid var(--line); }
+.pill.plan { color: var(--accent); border-color: var(--accent); }
+.pill.exec { color: var(--violet); border-color: var(--violet); }
+.pill.best { color: var(--best); border-color: var(--best); }
+.pill.frontier { color: var(--frontier); border-color: var(--frontier); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0 0; padding: 0;
+  list-style: none; color: var(--muted); font-size: 12.5px; }
+.legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+  margin-right: 6px; vertical-align: baseline; }
+.prov { font-weight: 600; font-size: 11.5px; padding: 0 4px; border-radius: 4px; white-space: nowrap; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; margin-top: 12px; }
 .panel.warnings { border-left: 3px solid var(--warn); }
@@ -142,8 +179,8 @@ button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--ac
 table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); font-size: 13.5px; }
 #models { min-width: 1180px; }
 /* The wrapper is the table's own scrollport: horizontal for the wide column set,
-   and vertical so the two sticky header rows have something to stick to (a
-   wrapper with only horizontal overflow would not let them stick at all). */
+   and vertical so the single sticky header row has something to stick to (a
+   wrapper with only horizontal overflow would not let it stick at all). */
 .table-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--line);
   border-radius: 10px; background: var(--card); }
 th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top;
@@ -152,11 +189,8 @@ th { background: var(--card); white-space: nowrap; }
 #models thead th[data-key] { position: sticky; top: 0; z-index: 2; cursor: pointer; }
 #models thead th[data-key] .dir { color: var(--muted); font-size: 11px; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-/* The filter row tucks slightly under the sortable header row so no gap can
-   appear between them while scrolling; the header row has the higher z-index. */
-#models tr.filters th { position: sticky; top: 2rem; z-index: 1; cursor: default; padding: 4px;
-  border-bottom: 1px solid var(--line); }
-#models tr.filters input { width: 100%; min-width: 72px; padding: 4px 6px; font-size: 12px; }
+#models tbody tr[data-frontier="true"] td:first-child { box-shadow: inset 3px 0 0 var(--frontier); }
+#models tbody tr[data-best="true"] td:first-child { box-shadow: inset 3px 0 0 var(--best); }
 #models tbody tr:hover td { background: var(--bg); }
 #models tbody tr[hidden] { display: none; }
 .tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
@@ -176,9 +210,14 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
 .chart text { fill: var(--ink); font-size: 11px; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
-.chart .frontier { fill: none; stroke: var(--accent); stroke-width: 2; }
-.chart .point { fill: var(--accent); }
+.chart .frontier { fill: none; stroke: var(--frontier); stroke-width: 2.5; }
+.chart .frontier-area { fill: var(--frontier); opacity: .08; stroke: none; }
+.chart .point { fill: var(--accent); opacity: .75; }
+.chart .point-frontier { fill: var(--frontier); opacity: 1; }
+.chart .point-best { fill: var(--best); opacity: 1; stroke: var(--card); stroke-width: 1.5; }
 .chart .point-free { fill: var(--warn); }
+.chart .ring { fill: none; stroke: var(--frontier); stroke-width: 1.5; opacity: .9; }
+.chart .ring-best { stroke: var(--best); stroke-width: 2; }
 .chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
 .chart .legend-box { fill: var(--card); stroke: var(--line); }
 footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
@@ -227,14 +266,21 @@ def _quality_ticks(low, high, count=5):
 def render_chart(report, config=None):
     """Render the combined cost/quality chart as inline SVG.
 
-    One point per eligible model, a single non-dominated frontier over the plotted
-    average cost, an annotation for every frontier model, and a legend inside the
-    lower-right of the plot area. Catalog-free models are drawn in a band at the
+    One point per eligible model, a stepwise efficient-frontier curve over the
+    plotted average cost, an annotation for every frontier model, and a legend
+    inside the lower-right of the plot area. Frontier members are colored green
+    and best-value winners gold; catalog-free models are drawn in a band at the
     left because a zero cost has no place on a logarithmic axis.
     """
     chart = report.get("chart") or {}
     points = list(chart.get("points") or [])
     band = list(chart.get("free_band") or [])
+    best_value = report.get("best_value") or {}
+    best_ids = {
+        (entry or {}).get("id")
+        for entry in best_value.values()
+        if isinstance(entry, dict) and entry.get("id")
+    }
     if not points and not band:
         return (
             '<svg viewBox="0 0 940 200" role="img" aria-label="Cost and quality chart">'
@@ -301,13 +347,14 @@ def render_chart(report, config=None):
         "Index</text>" % (AXIS_TITLE_X, (CHART_TOP + CHART_BOTTOM) // 2)
     )
 
-    parts.append(_chart_series(points, band, x_pos, y_pos))
+    parts.append(_chart_series(points, band, x_pos, y_pos, best_ids))
     parts.append("</svg>")
     return "".join(parts)
 
 
-def _chart_series(points, band, x_pos, y_pos):
-    """Marks, frontier line, annotations, the free band, and the in-plot legend."""
+def _chart_series(points, band, x_pos, y_pos, best_ids=None):
+    """Marks, the efficient-frontier curve, annotations, the free band, and legend."""
+    best_ids = set(best_ids or set())
     parts = []
     band_center = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
     if band:
@@ -328,24 +375,51 @@ def _chart_series(points, band, x_pos, y_pos):
     frontier_points = sorted(
         (point for point in points if point.get("frontier")), key=lambda point: point["cost"]
     )
-    if len(frontier_points) > 1:
-        coordinates = " ".join(
-            "%.1f,%.1f" % (x_pos(point["cost"]), y_pos(point["quality"]))
-            for point in frontier_points
-        )
-        parts.append('<polyline class="frontier" data-role="frontier" points="%s"/>' % coordinates)
+    if frontier_points:
+        # A Pareto frontier in quality-vs-cost space reads as a staircase: each
+        # step moves right (more cost) to reach a higher quality, so connect the
+        # ordered members with horizontal-then-vertical segments.
+        path = ["M %.1f,%.1f" % (x_pos(frontier_points[0]["cost"]), y_pos(frontier_points[0]["quality"]))]
+        for previous, current in zip(frontier_points, frontier_points[1:]):
+            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(previous["quality"])))
+            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(current["quality"])))
+        parts.append('<path class="frontier" data-role="frontier" d="%s"/>' % "".join(path))
+        area = list(path)
+        area.append("L %.1f,%d" % (x_pos(frontier_points[-1]["cost"]), CHART_BOTTOM))
+        area.append("L %.1f,%d" % (x_pos(frontier_points[0]["cost"]), CHART_BOTTOM))
+        area.append("Z")
+        parts.append('<path class="frontier-area" data-role="frontier-area" d="%s"/>' % "".join(area))
 
     for index, point in enumerate(points):
         x = x_pos(point["cost"])
         y = y_pos(point["quality"])
-        parts.append(
-            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-free="false">'
-            % (escape(point["id"]), "true" if point.get("frontier") else "false")
+        is_best = point["id"] in best_ids
+        point_class = "point point-best" if is_best else (
+            "point point-frontier" if point.get("frontier") else "point"
         )
+        ring_class = "ring ring-best" if is_best else "ring"
         parts.append(
-            '<circle class="point" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, mean cost %s'
+            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="false">'
+            % (
+                escape(point["id"]),
+                "true" if point.get("frontier") else "false",
+                "true" if is_best else "false",
+            )
+        )
+        if point.get("frontier"):
+            parts.append('<circle class="%s" cx="%.1f" cy="%.1f" r="9"/>' % (ring_class, x, y))
+        parts.append(
+            '<circle class="%s" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, mean cost %s%s'
             "</title></circle>"
-            % (x, y, escape(point["name"]), point["quality"], fmt_usd(point["cost"]))
+            % (
+                point_class,
+                x,
+                y,
+                escape(point["name"]),
+                point["quality"],
+                fmt_usd(point["cost"]),
+                " - best value" if is_best else "",
+            )
         )
         parts.append("</g>")
         if point.get("frontier"):
@@ -373,14 +447,20 @@ def _chart_series(points, band, x_pos, y_pos):
     for point in band:
         x = band_center
         y = y_pos(point["quality"])
+        is_best = point["id"] in best_ids
+        point_class = "point point-free point-best" if is_best else "point point-free"
         parts.append(
-            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-free="true">'
-            % (escape(point["id"]), "true" if point.get("frontier") else "false")
+            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="true">'
+            % (
+                escape(point["id"]),
+                "true" if point.get("frontier") else "false",
+                "true" if is_best else "false",
+            )
         )
         parts.append(
-            '<circle class="point point-free" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, '
+            '<circle class="%s" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, '
             "$0 (free) - not on the log axis</title></circle>"
-            % (x, y, escape(point["name"]), point["quality"])
+            % (point_class, x, y, escape(point["name"]), point["quality"])
         )
         parts.append("</g>")
         parts.append(
@@ -393,19 +473,23 @@ def _chart_series(points, band, x_pos, y_pos):
             )
         )
 
-    legend_x = CHART_RIGHT - 186
-    legend_y = CHART_BOTTOM - 60
+    legend_x = CHART_RIGHT - 216
+    legend_y = CHART_BOTTOM - 82
     parts.append(
         '<g data-role="legend" data-x="%d" data-y="%d" transform="translate(%d,%d)">'
         % (legend_x, legend_y, legend_x, legend_y)
     )
-    parts.append('<rect class="legend-box" width="176" height="50" rx="6"/>')
+    parts.append('<rect class="legend-box" width="206" height="72" rx="6"/>')
     parts.append('<circle class="point" cx="14" cy="15" r="5"/>')
-    parts.append('<text x="26" y="19">eligible model</text>')
-    parts.append('<line class="frontier" x1="6" y1="31" x2="22" y2="31"/>')
-    parts.append('<text x="26" y="35">non-dominated frontier</text>')
-    parts.append('<circle class="point point-free" cx="14" cy="46" r="5"/>')
-    parts.append('<text x="26" y="50">$0 free (off the log axis)</text>')
+    parts.append('<text x="26" y="19">paid model</text>')
+    parts.append('<circle class="point point-frontier" cx="14" cy="31" r="5"/>')
+    parts.append('<text x="26" y="35">efficient frontier</text>')
+    parts.append('<line class="frontier" x1="6" y1="42" x2="22" y2="42"/>')
+    parts.append('<text x="26" y="46">Pareto / efficient frontier</text>')
+    parts.append('<circle class="point point-best" cx="14" cy="58" r="5"/>')
+    parts.append('<text x="26" y="62">best value</text>')
+    parts.append('<circle class="point point-free" cx="14" cy="70" r="5"/>')
+    parts.append('<text x="26" y="74">$0 free (off the log axis)</text>')
     parts.append("</g>")
     parts.append(
         '<text x="%d" y="%d" data-role="chart-note">Free models carry a zero task cost, which '
@@ -451,7 +535,7 @@ def _rate_cell(model, rate_class):
     )
 
 
-def _model_row(model):
+def _model_row(model, is_frontier=False, is_best=False):
     """One table row, with the values mirrored into data attributes for filtering."""
     source_label, source_css = model_rate_source(model)
     quality_record = model.get("quality") or {}
@@ -512,9 +596,14 @@ def _model_row(model):
     attribute_text = " ".join(
         'data-%s="%s"' % (key, escape(value)) for key, value in attributes.items()
     )
+    badges = ""
+    if is_best:
+        badges += ' <span class="pill best">best</span>'
+    elif is_frontier:
+        badges += ' <span class="pill frontier">frontier</span>'
     return (
-        "<tr %s>"
-        "<td>%s</td>"
+        '<tr %s data-frontier="%s" data-best="%s">'
+        "<td>%s%s</td>"
         '<td><span class="tag %s">%s</span></td>'
         '<td class="num">%s</td>'
         '<td class="num">%s</td>'
@@ -527,7 +616,10 @@ def _model_row(model):
         "</tr>"
     ) % (
         attribute_text,
+        "true" if is_frontier else "false",
+        "true" if is_best else "false",
         model_cell,
+        badges,
         source_css,
         escape(source_label),
         fmt_points(quality),
@@ -545,8 +637,22 @@ def _model_row(model):
 
 
 def render_table(report, config=None):
-    """The sortable, filterable model table with per-column filters."""
+    """The sortable model table with a search box, family and quick filters."""
     models = report.get("models") or []
+    best_ids = {
+        (entry or {}).get("id")
+        for entry in (report.get("best_value") or {}).values()
+        if isinstance(entry, dict) and entry.get("id")
+    }
+    frontier_ids = {
+        model["id"]
+        for model in models
+        if (model.get("pareto") or {}).get("planning") or (model.get("pareto") or {}).get("execution")
+    } | {
+        point["id"]
+        for point in ((report.get("chart") or {}).get("points") or [])
+        if point.get("frontier")
+    }
     header = ["<tr>"]
     for key, label, sort_type in TABLE_COLUMNS:
         header.append(
@@ -554,17 +660,10 @@ def render_table(report, config=None):
             % (key, sort_type, escape(label))
         )
     header.append("</tr>")
-    filters = ['<tr class="filters">']
-    for key, label, sort_type in TABLE_COLUMNS:
-        filters.append(
-            '<th><input data-filter="%s" aria-label="Filter by %s" placeholder="%s"/></th>'
-            % (key, escape(label), "number" if sort_type == "number" else "text")
-        )
-    filters.append("</tr>")
 
     families = sorted({model["family"] for model in models})
     controls = [
-        '<div class="controls">',
+        '<div class="toolbar">',
         '<input id="model-search" type="search" placeholder="Search models" '
         'aria-label="Search models"/>',
         '<select id="family-filter" aria-label="Family filter"><option value="">All families'
@@ -576,6 +675,8 @@ def render_table(report, config=None):
     for quick, label in (
         ("benchmarked-priced", "Benchmarked &amp; Priced"),
         ("measured-rates", "Measured rates"),
+        ("frontier", "Frontier"),
+        ("best", "Best value"),
         ("free", "Free models"),
     ):
         controls.append(
@@ -590,9 +691,15 @@ def render_table(report, config=None):
         + [
             '<div class="table-wrap"><table id="models"><thead>',
             *header,
-            *filters,
             "</thead><tbody>",
-            *[_model_row(model) for model in models],
+            *[
+                _model_row(
+                    model,
+                    is_frontier=model["id"] in frontier_ids,
+                    is_best=model["id"] in best_ids,
+                )
+                for model in models
+            ],
             "</tbody></table></div>",
         ]
     )
@@ -603,31 +710,12 @@ TABLE_SCRIPT = """
   var table = document.getElementById('models');
   if (!table) { return; }
   var rows = Array.prototype.slice.call(table.tBodies[0].rows);
-  var filters = Array.prototype.slice.call(table.querySelectorAll('tr.filters input'));
   var quicks = Array.prototype.slice.call(document.querySelectorAll('button.quick'));
   var search = document.getElementById('model-search');
   var family = document.getElementById('family-filter');
   var counter = document.getElementById('row-count');
   var sortKey = null;
   var sortDir = 1;
-
-  function matches(value, spec) {
-    spec = (spec || '').trim();
-    if (!spec) { return true; }
-    var m = spec.match(/^(>=|<=|>|<|=)?\\s*(-?\\d+(?:\\.\\d+)?)$/);
-    if (m && value !== '') {
-      var target = parseFloat(m[2]);
-      var actual = parseFloat(value);
-      if (!isNaN(actual)) {
-        if (m[1] === '>') { return actual > target; }
-        if (m[1] === '>=') { return actual >= target; }
-        if (m[1] === '<') { return actual < target; }
-        if (m[1] === '<=') { return actual <= target; }
-        return actual === target;
-      }
-    }
-    return value.toLowerCase().indexOf(spec.toLowerCase()) !== -1;
-  }
 
   function apply() {
     var active = quicks.filter(function (button) {
@@ -637,11 +725,6 @@ TABLE_SCRIPT = """
     var chosenFamily = family ? family.value : '';
     rows.forEach(function (row) {
       var visible = true;
-      filters.forEach(function (input) {
-        if (visible && !matches(row.dataset[input.dataset.filter] || '', input.value)) {
-          visible = false;
-        }
-      });
       if (visible && term && (row.dataset.model || '').indexOf(term) === -1) { visible = false; }
       if (visible && chosenFamily && row.dataset.family !== chosenFamily) { visible = false; }
       if (visible) {
@@ -649,6 +732,8 @@ TABLE_SCRIPT = """
           if (name === 'benchmarked-priced' &&
               !(row.dataset.benchmarked === '1' && row.dataset.priced === '1')) { visible = false; }
           if (name === 'measured-rates' && row.dataset.measured !== '1') { visible = false; }
+          if (name === 'frontier' && row.dataset.frontier !== 'true') { visible = false; }
+          if (name === 'best' && row.dataset.best !== 'true') { visible = false; }
           if (name === 'free' && row.dataset.free !== '1') { visible = false; }
         });
       }
@@ -684,7 +769,6 @@ TABLE_SCRIPT = """
     });
   });
 
-  filters.forEach(function (input) { input.addEventListener('input', apply); });
   quicks.forEach(function (button) {
     button.addEventListener('click', function () {
       var pressed = button.getAttribute('aria-pressed') === 'true';
@@ -750,7 +834,7 @@ def _badges(snapshot, config):
     return '<div class="badges">%s</div>' % "".join(badges)
 
 
-def _best_value_card(label, winner, profile_label):
+def _best_value_card(label, winner, profile_label, css_class=""):
     if not winner:
         return _card(label, '<span class="muted">n/a</span>', "no eligible model")
     note = "%s: %s points, task cost %s, quality %s" % (
@@ -761,14 +845,16 @@ def _best_value_card(label, winner, profile_label):
     )
     if winner.get("basis") == "highest_efficiency_paid":
         note += " - best paid model; the Pareto set here is dominated by $0 free models"
-    return _card(label, escape(winner.get("name")), note)
+    css = ("best %s winner" % css_class).strip()
+    return (
+        '<div class="%s"><div class="k">%s</div><h3>%s</h3><div class="n">%s</div></div>'
+        % (css, escape(label), escape(winner.get("name")), escape(note))
+    )
 
 
 def _stat_cards(snapshot, config):
     stats = snapshot.get("stats") or {}
-    profiles = (config.get("profiles") or {})
     medians = snapshot.get("medians") or {}
-    best = snapshot.get("best_value") or {}
     cards = [
         _card("Models discovered", str(stats.get("discovered", 0)), "ClinePass catalog plus free models"),
         _card(
@@ -791,11 +877,6 @@ def _stat_cards(snapshot, config):
             "AA Intelligence Index %s" % fmt_points((highest or {}).get("quality"), 1),
         )
     )
-    for name in profiles:
-        label = profiles[name].get("label") or name
-        cards.append(
-            _best_value_card("%s best value" % label, best.get(name), label)
-        )
     cheapest = stats.get("lowest_cost")
     cards.append(
         _card(
@@ -808,12 +889,33 @@ def _stat_cards(snapshot, config):
             ),
         )
     )
-    for name in profiles:
+    return '<div class="cards">%s</div>' % "".join(cards)
+
+
+def _profile_cards(snapshot, config):
+    """Planning / Execution best-value winners plus their median reference costs."""
+    profiles = config.get("profiles") or {}
+    medians = snapshot.get("medians") or {}
+    best = snapshot.get("best_value") or {}
+    cards = []
+    for index, name in enumerate(profiles):
         label = profiles[name].get("label") or name
         cards.append(
-            _card("Median %s cost" % label.lower(), fmt_usd(medians.get(name)), "feeds the efficiency penalty")
+            _best_value_card(
+                "%s best value" % label,
+                best.get(name),
+                label,
+                "plan" if index == 0 else "exec",
+            )
         )
-    return '<div class="cards">%s</div>' % "".join(cards)
+        cards.append(
+            _card(
+                "Median %s cost" % label.lower(),
+                fmt_usd(medians.get(name)),
+                "feeds the efficiency penalty",
+            )
+        )
+    return '<div class="best-grid">%s</div>' % "".join(cards)
 
 
 def _change_panel(snapshot, config):
@@ -891,10 +993,14 @@ def render_dashboard(snapshot, config, archive_entries=None, depth=0):
     report_meta = snapshot.get("report") or {}
     title = report_meta.get("title") or (config.get("report") or {}).get("title") or "ClinePass Models Monitoring"
     body = [
+        '<div class="hero"><div><p class="eyebrow">ClinePass weekly monitor</p>'
         "<h1>%s</h1>" % escape(title),
         '<p class="sub">Report generated %s (%s). Prices are Cline billing rates measured from this '
         "account's ClinePass usage; quality is the Artificial Analysis Intelligence Index.</p>"
         % (escape(report_meta.get("generated_at")), escape(report_meta.get("timezone"))),
+        "</div>"
+        '<div class="hero-actions"><a class="btn primary" href="%smethodology.html">Methodology</a>'
+        '<a class="btn" href="%sarchive/index.html">Archive</a></div></div>' % (up, up),
         _badges(snapshot, config),
     ]
     warnings = report_meta.get("warnings") or []
@@ -903,17 +1009,31 @@ def render_dashboard(snapshot, config, archive_entries=None, depth=0):
             '<div class="panel warnings"><h3>Run warnings</h3><ul>%s</ul></div>'
             % "".join("<li>%s</li>" % escape(warning) for warning in warnings)
         )
+    body.append('<p class="eyebrow">At a glance</p>')
     body.append(_stat_cards(snapshot, config))
+    body.append('<p class="eyebrow">This week</p>')
     body.append(_change_panel(snapshot, config))
-    body.append("<h2>Cost and quality</h2>")
-    body.append('<div class="chart">%s</div>' % render_chart(snapshot, config))
-    body.append("<h2>Models</h2>")
+    body.append('<div class="section-head"><h2>Cost vs quality</h2><span class="muted small">Pareto inside</span></div>')
     body.append(
-        '<p class="sub">Click a header to sort. Per-column filters accept free text or numeric '
-        "comparisons such as <span class=\"code\">&gt;=1</span>, <span class=\"code\">&lt;0.5</span> "
-        "or <span class=\"code\">0.1</span>. Every rate cell carries its provenance: measured (in this "
-        "account's billing window), reference (Cline's published rate card), free (catalog-declared "
-        "$0) or input fallback.</p>"
+        '<p class="sub">Mean of the available planning and execution task costs (USD, log scale) '
+        "against the AA Intelligence Index. The green staircase is the Pareto / efficient frontier; "
+        "green markers sit on the frontier and gold markers are the best-value winners.</p>"
+    )
+    body.append('<div class="chart">%s</div>' % render_chart(snapshot, config))
+    body.append(
+        '<ul class="legend"><li><span class="sw" '
+        'style="background: var(--accent)"></span>paid model</li>'
+        '<li><span class="sw" style="background: var(--frontier)"></span>efficient frontier</li>'
+        '<li><span class="sw" style="background: var(--best)"></span>best value</li>'
+        '<li><span class="sw" style="background: var(--warn)"></span>$0 free</li></ul>'
+    )
+    body.append('<p class="eyebrow">Best value by workload</p>')
+    body.append(_profile_cards(snapshot, config))
+    body.append('<div class="section-head"><h2>Models</h2><span class="muted small">sortable</span></div>')
+    body.append(
+        '<p class="sub">Click a column header to sort. Use the search box, family picker, or '
+        "quick filters above the table. Frontier rows carry a green marker, best-value winners "
+        "carry a gold marker, and every rate cell carries its provenance.</p>"
     )
     body.append(render_table(snapshot, config))
     body.append("<h2>Methodology and history</h2>")

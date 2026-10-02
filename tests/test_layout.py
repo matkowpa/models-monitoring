@@ -61,15 +61,12 @@ class DashboardLayoutTests(FixtureTestCase):
         self.assertRegex(wrapper, r"max-height: \d+vh")
         self.assertIn("border-radius", wrapper)
 
-    def test_the_two_sticky_header_rows_do_not_share_one_offset(self):
+    def test_the_single_sticky_header_row_sticks_to_the_top(self):
         header = re.search(r"#models thead th\[data-key\] \{([^}]*)\}", self.css).group(1)
-        filters = re.search(r"#models tr\.filters th \{([^}]*)\}", self.css).group(1)
         self.assertIn("position: sticky", header)
         self.assertIn("top: 0", header)
-        self.assertIn("position: sticky", filters)
-        top = re.search(r"top: ([\d.]+)rem", filters)
-        self.assertIsNotNone(top, "the filter row needs its own sticky offset")
-        self.assertGreater(float(top.group(1)), 0.0)
+        self.assertNotIn("tr.filters", self.css)
+        self.assertNotIn("data-filter=", self.html)
 
     def test_long_values_cannot_stretch_the_layout(self):
         self.assertIn("overflow-wrap: anywhere", self.css)
@@ -98,6 +95,8 @@ class DashboardLayoutTests(FixtureTestCase):
             "priced",
             "free",
             "measured",
+            "frontier",
+            "best",
         )
         body = self.html[self.html.index("<tbody>") :]
         rows = re.findall(r"<tr ([^>]*)>", body)
@@ -106,11 +105,11 @@ class DashboardLayoutTests(FixtureTestCase):
             for key in keys:
                 self.assertIn("data-%s=" % key, row)
 
-    def test_each_column_filter_uses_a_matching_data_attribute(self):
-        filters = re.findall(r'data-filter="([a-z]+)"', self.html)
-        self.assertEqual(len(site.TABLE_COLUMNS), len(filters))
-        for name in filters:
-            self.assertIn("data-%s=" % name, self.html)
+    def test_the_table_has_no_per_column_filter_row(self):
+        self.assertNotIn('<tr class="filters">', self.html)
+        self.assertNotIn("data-filter=", self.html)
+        self.assertIn('id="model-search"', self.html)
+        self.assertIn('id="family-filter"', self.html)
 
 
 class ChartGeometryTests(FixtureTestCase):
@@ -162,14 +161,41 @@ class ChartGeometryTests(FixtureTestCase):
         self.assertIsNotNone(label)
         self.assertLess(float(label.group(2)), site.CHART_TOP)
         markers = re.findall(
-            r'<g data-role="point" data-model-id="[^"]*" data-frontier="[^"]*" data-free="true">'
-            r'<circle class="point point-free" cx="([\d.]+)"',
+            r'<g data-role="point" data-model-id="[^"]*" data-frontier="[^"]*" data-best="[^"]*" '
+            r'data-free="true">'
+            r'<circle class="point point-free[^"]*" cx="([\d.]+)"',
             self.svg,
         )
         self.assertEqual(len(self.snapshot["chart"]["free_band"]), len(markers))
         for x in markers:
             self.assertGreaterEqual(float(x), site.FREE_BAND_LEFT)
             self.assertLessEqual(float(x), site.FREE_BAND_RIGHT)
+
+    def test_the_frontier_is_a_stepped_pareto_curve(self):
+        self.assertIn('data-role="frontier"', self.svg)
+        path = re.search(r'<path class="frontier" data-role="frontier" d="([^"]+)"', self.svg)
+        self.assertIsNotNone(path, "the frontier renders as a stepped path")
+        segments = re.findall(r"[ML] ([\d.]+),([\d.]+)", path.group(1))
+        self.assertGreaterEqual(len(segments), 1)
+        for x, y in segments:
+            self.assertGreaterEqual(float(x), site.CHART_LEFT)
+            self.assertLessEqual(float(x), site.CHART_RIGHT)
+            self.assertGreaterEqual(float(y), site.CHART_TOP)
+            self.assertLessEqual(float(y), site.CHART_BOTTOM)
+        self.assertIn('data-role="frontier-area"', self.svg)
+
+    def test_frontier_and_best_value_points_are_colored(self):
+        self.assertIn("point-frontier", self.svg)
+        self.assertIn("point-best", self.svg)
+        self.assertIn("Pareto / efficient frontier", self.svg)
+        best_ids = {
+            entry.get("id")
+            for entry in (self.snapshot.get("best_value") or {}).values()
+            if isinstance(entry, dict) and entry.get("id")
+        }
+        self.assertTrue(best_ids)
+        for model_id in best_ids:
+            self.assertIn('data-best="true"', self.svg)
 
     def test_annotations_stay_inside_the_plot_area(self):
         ys = [

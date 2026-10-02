@@ -157,11 +157,16 @@ class ChartTests(FixtureTestCase):
                     }
                 ],
                 "free_band": [],
-            }
+            },
+            "best_value": {
+                "planning": {"id": "x", "name": "X"},
+            },
         }
         svg = site.render_chart(report, self.config)
         self.assertIn('data-model-id="x"', svg)
         self.assertIn('data-role="annotation" data-model-id="x"', svg)
+        self.assertIn('data-role="frontier"', svg)
+        self.assertIn("point-best", svg)
 
 
 if __name__ == "__main__":

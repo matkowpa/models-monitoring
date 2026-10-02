@@ -7,12 +7,14 @@
 <style>
 :root {
   color-scheme: light dark;
-  --bg: #f7f8fa; --card: #ffffff; --ink: #1b1f24; --muted: #5b6472;
+  --bg: #f4f6f9; --card: #ffffff; --ink: #161b22; --muted: #5b6472;
   --line: #e2e5ea; --accent: #0b6bcb; --good: #1a7f37; --warn: #9a6700; --bad: #b3261e;
+  --violet: #8250df; --pill: #edf1f5; --frontier: #1a7f37; --best: #9a6700;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #10141a; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
-          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149; }
+  :root { --bg: #0e1218; --card: #171c24; --ink: #e6e9ee; --muted: #9aa4b2;
+          --line: #2a313b; --accent: #4c9ffe; --good: #4ac26b; --warn: #d4a72c; --bad: #f85149;
+          --violet: #b392f0; --pill: #222b37; --frontier: #4ac26b; --best: #d4a72c; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
@@ -29,11 +31,46 @@ a { color: var(--accent); }
 .badge.live { color: var(--good); border-color: var(--good); font-weight: 600; }
 .badge.offline { color: var(--warn); border-color: var(--warn); font-weight: 600; }
 .badge.fallback { color: var(--bad); border-color: var(--bad); font-weight: 600; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-.card .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
-.card .v { font-size: 20px; font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
-.card .n { color: var(--muted); font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
+/* Card grids share the same spacing: stat, story, and profile cards below. */
+.cards, .story-grid, .best-grid { display: grid; gap: 12px; }
+.cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.story-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-top: 12px; }
+.best-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 12px; }
+.card, .story, .best { background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px 16px; }
+.card .k, .story .k, .best .k { color: var(--muted); font-size: 11px; text-transform: uppercase;
+  letter-spacing: .06em; font-weight: 600; }
+.card .v { font-size: 22px; font-weight: 650; margin-top: 2px; overflow-wrap: anywhere; }
+.card .n, .best .n, .story p { color: var(--muted); font-size: 13px; margin: 4px 0 0;
+  overflow-wrap: anywhere; }
+.story h3, .best h3 { font-size: 15px; margin: 6px 0 4px; }
+.hero { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+  gap: 12px; margin-bottom: 4px; }
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 7px 14px; border-radius: 999px; font-size: 13px;
+  font-weight: 600; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  text-decoration: none; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 14px 0 4px; }
+.toolbar .spacer { flex: 1 1 auto; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; }
+.eyebrow { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em;
+  margin: 26px 0 2px; font-weight: 700; }
+.winner { border-top: 3px solid var(--good); }
+.winner.plan { border-top-color: var(--accent); }
+.winner.exec { border-top-color: var(--violet); }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px;
+  font-weight: 700; background: var(--pill); color: var(--muted); border: 1px solid var(--line); }
+.pill.plan { color: var(--accent); border-color: var(--accent); }
+.pill.exec { color: var(--violet); border-color: var(--violet); }
+.pill.best { color: var(--best); border-color: var(--best); }
+.pill.frontier { color: var(--frontier); border-color: var(--frontier); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 8px 0 0; padding: 0;
+  list-style: none; color: var(--muted); font-size: 12.5px; }
+.legend .sw { display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+  margin-right: 6px; vertical-align: baseline; }
+.prov { font-weight: 600; font-size: 11.5px; padding: 0 4px; border-radius: 4px; white-space: nowrap; }
 .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
   padding: 14px 16px; margin-top: 12px; }
 .panel.warnings { border-left: 3px solid var(--warn); }
@@ -45,8 +82,8 @@ button.quick[aria-pressed="true"] { border-color: var(--accent); color: var(--ac
 table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); font-size: 13.5px; }
 #models { min-width: 1180px; }
 /* The wrapper is the table's own scrollport: horizontal for the wide column set,
-   and vertical so the two sticky header rows have something to stick to (a
-   wrapper with only horizontal overflow would not let them stick at all). */
+   and vertical so the single sticky header row has something to stick to (a
+   wrapper with only horizontal overflow would not let it stick at all). */
 .table-wrap { overflow: auto; max-height: 72vh; border: 1px solid var(--line);
   border-radius: 10px; background: var(--card); }
 th, td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top;
@@ -55,11 +92,8 @@ th { background: var(--card); white-space: nowrap; }
 #models thead th[data-key] { position: sticky; top: 0; z-index: 2; cursor: pointer; }
 #models thead th[data-key] .dir { color: var(--muted); font-size: 11px; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-/* The filter row tucks slightly under the sortable header row so no gap can
-   appear between them while scrolling; the header row has the higher z-index. */
-#models tr.filters th { position: sticky; top: 2rem; z-index: 1; cursor: default; padding: 4px;
-  border-bottom: 1px solid var(--line); }
-#models tr.filters input { width: 100%; min-width: 72px; padding: 4px 6px; font-size: 12px; }
+#models tbody tr[data-frontier="true"] td:first-child { box-shadow: inset 3px 0 0 var(--frontier); }
+#models tbody tr[data-best="true"] td:first-child { box-shadow: inset 3px 0 0 var(--best); }
 #models tbody tr:hover td { background: var(--bg); }
 #models tbody tr[hidden] { display: none; }
 .tag { display: inline-block; padding: 1px 6px; border-radius: 6px; font-size: 11px;
@@ -79,9 +113,14 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
 .chart text { fill: var(--ink); font-size: 11px; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
-.chart .frontier { fill: none; stroke: var(--accent); stroke-width: 2; }
-.chart .point { fill: var(--accent); }
+.chart .frontier { fill: none; stroke: var(--frontier); stroke-width: 2.5; }
+.chart .frontier-area { fill: var(--frontier); opacity: .08; stroke: none; }
+.chart .point { fill: var(--accent); opacity: .75; }
+.chart .point-frontier { fill: var(--frontier); opacity: 1; }
+.chart .point-best { fill: var(--best); opacity: 1; stroke: var(--card); stroke-width: 1.5; }
 .chart .point-free { fill: var(--warn); }
+.chart .ring { fill: none; stroke: var(--frontier); stroke-width: 1.5; opacity: .9; }
+.chart .ring-best { stroke: var(--best); stroke-width: 2; }
 .chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
 .chart .legend-box { fill: var(--card); stroke: var(--line); }
 footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
