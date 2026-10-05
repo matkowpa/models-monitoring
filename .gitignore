@@ -1,6 +1,9 @@
 # Local scratch notes
 TODOs.txt
 
+# Local secrets (read only by scripts/run_local.py)
+.env
+
 # Offline pipeline output (fixture runs; never published)
 site-offline/
 data/history/*.offline.json

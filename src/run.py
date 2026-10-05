@@ -370,17 +370,18 @@ def warsaw_now(config, now=None):
 def should_run_scheduled(config, history_dir, now=None):
     """Decide whether a scheduled invocation may publish.
 
-    Warsaw local time must be a Monday in hour 06 or 07, and no snapshot may
-    exist yet for that date - the hour tolerance absorbs GitHub schedule delays
-    and the same-day check makes the two cron entries mutually exclusive.
-    Manual dispatch bypasses both checks.
+    Warsaw local time must be one of the configured weekdays (default Monday)
+    in a configured hour, and no snapshot may exist yet for that date - the
+    hour tolerance absorbs GitHub schedule delays and the same-day check makes
+    repeated cron entries mutually exclusive. Manual dispatch bypasses both
+    checks.
     """
     report = config.get("report") or {}
     local = warsaw_now(config, now)
-    hours = report.get("schedule_hours", [6, 7])
-    weekday = report.get("schedule_weekday", 0)
-    if local.weekday() != weekday:
-        return False, "Warsaw date %s is not the scheduled weekday" % local.date().isoformat()
+    hours = report.get("schedule_hours", [5])
+    weekdays = report.get("schedule_weekdays", [0])
+    if local.weekday() not in weekdays:
+        return False, "Warsaw date %s is not a scheduled weekday" % local.date().isoformat()
     if local.hour not in hours:
         return False, "Warsaw hour %02d is not in the scheduled hours %s" % (local.hour, hours)
     if site_module.snapshot_exists(history_dir, local.date().isoformat(), monitor.MODE_LIVE):

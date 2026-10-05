@@ -25,8 +25,7 @@
   "narrative": {
     "models": [
       "cline-pass/glm-5.3-flash",
-      "cline-pass/deepseek-v4.1-flash",
-      "cline-pass/kimi-k3"
+      "cline-pass/deepseek-v4.1-flash"
     ],
     "max_words": 100,
     "max_tokens": 400
@@ -74,7 +73,7 @@
     "timezone": "Europe/Warsaw",
     "pages_base_url": "https://matkowpa.github.io/models-monitoring/",
     "archive_limit": 26,
-    "schedule_hours": [6, 7],
-    "schedule_weekday": 0
+    "schedule_hours": [5, 6],
+    "schedule_weekdays": [0, 2, 4]
   }
 }

@@ -12,33 +12,44 @@ from src import monitor, run, site
 WORKFLOW = ROOT / ".github" / "workflows" / "weekly-monitor.yml"
 
 # 2026-10-05 is a Monday inside CEST; 2026-11-02 is a Monday inside CET.
-MONDAY_SUMMER_0600 = datetime(2026, 10, 5, 4, 30, tzinfo=timezone.utc)
-MONDAY_WINTER_0700 = datetime(2026, 11, 2, 6, 30, tzinfo=timezone.utc)
-MONDAY_WINTER_0500 = datetime(2026, 11, 2, 4, 30, tzinfo=timezone.utc)
+# 03:45 UTC is 05:45 Warsaw during CEST; 04:45 UTC is 05:45 during CET.
+MONDAY_SUMMER_0545 = datetime(2026, 10, 5, 3, 45, tzinfo=timezone.utc)
+MONDAY_WINTER_0545 = datetime(2026, 11, 2, 4, 45, tzinfo=timezone.utc)
+MONDAY_SUMMER_0700 = datetime(2026, 10, 5, 5, 0, tzinfo=timezone.utc)
+MONDAY_WINTER_0430 = datetime(2026, 11, 2, 3, 30, tzinfo=timezone.utc)
+WEDNESDAY_SUMMER_0545 = datetime(2026, 10, 7, 3, 45, tzinfo=timezone.utc)
+TUESDAY_SUMMER_0545 = datetime(2026, 10, 6, 3, 45, tzinfo=timezone.utc)
 SUNDAY_SUMMER_0600 = datetime(2026, 10, 4, 4, 30, tzinfo=timezone.utc)
 
 
 class ScheduleGuardTests(FixtureTestCase):
-    def test_the_summer_and_winter_candidates_both_land_at_06_or_07_warsaw(self):
+    def test_the_summer_and_winter_candidates_both_land_at_05_warsaw(self):
         allowed, reason = run.should_run_scheduled(
-            self.config, self.history_dir, MONDAY_SUMMER_0600
+            self.config, self.history_dir, MONDAY_SUMMER_0545
         )
         self.assertTrue(allowed)
         self.assertIn("scheduled window matches", reason)
         self.assertTrue(
-            run.should_run_scheduled(self.config, self.history_dir, MONDAY_WINTER_0700)[0]
+            run.should_run_scheduled(self.config, self.history_dir, MONDAY_WINTER_0545)[0]
         )
+
+    def test_wednesday_and_friday_are_scheduled_days(self):
+        self.assertTrue(
+            run.should_run_scheduled(self.config, self.history_dir, WEDNESDAY_SUMMER_0545)[0]
+        )
+        friday = datetime(2026, 10, 9, 3, 45, tzinfo=timezone.utc)
+        self.assertTrue(run.should_run_scheduled(self.config, self.history_dir, friday)[0])
 
     def test_an_out_of_window_hour_is_skipped(self):
         allowed, reason = run.should_run_scheduled(
-            self.config, self.history_dir, MONDAY_WINTER_0500
+            self.config, self.history_dir, MONDAY_SUMMER_0700
         )
         self.assertFalse(allowed)
         self.assertIn("scheduled hours", reason)
 
     def test_another_weekday_is_skipped(self):
         allowed, reason = run.should_run_scheduled(
-            self.config, self.history_dir, SUNDAY_SUMMER_0600
+            self.config, self.history_dir, TUESDAY_SUMMER_0545
         )
         self.assertFalse(allowed)
         self.assertIn("weekday", reason)
@@ -46,7 +57,7 @@ class ScheduleGuardTests(FixtureTestCase):
     def test_an_existing_live_snapshot_makes_a_repeat_invocation_skip(self):
         site.write_snapshot(self.history_dir, {"report": {"date": "2026-10-05"}}, monitor.MODE_LIVE)
         allowed, reason = run.should_run_scheduled(
-            self.config, self.history_dir, MONDAY_SUMMER_0600
+            self.config, self.history_dir, MONDAY_SUMMER_0545
         )
         self.assertFalse(allowed)
         self.assertIn("already exists", reason)
@@ -56,19 +67,19 @@ class ScheduleGuardTests(FixtureTestCase):
             self.history_dir, {"report": {"date": "2026-10-05"}}, monitor.MODE_OFFLINE
         )
         self.assertTrue(
-            run.should_run_scheduled(self.config, self.history_dir, MONDAY_SUMMER_0600)[0]
+            run.should_run_scheduled(self.config, self.history_dir, MONDAY_SUMMER_0545)[0]
         )
 
     def test_the_guard_uses_warsaw_time_not_the_runner_clock(self):
-        # 04:30 UTC is 06:30 in Warsaw during CEST and 05:30 during CET, so the
+        # 03:45 UTC is 05:45 in Warsaw during CEST but 04:45 during CET, so the
         # same UTC instant is allowed in October and skipped in November.
-        self.assertEqual(6, run.warsaw_now(self.config, MONDAY_SUMMER_0600).hour)
-        self.assertEqual(5, run.warsaw_now(self.config, MONDAY_WINTER_0500).hour)
+        self.assertEqual(5, run.warsaw_now(self.config, MONDAY_SUMMER_0545).hour)
+        self.assertEqual(4, run.warsaw_now(self.config, MONDAY_WINTER_0430).hour)
         self.assertTrue(
-            run.should_run_scheduled(self.config, self.history_dir, MONDAY_SUMMER_0600)[0]
+            run.should_run_scheduled(self.config, self.history_dir, MONDAY_SUMMER_0545)[0]
         )
         self.assertFalse(
-            run.should_run_scheduled(self.config, self.history_dir, MONDAY_WINTER_0500)[0]
+            run.should_run_scheduled(self.config, self.history_dir, MONDAY_WINTER_0430)[0]
         )
 
 
@@ -78,7 +89,7 @@ class CliModeTests(FixtureTestCase):
         os.environ["GITHUB_EVENT_NAME"] = "schedule"
         buffer = io.StringIO()
         try:
-            run.warsaw_now = lambda config, now=None: original_now(config, MONDAY_WINTER_0500)
+            run.warsaw_now = lambda config, now=None: original_now(config, SUNDAY_SUMMER_0600)
             with redirect_stdout(buffer):
                 code = run.main(["--history-dir", str(self.history_dir)])
         finally:
@@ -108,9 +119,9 @@ class WorkflowFileTests(unittest.TestCase):
     def setUp(self):
         self.text = WORKFLOW.read_text(encoding="utf-8")
 
-    def test_the_workflow_schedules_both_utc_candidates_and_allows_dispatch(self):
-        self.assertIn("cron: '0 4 * * 1'", self.text)
-        self.assertIn("cron: '0 5 * * 1'", self.text)
+    def test_the_workflow_schedules_monday_wednesday_friday_at_0545_warsaw(self):
+        self.assertIn("cron: '45 3 * * 1,3,5'", self.text)
+        self.assertIn("cron: '45 4 * * 1,3,5'", self.text)
         self.assertIn("workflow_dispatch:", self.text)
 
     def test_permissions_and_concurrency_match_the_plan(self):
@@ -151,9 +162,9 @@ class WorkflowFileTests(unittest.TestCase):
             self.assertIn(needle, self.text)
 
     def test_a_skipped_schedule_does_not_publish(self):
-        # The two cron entries are made mutually exclusive by the app's same-day
-        # snapshot check, so the workflow must detect the skip and gate both the
-        # history commit and the Pages deployment on it.
+        # Repeated cron triggers on the same day are made mutually exclusive by
+        # the app's same-day snapshot check, so the workflow must detect the
+        # skip and gate both the history commit and the Pages deployment on it.
         self.assertIn("SCHEDULE_SKIPPED", self.text)
         self.assertIn("id: monitor", self.text)
         self.assertIn("if: steps.monitor.outputs.skipped == 'false'", self.text)

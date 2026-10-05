@@ -1,12 +1,13 @@
 name: Weekly ClinePass models monitor
 
-# GitHub schedules in UTC, so both Warsaw candidates run and the application
-# decides: it proceeds only when Warsaw local time is Monday 06:00-07:59 and no
+# GitHub schedules in UTC and Warsaw alternates between UTC+1 and UTC+2, so
+# both candidates are scheduled; the application decides: it proceeds only when
+# Warsaw local time is Monday, Wednesday, or Friday in hour 05 or 06 and no
 # snapshot exists yet for that date (see src/run.py: should_run_scheduled).
 on:
   schedule:
-    - cron: '0 4 * * 1'   # 06:00 Europe/Warsaw during CEST
-    - cron: '0 5 * * 1'   # 06:00 Europe/Warsaw during CET
+    - cron: '45 3 * * 1,3,5'   # 05:45 Europe/Warsaw during CEST
+    - cron: '45 4 * * 1,3,5'   # 05:45 Europe/Warsaw during CET
   workflow_dispatch:
 
 permissions:

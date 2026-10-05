@@ -142,16 +142,16 @@ The current delta detector compares model additions/removals, material changes i
 
 ## 5. Weekly Workflow and Deployment
 
-`.github/workflows/weekly-monitor.yml` runs on a GitHub-hosted `ubuntu-latest` runner. Since GitHub schedules use UTC and Warsaw alternates between UTC+1 and UTC+2, the workflow schedules both Monday UTC candidates:
+`.github/workflows/weekly-monitor.yml` runs on a GitHub-hosted `ubuntu-latest` runner. GitHub schedules use UTC and Warsaw alternates between UTC+1 and UTC+2, so the workflow schedules both candidates on each report day; `05:45` is never a DST-transition hour in the EU, so exactly one of them lands at 05:45 local:
 
-- `04:00 UTC` on Monday, for `06:00 Europe/Warsaw` during summer time (CEST).
-- `05:00 UTC` on Monday, for `06:00 Europe/Warsaw` during standard time (CET).
+- `45 3 * * 1,3,5` — Monday, Wednesday, Friday, for `05:45 Europe/Warsaw` during summer time (CEST).
+- `45 4 * * 1,3,5` — Monday, Wednesday, Friday, for `05:45 Europe/Warsaw` during standard time (CET).
 
 The application decides whether to proceed by computing the current time with `zoneinfo` (`Europe/Warsaw`) — GitHub runners keep a UTC clock, so the host's local time must not be used — and runs only when all of the following hold:
 
-- the Warsaw date is a Monday;
-- the Warsaw hour is 06 or 07, which absorbs the delay GitHub scheduled runs can experience under load;
-- no snapshot exists yet for that Warsaw date, which makes the two cron entries mutually exclusive and prevents a delayed or repeated invocation from publishing a second report for the same day.
+- the Warsaw weekday is Monday, Wednesday, or Friday (`report.schedule_weekdays`);
+- the Warsaw hour is 05 or 06 (`report.schedule_hours`), which absorbs the delay GitHub scheduled runs can experience under load;
+- no snapshot exists yet for that Warsaw date, which makes the two cron candidates mutually exclusive and prevents a delayed or repeated invocation from publishing a second report for the same day.
 
 Manual `workflow_dispatch` bypasses both the hour check and the same-day snapshot check.
 

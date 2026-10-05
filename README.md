@@ -65,6 +65,17 @@ a different filename so a fixture run can never block the live weekly run.
 Useful flags: `--force` (bypass the schedule guard), `--site-dir`, `--history-dir`,
 `--fixtures-dir`, `--config`.
 
+To run the live pipeline from this machine instead of GitHub Actions, put the credentials from
+the table below in a git-ignored `.env` at the repository root and start the run through the
+launcher, which loads that file into the environment and then calls `src.run` unchanged:
+
+```powershell
+python scripts/run_local.py
+```
+
+`src/run.py` itself never reads `.env`, so the test suite and the weekly workflow are
+unaffected by it. A local live run writes the real `site/` and `data/history/<date>.json`.
+
 ## Live run requirements
 
 | Name | Kind | Notes |
