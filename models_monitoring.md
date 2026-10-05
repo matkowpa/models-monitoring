@@ -134,7 +134,7 @@ The generated static dashboard includes discovered/priced/benchmarked counts, hi
 
 Top planning/execution comparison fields are not benchmark-derived dimensions in the current scoring design; the earlier capability matrix and component-benchmark planner/executor rankings were removed from the active report. This preserves the single AA quality measure while retaining separate planning/execution cost and efficiency columns.
 
-Each run stores a report timestamp (date, time, and timezone where available) in the dashboard and snapshot. The date is in `Europe/Warsaw` for report selection. The archive stores a dated HTML report and `archive.json`; the benchmark/methodology guide is also generated. Historical links point from the current dashboard to each retained report.
+Each run stores a report timestamp (date, time, and timezone where available) in the dashboard and snapshot. The snapshot keeps the exact ISO value; the published pages spell it out for reading (`Monday, 5 October 2026, 15:13 (Europe/Warsaw)`). The date is in `Europe/Warsaw` for report selection. The archive stores a dated HTML report and `archive.json`; the benchmark/methodology guide is also generated. Historical links point from the current dashboard to each retained report.
 
 Every rate and cost figure carries its provenance into the page: a measured rate is shown with its rate window and row count, a fallback rate is labelled as Cline's published reference price, and a catalog-free model is labelled `free`. The page never presents a fallback catalog or a fallback rate as a live value.
 

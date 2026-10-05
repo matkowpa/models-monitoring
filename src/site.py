@@ -58,6 +58,27 @@ def fmt_int(value):
     return "n/a" if number is None else f"{int(number):,}"
 
 
+def fmt_local_time(value):
+    """A readable local timestamp for the pages: ``Monday, 5 October 2026, 15:13``.
+
+    Snapshots store an ISO timestamp already expressed in the report time zone,
+    so only the presentation changes; anything unparseable is printed unchanged
+    rather than dropped. The day and month names are spelled out because the
+    pages are read by people, while the snapshot keeps the exact ISO value.
+    """
+    try:
+        moment = datetime.fromisoformat(str(value))
+    except (TypeError, ValueError):
+        return str(value or "")
+    return "%s, %d %s %d, %s" % (
+        moment.strftime("%A"),
+        moment.day,
+        moment.strftime("%B"),
+        moment.year,
+        moment.strftime("%H:%M"),
+    )
+
+
 PROVENANCE_LABELS = {
     monitor.PROVENANCE_MEASURED: ("measured", "prov-measured"),
     monitor.PROVENANCE_REFERENCE: ("reference", "prov-reference"),
@@ -1005,7 +1026,10 @@ def render_dashboard(snapshot, config, archive_entries=None, depth=0):
         "<h1>%s</h1>" % escape(title),
         '<p class="sub">Report generated %s (%s). Prices are Cline billing rates measured from this '
         "account's ClinePass usage; quality is the Artificial Analysis Intelligence Index.</p>"
-        % (escape(report_meta.get("generated_at")), escape(report_meta.get("timezone"))),
+        % (
+            escape(fmt_local_time(report_meta.get("generated_at"))),
+            escape(report_meta.get("timezone")),
+        ),
         "</div>"
         '<div class="hero-actions"><a class="btn primary" href="%smethodology.html">Methodology</a>'
         '<a class="btn" href="%sarchive/index.html">Archive</a></div></div>' % (up, up),
@@ -1088,7 +1112,7 @@ def render_methodology(snapshot, config):
         '<p class="sub">Generated %s (%s) in %s mode. This page describes exactly how the numbers on '
         "the dashboard are produced and where each rate came from.</p>"
         % (
-            escape(report_meta.get("generated_at")),
+            escape(fmt_local_time(report_meta.get("generated_at"))),
             escape(report_meta.get("timezone")),
             escape(report_meta.get("mode")),
         ),
@@ -1253,7 +1277,7 @@ def render_archive_index(snapshot, config, archive_entries):
         '<td><span class="code">%s</span></td></tr>'
         % (
             escape(entry.get("date")),
-            escape(entry.get("generated_at")),
+            escape(fmt_local_time(entry.get("generated_at"))),
             escape(entry.get("mode")),
             escape(entry.get("narrative_model")),
             escape(entry.get("report")),

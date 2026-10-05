@@ -60,7 +60,15 @@ class OfflinePipelineTests(FixtureTestCase):
         self.assertIn("not a live evaluation", self.dashboard)
 
     def test_dashboard_shows_the_report_timestamp_and_provenance(self):
-        self.assertIn(self.snapshot["report"]["generated_at"], self.dashboard)
+        stamp = site.fmt_local_time(self.snapshot["report"]["generated_at"])
+        self.assertIn(stamp, self.dashboard)
+        # The pages spell the timestamp out; the raw ISO value only lives in the
+        # snapshot, and it never leaks onto the dashboard.
+        self.assertNotIn(self.snapshot["report"]["generated_at"], self.dashboard)
+        self.assertRegex(
+            self.dashboard,
+            r"Report generated \w+day, \d{1,2} \w+ \d{4}, \d{2}:\d{2} \(Europe/Warsaw\)",
+        )
         for needle in ("measured", "reference", "free"):
             self.assertIn(needle, self.dashboard)
 
@@ -215,6 +223,18 @@ class ChartTests(FixtureTestCase):
         self.assertIn('data-role="annotation" data-model-id="x"', svg)
         self.assertIn('data-role="frontier"', svg)
         self.assertIn("point-best", svg)
+
+
+class TimestampFormatTests(unittest.TestCase):
+    def test_the_page_timestamp_is_spelled_out(self):
+        self.assertEqual(
+            "Monday, 5 October 2026, 15:13",
+            site.fmt_local_time("2026-10-05T15:13:29.539924+02:00"),
+        )
+
+    def test_an_unparseable_timestamp_is_printed_unchanged(self):
+        self.assertEqual("not a timestamp", site.fmt_local_time("not a timestamp"))
+        self.assertEqual("", site.fmt_local_time(None))
 
 
 if __name__ == "__main__":
