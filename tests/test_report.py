@@ -62,15 +62,18 @@ class OfflinePipelineTests(FixtureTestCase):
     def test_dashboard_shows_the_report_timestamp_and_provenance(self):
         stamp = site.fmt_local_time(self.snapshot["report"]["generated_at"])
         self.assertIn(stamp, self.dashboard)
-        # The pages spell the timestamp out; the raw ISO value only lives in the
-        # snapshot, and it never leaks onto the dashboard.
+        # The pages spell the timestamp out and emphasize it; the raw ISO value
+        # only lives in the snapshot and never leaks onto the dashboard.
+        self.assertIn("<strong>%s</strong>" % stamp, self.dashboard)
         self.assertNotIn(self.snapshot["report"]["generated_at"], self.dashboard)
         self.assertRegex(
             self.dashboard,
-            r"Report generated \w+day, \d{1,2} \w+ \d{4}, \d{2}:\d{2} \(Europe/Warsaw\)",
+            r"Report generated <strong>\w+day, \d{1,2} \w+ \d{4}, \d{2}:\d{2}</strong> "
+            r"\(Europe/Warsaw\)",
         )
         for needle in ("measured", "reference", "free"):
             self.assertIn(needle, self.dashboard)
+        self.assertIn("<strong>%s</strong>" % stamp, self.methodology)
 
     def test_dashboard_lists_discovered_and_measured_counts(self):
         stats = self.snapshot["stats"]

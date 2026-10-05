@@ -1027,7 +1027,7 @@ def render_dashboard(snapshot, config, archive_entries=None, depth=0):
         '<p class="sub">Report generated %s (%s). Prices are Cline billing rates measured from this '
         "account's ClinePass usage; quality is the Artificial Analysis Intelligence Index.</p>"
         % (
-            escape(fmt_local_time(report_meta.get("generated_at"))),
+            "<strong>%s</strong>" % escape(fmt_local_time(report_meta.get("generated_at"))),
             escape(report_meta.get("timezone")),
         ),
         "</div>"
@@ -1112,7 +1112,7 @@ def render_methodology(snapshot, config):
         '<p class="sub">Generated %s (%s) in %s mode. This page describes exactly how the numbers on '
         "the dashboard are produced and where each rate came from.</p>"
         % (
-            escape(fmt_local_time(report_meta.get("generated_at"))),
+            "<strong>%s</strong>" % escape(fmt_local_time(report_meta.get("generated_at"))),
             escape(report_meta.get("timezone")),
             escape(report_meta.get("mode")),
         ),
@@ -1277,7 +1277,7 @@ def render_archive_index(snapshot, config, archive_entries):
         '<td><span class="code">%s</span></td></tr>'
         % (
             escape(entry.get("date")),
-            escape(fmt_local_time(entry.get("generated_at"))),
+            "<strong>%s</strong>" % escape(fmt_local_time(entry.get("generated_at"))),
             escape(entry.get("mode")),
             escape(entry.get("narrative_model")),
             escape(entry.get("report")),
