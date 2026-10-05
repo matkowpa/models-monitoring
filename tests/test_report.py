@@ -117,15 +117,63 @@ class ChartTests(FixtureTestCase):
                 self.assertTrue(members[point["id"]], point["id"])
 
     def test_free_models_are_in_the_left_band(self):
-        band = self.snapshot["chart"]["free_band"]
-        self.assertTrue(band)
-        self.assertIn('data-role="free-band"', self.svg)
-        self.assertIn("$0 (free)", self.svg)
-        plotted = [point["id"] for point in self.snapshot["chart"]["points"]]
+        # The offline fixture has no scored free model (its AA payload omits the
+        # promotions on purpose), so the band contract is pinned on a report
+        # that pairs one $0 point with one plotted paid model.
+        report = {
+            "chart": {
+                "points": [
+                    {
+                        "id": "paid",
+                        "name": "Paid",
+                        "quality": 55.0,
+                        "cost": 0.5,
+                        "free": False,
+                        "profiles": ["planning"],
+                        "frontier": True,
+                    }
+                ],
+                "free_band": [
+                    {
+                        "id": "free",
+                        "name": "Free",
+                        "quality": 40.0,
+                        "cost": 0.0,
+                        "free": True,
+                        "profiles": ["planning"],
+                        "frontier": False,
+                    }
+                ],
+            },
+            "best_value": {},
+        }
+        svg = site.render_chart(report, self.config)
+        band = report["chart"]["free_band"]
+        self.assertIn('data-role="free-band"', svg)
+        self.assertIn("$0 (free)", svg)
+        plotted = [point["id"] for point in report["chart"]["points"]]
         for point in band:
             self.assertEqual(0.0, point["cost"])
             self.assertNotIn(point["id"], plotted)
-            self.assertIn('data-model-id="%s"' % point["id"], self.svg)
+            self.assertIn('data-model-id="%s"' % point["id"], svg)
+
+    def test_free_models_without_a_current_score_are_not_charted(self):
+        # The offline fixture omits the free promotions from its AA payload on
+        # purpose, so offline free models carry rates but no score. A model with
+        # no score must never reach the chart, which is why the band contract
+        # above is pinned on a synthetic report.
+        chart = self.snapshot["chart"]
+        charted = {point["id"] for point in chart["points"]}
+        charted |= {point["id"] for point in chart["free_band"]}
+        scoreless = [
+            model
+            for model in self.snapshot["models"]
+            if not (model["quality"] or {}).get("intelligence_index")
+        ]
+        self.assertTrue(scoreless, "the fixture still exercises the rates-without-score path")
+        self.assertTrue(any(model["free"] for model in scoreless))
+        for model in scoreless:
+            self.assertNotIn(model["id"], charted)
 
     def test_the_legend_sits_inside_the_lower_right_of_the_plot(self):
         marker = self.svg.index('data-role="legend"')

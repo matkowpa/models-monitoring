@@ -25,10 +25,9 @@ class SnapshotHistoryTests(FixtureTestCase):
         self.assertEqual([], site.read_snapshot(path)["models"])
 
     def test_an_offline_run_does_not_block_a_live_one_for_the_same_day(self):
-        self.run_offline()
-        self.assertTrue(
-            site.snapshot_exists(self.history_dir, "2026-10-02", monitor.MODE_OFFLINE)
-        )
+        snapshot = self.run_offline()
+        day = snapshot["report"]["date"]
+        self.assertTrue(site.snapshot_exists(self.history_dir, day, monitor.MODE_OFFLINE))
         self.assertEqual(
             [], site.history_snapshots(self.history_dir, monitor.MODE_LIVE)
         )

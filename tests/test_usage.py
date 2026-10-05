@@ -1,7 +1,7 @@
 """Billing usage ingestion (section 7 step 2)."""
 
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 from tests.support import (
     FIXTURES,
@@ -128,9 +128,14 @@ class DailyWindowTests(unittest.TestCase):
         )
 
     def test_fixture_date_anchors_are_recent_relative_to_today(self):
+        # The fixtures carry fixed dates, so freshness is asserted against the
+        # rate window an offline run uses today - the newest anchor has to fall
+        # inside it - rather than against the day the fixtures were generated.
         rows, _dropped = normalized_fixture_rows()
-        newest = max(row["date"] for row in rows)
-        self.assertEqual(date.today().isoformat(), newest)
+        newest = max(date.fromisoformat(row["date"]) for row in rows)
+        window_days = int(config()["rate_window_days"])
+        self.assertLessEqual(newest, date.today())
+        self.assertGreaterEqual(newest, date.today() - timedelta(days=window_days - 1))
 
 
 if __name__ == "__main__":

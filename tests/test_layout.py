@@ -153,10 +153,52 @@ class ChartGeometryTests(FixtureTestCase):
             self.assertGreaterEqual(x, site.FREE_BAND_RIGHT)
 
     def test_the_free_band_label_is_above_the_plot_and_markers_sit_inside_it(self):
-        self.assertTrue(self.snapshot["chart"]["free_band"])
+        # The offline fixture has no scored free model (its AA payload omits the
+        # promotions on purpose), so the band contract is pinned on a report
+        # that carries two $0 points next to one plotted paid model.
+        band = [
+            {
+                "id": "free-low",
+                "name": "Free Low",
+                "quality": 40.0,
+                "cost": 0.0,
+                "free": True,
+                "profiles": ["planning"],
+                "frontier": False,
+            },
+            {
+                "id": "free-high",
+                "name": "Free High",
+                "quality": 60.0,
+                "cost": 0.0,
+                "free": True,
+                "profiles": ["planning"],
+                "frontier": True,
+            },
+        ]
+        svg = site.render_chart(
+            {
+                "chart": {
+                    "points": [
+                        {
+                            "id": "paid",
+                            "name": "Paid",
+                            "quality": 55.0,
+                            "cost": 0.5,
+                            "free": False,
+                            "profiles": ["planning"],
+                            "frontier": True,
+                        }
+                    ],
+                    "free_band": band,
+                },
+                "best_value": {},
+            },
+            self.config,
+        )
         label = re.search(
             r'<text x="([\d.]+)" y="([\d.]+)" text-anchor="middle" data-role="free-band-label">',
-            self.svg,
+            svg,
         )
         self.assertIsNotNone(label)
         self.assertLess(float(label.group(2)), site.CHART_TOP)
@@ -164,9 +206,9 @@ class ChartGeometryTests(FixtureTestCase):
             r'<g data-role="point" data-model-id="[^"]*" data-frontier="[^"]*" data-best="[^"]*" '
             r'data-free="true">'
             r'<circle class="point point-free[^"]*" cx="([\d.]+)"',
-            self.svg,
+            svg,
         )
-        self.assertEqual(len(self.snapshot["chart"]["free_band"]), len(markers))
+        self.assertEqual(len(band), len(markers))
         for x in markers:
             self.assertGreaterEqual(float(x), site.FREE_BAND_LEFT)
             self.assertLessEqual(float(x), site.FREE_BAND_RIGHT)
