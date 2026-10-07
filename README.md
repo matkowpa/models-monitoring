@@ -92,11 +92,12 @@ and GitHub.
 
 `.github/workflows/weekly-monitor.yml` runs on a GitHub-hosted runner:
 
-- **Schedule:** `0 4 * * 1` and `0 5 * * 1` UTC, which are 06:00 Europe/Warsaw in CEST and CET
-  respectively. The application decides with `zoneinfo`: it proceeds only when Warsaw local
-  time is Monday 06:00-07:59 **and** no snapshot exists yet for that date, so exactly one of
-  the two invocations analyses each week and a delayed run cannot publish twice.
-- **Manual dispatch** bypasses both checks.
+- **Schedule:** `45 3 * * 1,3,5` and `45 4 * * 1,3,5` UTC, which are 05:45 Europe/Warsaw in CEST
+  and CET respectively. The application decides with `zoneinfo`: it proceeds on a scheduled weekday
+  (Mon/Wed/Fri) at or after 05:00 Warsaw **and** when no snapshot exists yet for that date, so
+  exactly one invocation analyses each day and a run GitHub delays by hours still publishes as a
+  same-day catch-up instead of being silently dropped.
+- **Manual dispatch** bypasses all checks.
 - **Tests run before** the live pipeline, then the site is committed to `main` and deployed as
   a Pages artifact (`actions/upload-pages-artifact@v3` + `actions/deploy-pages@v4`). A skipped
   schedule skips both the commit and the deployment.
@@ -139,6 +140,7 @@ history.
 - Efficiency points are not dollars or credits, and there is no minimum-quality gate: a cheap
   model can win best value on a profile. Free models have no efficiency value (a zero cost has
   no place in a logarithmic formula); they are reported as free and stay in the Pareto set.
-- GitHub does not guarantee scheduled-run timing. The hour tolerance exists for that reason,
-  and a missed Monday is reported as a missed run rather than silently skipped.
+- GitHub does not guarantee scheduled-run timing. The hour tolerance exists for that reason: a
+  run delayed by hours still publishes as a same-day catch-up, and only a delay past midnight
+  loses the report, which must then be surfaced as a missed run rather than silently skipped.
 

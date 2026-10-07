@@ -40,12 +40,30 @@ class ScheduleGuardTests(FixtureTestCase):
         friday = datetime(2026, 10, 9, 3, 45, tzinfo=timezone.utc)
         self.assertTrue(run.should_run_scheduled(self.config, self.history_dir, friday)[0])
 
-    def test_an_out_of_window_hour_is_skipped(self):
+    def test_a_late_run_on_a_scheduled_day_becomes_a_catch_up_run(self):
+        # A GitHub schedule delay can push the 05:45 invocation hours late; the
+        # run must still publish that day's report instead of being dropped.
+        allowed, reason = run.should_run_scheduled(
+            self.config, self.history_dir, MONDAY_SUMMER_0700
+        )
+        self.assertTrue(allowed)
+        self.assertIn("catch-up", reason)
+
+    def test_an_hour_before_the_scheduled_window_is_skipped(self):
+        # 04:30 Warsaw is before the first configured hour, so it is not a run.
+        allowed, reason = run.should_run_scheduled(
+            self.config, self.history_dir, MONDAY_WINTER_0430
+        )
+        self.assertFalse(allowed)
+        self.assertIn("scheduled hours", reason)
+
+    def test_a_catch_up_run_does_not_publish_twice_in_one_day(self):
+        site.write_snapshot(self.history_dir, {"report": {"date": "2026-10-05"}}, monitor.MODE_LIVE)
         allowed, reason = run.should_run_scheduled(
             self.config, self.history_dir, MONDAY_SUMMER_0700
         )
         self.assertFalse(allowed)
-        self.assertIn("scheduled hours", reason)
+        self.assertIn("already exists", reason)
 
     def test_another_weekday_is_skipped(self):
         allowed, reason = run.should_run_scheduled(

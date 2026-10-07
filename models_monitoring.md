@@ -150,10 +150,10 @@ The current delta detector compares model additions/removals, material changes i
 The application decides whether to proceed by computing the current time with `zoneinfo` (`Europe/Warsaw`) — GitHub runners keep a UTC clock, so the host's local time must not be used — and runs only when all of the following hold:
 
 - the Warsaw weekday is Monday, Wednesday, or Friday (`report.schedule_weekdays`);
-- the Warsaw hour is 05 or 06 (`report.schedule_hours`), which absorbs the delay GitHub scheduled runs can experience under load;
+- the Warsaw hour is at or after the first configured hour (`report.schedule_hours`, i.e. 05), so the two candidates run on time during their DST slot while a run GitHub delays by hours still publishes the same day as a catch-up instead of being silently dropped;
 - no snapshot exists yet for that Warsaw date, which makes the two cron candidates mutually exclusive and prevents a delayed or repeated invocation from publishing a second report for the same day.
 
-Manual `workflow_dispatch` bypasses both the hour check and the same-day snapshot check.
+Manual `workflow_dispatch` bypasses the weekday, hour, and same-day snapshot checks.
 
 The build job checks out `main`, installs Python 3.11 or newer together with `requirements.txt`, runs `python -m src.run`, commits changed `data/history/` and `site/` files as `github-actions[bot]` and pushes them to `main`, then uploads `site/` as the `github-pages` artifact. A second, dependent deploy job uses the `github-pages` environment and deploys that artifact. A push made with the workflow's own token does not trigger another workflow run, so the history commit cannot loop.
 
@@ -215,7 +215,7 @@ Offline tests establish parser, rate-fitting, scoring, rendering, archive, and f
 
 - GitHub Pages sites are publicly readable on the internet even when the repository is private, and Pages on a private repository requires a paid plan (GitHub Pro, Team, or Enterprise). Before the first live run, decide whether the report is allowed to be public; if it must stay internal, keep an internal publication target alongside Pages or choose a private hosting option instead.
 - Artifact-based Pages deployment needs a GitHub.com repository; on GitHub Enterprise Server only `actions/deploy-pages@v3` and later GHES releases are usable, and earlier versions cannot deploy this way at all.
-- GitHub does not guarantee scheduled-run timing: runs can be delayed under load, and scheduled workflows are disabled after a prolonged period without repository activity in public repositories. The hour tolerance and the same-day snapshot check exist for this reason, and a missed Monday must be reported as a missed run rather than silently skipped.
+- GitHub does not guarantee scheduled-run timing: runs can be delayed under load, and scheduled workflows are disabled after a prolonged period without repository activity in public repositories. The hour tolerance and the same-day snapshot check exist for this reason: a delayed run on a scheduled day still publishes as a catch-up, so a report is only lost when every candidate is delayed past midnight, and such a miss must be surfaced as a missed run rather than silently skipped.
 - Measured rates are this account's and this window's rates. DeepSeek peak/off-peak billing appears as one blended measured rate, and only models with enough independent token mixes can be fitted at all; never present a measured rate as a canonical price list, and always keep the window and the row count next to it.
 - Cline's published reference table drifts from what billing actually charges, which is exactly why it is only a fallback. Mixing measured and reference classes for one model is not allowed, and the provenance field must stay visible in the report.
 - The integer money scales (`costUsd` at 1e-8 USD; `creditsUsed` and `balance` at 1e-6 USD) come from an audited third-party client rather than from public API documentation. Keep the raw integers in snapshots and re-verify the scale if Cline changes the API.

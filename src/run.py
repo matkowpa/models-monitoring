@@ -371,10 +371,12 @@ def should_run_scheduled(config, history_dir, now=None):
     """Decide whether a scheduled invocation may publish.
 
     Warsaw local time must be one of the configured weekdays (default Monday)
-    in a configured hour, and no snapshot may exist yet for that date - the
-    hour tolerance absorbs GitHub schedule delays and the same-day check makes
-    repeated cron entries mutually exclusive. Manual dispatch bypasses both
-    checks.
+    and no earlier than the first configured hour, and no snapshot may exist yet
+    for that date. Accepting any later hour turns GitHub's schedule delay - which
+    can stretch to hours under load - into a same-day catch-up run instead of a
+    silently lost report, while the same-day snapshot check still makes repeated
+    cron entries mutually exclusive and keeps one report per day. Manual dispatch
+    bypasses all of these checks.
     """
     report = config.get("report") or {}
     local = warsaw_now(config, now)
@@ -382,11 +384,17 @@ def should_run_scheduled(config, history_dir, now=None):
     weekdays = report.get("schedule_weekdays", [0])
     if local.weekday() not in weekdays:
         return False, "Warsaw date %s is not a scheduled weekday" % local.date().isoformat()
-    if local.hour not in hours:
-        return False, "Warsaw hour %02d is not in the scheduled hours %s" % (local.hour, hours)
+    if local.hour < min(hours):
+        return False, "Warsaw hour %02d is before the scheduled hours %s" % (local.hour, hours)
     if site_module.snapshot_exists(history_dir, local.date().isoformat(), monitor.MODE_LIVE):
         return False, "a live snapshot for %s already exists" % local.date().isoformat()
-    return True, "scheduled window matches and no snapshot exists for %s" % local.date().isoformat()
+    if local.hour in hours:
+        return True, "scheduled window matches and no snapshot exists for %s" % local.date().isoformat()
+    return True, "catch-up run at Warsaw hour %02d after the scheduled hours %s with no snapshot yet for %s" % (
+        local.hour,
+        hours,
+        local.date().isoformat(),
+    )
 
 
 # ---------------------------------------------------------------------------
