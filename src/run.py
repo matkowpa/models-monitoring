@@ -599,25 +599,57 @@ def collect_catalog(config):
 
 
 def resolve_model_rates(entries, rows, config, reference_models, reference_meta, window):
-    """Fit or fall back per model, returning rates, accepted fits, and rejections."""
+    """Fit or fall back per model, returning rates, accepted fits, and rejections.
+
+    The order is deliberate: the ClinePass subscription fit is the authority, and
+    only a model whose subscription fit is rejected is retried on credit-billed
+    rows under the looser ``rate_fit.credits`` profile. That is how a model Cline
+    serves exclusively through credits (a fresh catalog id, before it is put on the
+    subscription) still gets a real measured price instead of an empty row, without
+    ever mixing the two billing bases in one fit.
+    """
     fit_config = config.get("rate_fit") or {}
+    credits_config = fit_config.get("credits") or {}
     rates_by_id = {}
     fits_by_slug = {}
     rejected = {}
     for entry in entries:
-        model_rows = monitor.rows_for_model(rows, entry)
         fit = None
+        credits_fit = None
+        measured_provenance = monitor.PROVENANCE_MEASURED
         if not entry["free"]:
             fit = monitor.fit_rates(
-                model_rows, fit_config, window.get("start"), window.get("end")
+                monitor.rows_for_model(rows, entry),
+                fit_config,
+                window.get("start"),
+                window.get("end"),
             )
+            if fit.get("status") != monitor.FIT_ACCEPTED:
+                credit_rows = monitor.rows_for_model(
+                    rows, entry, billing_type=monitor.BILLING_TYPE_CLINE_USAGE
+                )
+                if credit_rows:
+                    credits_fit = monitor.fit_rates(
+                        credit_rows, credits_config, window.get("start"), window.get("end")
+                    )
+                    if credits_fit.get("status") == monitor.FIT_ACCEPTED:
+                        fit = credits_fit
+                        measured_provenance = monitor.PROVENANCE_MEASURED_CREDITS
             if fit.get("status") == monitor.FIT_ACCEPTED:
                 fits_by_slug[entry["slug"]] = fit
             else:
-                rejected[entry["id"]] = fit.get("reason")
+                reason = fit.get("reason")
+                if credits_fit is not None:
+                    reason = "%s (credits: %s)" % (reason, credits_fit.get("reason"))
+                rejected[entry["id"]] = reason
         reference_entry = reference_models.get(entry["slug"]) or {}
         rates_by_id[entry["id"]] = monitor.resolve_rates(
-            entry, fit, reference_entry, reference_meta
+            entry,
+            fit,
+            reference_entry,
+            reference_meta,
+            measured_provenance=measured_provenance,
+            credits_fit=credits_fit,
         )
     return rates_by_id, fits_by_slug, rejected
 
@@ -703,6 +735,13 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
     scale_warning = monitor.money_scale_warning(fits_by_slug, reference_models)
     if scale_warning:
         append_bounded(warnings, scale_warning)
+    drift_warning = monitor.reference_drift_warning(
+        fits_by_slug,
+        reference_models,
+        (config.get("rate_fit") or {}).get("reference_drift_ratio", 1.5),
+    )
+    if drift_warning:
+        append_bounded(warnings, drift_warning)
 
     if mode == monitor.MODE_LIVE:
         aa_index = fetch_aa_models(config)

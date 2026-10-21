@@ -81,6 +81,7 @@ def fmt_local_time(value):
 
 PROVENANCE_LABELS = {
     monitor.PROVENANCE_MEASURED: ("measured", "prov-measured"),
+    monitor.PROVENANCE_MEASURED_CREDITS: ("measured (credits)", "prov-measured"),
     monitor.PROVENANCE_REFERENCE: ("reference", "prov-reference"),
     monitor.PROVENANCE_CATALOG_FREE: ("free", "prov-free"),
     monitor.PROVENANCE_INPUT_FALLBACK: ("input fallback", "prov-fallback"),
@@ -92,6 +93,14 @@ def provenance_label(rates, rate_class):
     return PROVENANCE_LABELS.get(provenance, ("unavailable", "prov-none"))
 
 
+def has_billing_rows(model):
+    """False when the model has no billing rows at all, as opposed to unusable ones."""
+    fit = (model.get("rates") or {}).get("fit") or {}
+    if not isinstance(fit, dict) or fit.get("status") != monitor.FIT_REJECTED:
+        return True
+    return bool(fit.get("rows_in_window") or fit.get("rows"))
+
+
 def model_rate_source(model):
     """One label describing where this model's rates came from."""
     provenances = {
@@ -100,11 +109,15 @@ def model_rate_source(model):
     }
     provenances.discard(None)
     if not provenances:
+        if not has_billing_rows(model):
+            return "no billing rows yet", "prov-none"
         return "unavailable", "prov-none"
     if provenances == {monitor.PROVENANCE_CATALOG_FREE}:
         return "free (catalog)", "prov-free"
     if provenances == {monitor.PROVENANCE_MEASURED}:
         return "measured", "prov-measured"
+    if provenances == {monitor.PROVENANCE_MEASURED_CREDITS}:
+        return "measured (credits)", "prov-measured"
     if provenances == {monitor.PROVENANCE_REFERENCE}:
         return "reference", "prov-reference"
     return "mixed", "prov-mixed"
@@ -114,7 +127,10 @@ def rate_window_text(model):
     """The window and row count behind a measured rate, for the page."""
     for rate_class in monitor.FIT_CLASSES:
         entry = (model.get("rates") or {}).get(rate_class) or {}
-        if entry.get("provenance") == monitor.PROVENANCE_MEASURED:
+        if entry.get("provenance") in (
+            monitor.PROVENANCE_MEASURED,
+            monitor.PROVENANCE_MEASURED_CREDITS,
+        ):
             return (
                 f"{entry.get('window_start')} to {entry.get('window_end')} "
                 f"({entry.get('rows')} rows)"
@@ -553,9 +569,11 @@ def _effective(efficiency_value, cost, free):
     return fmt_points(efficiency_value)
 
 
-def _rate_cell(model, rate_class):
+def _rate_cell(model, rate_class, no_rows=False):
     rates = model.get("rates") or {}
     label, css = provenance_label(rates, rate_class)
+    if no_rows:
+        label, css = "no rows yet", "prov-none"
     value = monitor.rate_value(rates, rate_class)
     return '<td class="num" style="white-space:nowrap">%s<br/><span class="tag %s">%s</span></td>' % (
         fmt_usd_mtok(value),
@@ -574,9 +592,11 @@ def _model_row(model, is_frontier=False, is_best=False):
     costs = model.get("cost_usd") or {}
     efficiencies = model.get("efficiency") or {}
     measured = any(
-        monitor.rate_provenance(rates, rate_class) == monitor.PROVENANCE_MEASURED
+        monitor.rate_provenance(rates, rate_class)
+        in (monitor.PROVENANCE_MEASURED, monitor.PROVENANCE_MEASURED_CREDITS)
         for rate_class in monitor.FIT_CLASSES
     )
+    no_rows = not has_billing_rows(model)
 
     model_cell = '%s <span class="tag">%s</span>' % (
         escape(model["name"]),
@@ -653,10 +673,10 @@ def _model_row(model, is_frontier=False, is_best=False):
         escape(source_label),
         fmt_points(quality),
         fmt_points(coding),
-        _rate_cell(model, "input"),
-        _rate_cell(model, "output"),
-        _rate_cell(model, "cache_read"),
-        _rate_cell(model, "cache_write"),
+        _rate_cell(model, "input", no_rows),
+        _rate_cell(model, "output", no_rows),
+        _rate_cell(model, "cache_read", no_rows),
+        _rate_cell(model, "cache_write", no_rows),
         fmt_usd(costs.get("planning")),
         _effective(efficiencies.get("planning"), costs.get("planning"), model.get("free")),
         fmt_usd(costs.get("execution")),
@@ -894,7 +914,12 @@ def _stat_cards(snapshot, config):
         _card(
             "Measured rates",
             str(stats.get("measured_rates", 0)),
-            "fitted from this account's billing usage",
+            "fitted from this account's billing usage"
+            + (
+                " (%d of them from credit-billed rows)" % stats["measured_credits_rates"]
+                if stats.get("measured_credits_rates")
+                else ""
+            ),
         ),
         _card("Free models", str(stats.get("free_models", 0)), "catalog-declared $0"),
     ]
@@ -1135,6 +1160,7 @@ def render_methodology(snapshot, config):
 
 def _methodology_rates(window, reference, fit_config):
     """Section 2: the measured fit, the fallback table, and free models."""
+    credits = fit_config.get("credits") or {}
     return [
         "<h3>Measured rates (primary)</h3>",
         "<p>For each ClinePass model the per-class rates are recovered from this account's own billing "
@@ -1158,6 +1184,25 @@ def _methodology_rates(window, reference, fit_config):
             escape(fit_config.get("rms_residual_ratio")),
             escape(fit_config.get("rms_residual_floor_usd")),
         ),
+        "<h3>Measured rates from credit-billed rows (fallback)</h3>",
+        "<p>When the subscription fit is rejected, the same three rates are retried on rows billed "
+        'through credits (<span class="code">cline-usage</span>), which is how a model Cline only '
+        "serves through credits gets a real price instead of an empty row. Credit rows carry a "
+        "flat or rounded component per request, so a few outlier rows make a per-row RMS "
+        "meaningless: that profile drops the RMS gate and requires instead a median per-row "
+        "relative error of at most %s and a total reconciliation within %s. Those rates carry "
+        'the provenance <span class="code">measured-credits</span> - never plain '
+        '<span class="code">measured</span> - and the two billing paths are never mixed inside '
+        "one model.</p>"
+        % (
+            escape(credits.get("max_median_relative_error")),
+            escape(credits.get("max_total_reconciliation_error")),
+        ),
+        "<p>When a measured rate and the dated reference entry disagree by more than %sx, the run "
+        "records a warning: the reference table is a snapshot, and a provider can swap the model "
+        "or halve a price behind an unchanged catalog id. The measured value is what the report "
+        "publishes; the warning says the table is stale for that model.</p>"
+        % escape(fit_config.get("reference_drift_ratio")),
         "<h3>Reference rates (fallback)</h3>",
         '<p>%s, retrieved %s from <a href="%s">%s</a>, fills in models whose fit cannot be estimated '
         "and the cache-write class, which usage rows do not report separately. Measured and reference "

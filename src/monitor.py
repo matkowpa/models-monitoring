@@ -18,6 +18,7 @@ CATALOG_SOURCE_LIVE = "recommended-models"
 CATALOG_SOURCE_FALLBACK = "fallback"
 
 PROVENANCE_MEASURED = "measured"
+PROVENANCE_MEASURED_CREDITS = "measured-credits"
 PROVENANCE_REFERENCE = "reference"
 PROVENANCE_CATALOG_FREE = "catalog-free"
 PROVENANCE_INPUT_FALLBACK = "input-fallback"
@@ -25,6 +26,7 @@ PROVENANCE_INPUT_FALLBACK = "input-fallback"
 RATE_CLASSES = ("input", "output", "cache_read", "cache_write")
 FIT_CLASSES = ("input", "output", "cache_read")
 BILLING_TYPE_CLINEPASS = "cline-pass"
+BILLING_TYPE_CLINE_USAGE = "cline-usage"
 
 MODE_LIVE = "live"
 MODE_OFFLINE = "offline"
@@ -389,7 +391,7 @@ def normalize_usage_row(row, money_scales):
         "billing_type": (
             BILLING_TYPE_CLINEPASS
             if row.get("aiModelTypeName") == BILLING_TYPE_CLINEPASS
-            else "cline-usage"
+            else BILLING_TYPE_CLINE_USAGE
         ),
         "raw_model_type_name": row.get("aiModelTypeName"),
         "provider": row.get("aiInferenceProviderName") or "unknown",
@@ -421,18 +423,22 @@ def normalize_usage_rows(rows, money_scales):
     return normalized, dropped
 
 
-def rows_for_model(rows, entry):
-    """ClinePass usage rows that belong to one catalog entry.
+def rows_for_model(rows, entry, billing_type=BILLING_TYPE_CLINEPASS):
+    """Usage rows that belong to one catalog entry and billing path.
 
     Matching uses the row's model name and raw model id against the entry slug and
-    id. Only rows billed as ClinePass are considered, which also keeps a free twin
-    id (``cline-free/<slug>``) from contaminating the paid model's fit.
+    id. ``billing_type`` selects the path: ClinePass rows carry a single reference
+    cost per request, which is what the subscription price is fitted from, while
+    ``cline-usage`` rows are billed through credits per token and are fitted only
+    as a fallback for models that never received subscription traffic. The two
+    paths are never mixed inside one fit, and a free twin id
+    (``cline-free/<slug>``) is kept out of the paid model's fit.
     """
     wanted = {normalize_key(entry["slug"]), normalize_key(entry["id"])}
     wanted.discard("")
     matched = []
     for row in rows or []:
-        if row.get("billing_type") != BILLING_TYPE_CLINEPASS:
+        if row.get("billing_type") != billing_type:
             continue
         keys = {normalize_key(row.get("model")), normalize_key(row.get("raw_model"))}
         keys.discard("")
@@ -543,6 +549,8 @@ def empty_fit(window_start=None, window_end=None, reason=None):
         "condition_number": None,
         "rms_residual_usd": None,
         "allowed_rms_residual_usd": None,
+        "median_relative_error": None,
+        "p90_relative_error": None,
         "total_reconciliation_error": None,
     }
 
@@ -553,9 +561,22 @@ def fit_rates(rows, fit_config, window_start=None, window_end=None):
     ClinePass bills a single reference cost per request, so the per-class rates
     are recovered jointly by non-negative least squares from the token classes in
     each row. The fit is accepted only when the token mixes identify three rates,
-    the rates are positive, the model total reconciles, and the per-row residual
-    stays inside tolerance; otherwise the caller falls back to the dated
+    the rates are positive, the model total reconciles, and the residual test in
+    ``fit_config`` passes; otherwise the caller falls back to the dated
     reference table.
+
+    Two residual tests are supported and a profile enables whichever it needs:
+
+    ``rms_residual_ratio`` / ``rms_residual_floor_usd``
+        per-row RMS residual against the mean row cost, for subscription rows
+        whose cost is an exact linear function of the tokens.
+    ``max_median_relative_error``
+        median per-row relative error, for credit-billed rows, whose individual
+        costs carry a flat or rounded component: a handful of outlier rows
+        dominate an RMS without meaning the fitted rate level is wrong (R^2 stays
+        around 0.985 on live data while the worst row misses by 90%). Setting
+        ``rms_residual_ratio`` to ``null`` disables the RMS gate for such a
+        profile while still recording the value for audit.
     """
     in_window = [
         row
@@ -632,17 +653,35 @@ def fit_rates(rows, fit_config, window_start=None, window_end=None):
     ]
     residuals = [predicted[k] - target[k] for k in range(row_count)]
     rms = math.sqrt(sum(value * value for value in residuals) / row_count)
+    relative_errors = sorted(
+        abs(residuals[k]) / target[k] for k in range(row_count) if target[k] > 0
+    )
+    median_relative = statistics.median(relative_errors) if relative_errors else None
+    p90_relative = (
+        relative_errors[min(len(relative_errors) - 1, int(0.9 * len(relative_errors)))]
+        if relative_errors
+        else None
+    )
     total_target = sum(target)
     reconciliation = abs(sum(predicted) - total_target) / total_target if total_target else None
     mean_cost = total_target / row_count
-    allowed_rms = max(
-        float(fit_config.get("rms_residual_ratio", 0.02)) * mean_cost,
-        float(fit_config.get("rms_residual_floor_usd", 0.00002)),
+    rms_ratio = fit_config.get("rms_residual_ratio", 0.02)
+    allowed_rms = (
+        None
+        if rms_ratio is None
+        else max(
+            float(rms_ratio) * mean_cost,
+            float(fit_config.get("rms_residual_floor_usd", 0.00002)),
+        )
     )
 
     result["rates"] = {rate_class: round(fitted[rate_class], 6) for rate_class in FIT_CLASSES}
     result["rms_residual_usd"] = round(rms, 8)
-    result["allowed_rms_residual_usd"] = round(allowed_rms, 8)
+    result["allowed_rms_residual_usd"] = None if allowed_rms is None else round(allowed_rms, 8)
+    result["median_relative_error"] = (
+        None if median_relative is None else round(median_relative, 6)
+    )
+    result["p90_relative_error"] = None if p90_relative is None else round(p90_relative, 6)
     result["total_reconciliation_error"] = (
         None if reconciliation is None else round(reconciliation, 6)
     )
@@ -656,26 +695,49 @@ def fit_rates(rows, fit_config, window_start=None, window_end=None):
             f"total reconciliation error {reconciliation} exceeds {maximum_reconciliation}"
         )
         return result
-    if rms > allowed_rms:
+    if allowed_rms is not None and rms > allowed_rms:
         result["reason"] = (
             f"per-row RMS residual {rms:.6g} USD exceeds the allowed {allowed_rms:.6g} USD"
         )
         return result
+    maximum_median_relative = fit_config.get("max_median_relative_error")
+    if maximum_median_relative is not None:
+        allowed_median = float(maximum_median_relative)
+        if median_relative is None or median_relative > allowed_median:
+            result["reason"] = (
+                "median per-row relative error %s exceeds the allowed %s"
+                % (
+                    "n/a" if median_relative is None else "%.4g" % median_relative,
+                    "%.4g" % allowed_median,
+                )
+            )
+            return result
 
     result["status"] = FIT_ACCEPTED
     result["reason"] = None
     return result
 
 
-def resolve_rates(entry, fit, reference_entry=None, reference_meta=None):
+def resolve_rates(
+    entry,
+    fit,
+    reference_entry=None,
+    reference_meta=None,
+    measured_provenance=PROVENANCE_MEASURED,
+    credits_fit=None,
+):
     """Per-class rates with provenance for one catalog entry.
 
     A catalog-free entry is $0 by declaration. Otherwise an accepted fit supplies
     input, output, and cache read, and a rejected or absent fit falls back to the
     dated reference table for those three classes at once - measured and
-    reference classes are never mixed inside one model. Cache write is never
-    fitted: it comes from the reference table when that defines it, and from the
-    input rate otherwise, which the provenance field records.
+    reference classes are never mixed inside one model. ``measured_provenance``
+    names the billing path the fit came from: subscription rows are ``measured``,
+    credit-billed rows are ``measured-credits``, so a page can never present the
+    two as the same evidence. Cache write is never fitted: it comes from the
+    reference table when that defines it, and from the input rate otherwise,
+    which the provenance field records. A credits fit that was attempted and
+    rejected is kept next to the chosen one so the snapshot shows both verdicts.
     """
     reference_entry = reference_entry or {}
     reference_meta = reference_meta or {}
@@ -692,6 +754,8 @@ def resolve_rates(entry, fit, reference_entry=None, reference_meta=None):
             "retrieved_at": reference_meta.get("retrieved_at"),
         },
     }
+    if credits_fit is not None:
+        record["credits_fit"] = credits_fit
 
     if entry.get("free"):
         for rate_class in RATE_CLASSES:
@@ -702,11 +766,12 @@ def resolve_rates(entry, fit, reference_entry=None, reference_meta=None):
         for rate_class in FIT_CLASSES:
             record[rate_class] = {
                 "usd_per_mtok": fit["rates"].get(rate_class),
-                "provenance": PROVENANCE_MEASURED,
+                "provenance": measured_provenance,
                 "window_start": fit.get("window_start"),
                 "window_end": fit.get("window_end"),
                 "rows": fit.get("rows"),
                 "rms_residual_usd": fit.get("rms_residual_usd"),
+                "median_relative_error": fit.get("median_relative_error"),
                 "condition_number": fit.get("condition_number"),
             }
     else:
@@ -769,6 +834,48 @@ def money_scale_warning(fits_by_slug, reference_models):
     return (
         f"median measured/reference rate ratio is {ratio:.3g}, outside 0.2-5.0; re-verify the "
         "costUsd and creditsUsed money scales against a known request before trusting these rates"
+    )
+
+
+def reference_drift_warning(fits_by_slug, reference_models, threshold=1.5):
+    """Flag models whose measured rate and dated reference entry disagree.
+
+    The reference table is a snapshot of Cline's published prices on one date. When
+    a provider swaps the model or halves a price under an unchanged catalog id,
+    nothing fails: the measured fit simply disagrees with the table. At the 5x
+    ratio that ``money_scale_warning`` uses to catch a wrong money scale this 2x
+    drift is invisible, so it gets its own, tighter check - the measured value is
+    what the report publishes, and the warning tells the reader the table is stale.
+    """
+    threshold = float(threshold or 1.5)
+    if threshold <= 1.0:
+        threshold = 1.5
+    drifted = []
+    for slug, fit in sorted((fits_by_slug or {}).items()):
+        if not fit or fit.get("status") != FIT_ACCEPTED:
+            continue
+        reference = (reference_models or {}).get(slug) or {}
+        ratios = []
+        for rate_class in FIT_CLASSES:
+            measured = as_float(fit["rates"].get(rate_class))
+            published = as_float(reference.get(rate_class))
+            if measured and published and measured > 0 and published > 0:
+                ratios.append(measured / published)
+        if not ratios:
+            continue
+        ratio = statistics.median(ratios)
+        if 1.0 / threshold <= ratio <= threshold:
+            continue
+        drifted.append("%s (%.2fx of the reference)" % (slug, ratio))
+    if not drifted:
+        return None
+    listed = ", ".join(drifted[:6])
+    if len(drifted) > 6:
+        listed += ", and %d more" % (len(drifted) - 6)
+    return (
+        "measured rates differ from the dated reference table by more than %.1fx for: %s; "
+        "the measured fit is published, so treat the reference table as stale for these "
+        "models" % (threshold, listed)
     )
 
 
@@ -1079,7 +1186,19 @@ def _with_chart(records, profiles, medians, best_value):
     measured = [
         record
         for record in records
-        if any(rate_provenance(record["rates"], cls) == PROVENANCE_MEASURED for cls in FIT_CLASSES)
+        if any(
+            rate_provenance(record["rates"], cls)
+            in (PROVENANCE_MEASURED, PROVENANCE_MEASURED_CREDITS)
+            for cls in FIT_CLASSES
+        )
+    ]
+    measured_credits = [
+        record
+        for record in records
+        if any(
+            rate_provenance(record["rates"], cls) == PROVENANCE_MEASURED_CREDITS
+            for cls in FIT_CLASSES
+        )
     ]
 
     return {
@@ -1092,6 +1211,7 @@ def _with_chart(records, profiles, medians, best_value):
             "priced": sum(1 for record in records if record["priced"]),
             "benchmarked": len(benchmarked),
             "measured_rates": len(measured),
+            "measured_credits_rates": len(measured_credits),
             "free_models": sum(1 for record in records if record["free"]),
             "highest_quality": highest,
             "lowest_cost": cheapest,

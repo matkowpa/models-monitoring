@@ -39,7 +39,15 @@
     "max_condition_number": 1000000.0,
     "max_total_reconciliation_error": 0.01,
     "rms_residual_ratio": 0.02,
-    "rms_residual_floor_usd": 0.00002
+    "rms_residual_floor_usd": 0.00002,
+    "reference_drift_ratio": 1.5,
+    "credits": {
+      "min_rows": 12,
+      "max_condition_number": 1000000.0,
+      "max_total_reconciliation_error": 0.01,
+      "rms_residual_ratio": null,
+      "max_median_relative_error": 0.05
+    }
   },
   "money_scales": {
     "cost_usd": 100000000,

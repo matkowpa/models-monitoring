@@ -39,10 +39,14 @@ plan).
    (default 30). The endpoint ignores date filters, so the walk is paced, stops as soon as the
    window is covered, and retries a 429 for the interval the server asks for in `Retry-After`
    instead of aborting the report.
-3. Fall back to Cline's dated published reference table for models whose fit cannot be
-   estimated and for cache write, which usage rows do not report separately. Measured and
-   reference classes are never mixed inside one model, and every rate field carries its
-   provenance into the report.
+3. Retry a model whose subscription fit is rejected on its credit-billed rows, under a
+   looser median-based profile, and publish those rates as `measured-credits`; a model Cline
+   only serves through credits (a fresh catalog id) would otherwise have no price at all.
+   Fall back to Cline's dated published reference table for models where neither fit works
+   and for cache write, which usage rows do not report separately. Measured and reference
+   classes are never mixed inside one model, and every rate field carries its provenance into
+   the report. A measured rate that disagrees with the reference entry by more than 1.5x
+   raises a run warning: the reference table is stale for that model.
 4. Fetch the current AA Intelligence Index. A live run **fails closed** when the key is
    missing, the feed fails, or no catalog model matches a current score.
 5. Score, compare against the previous snapshot, summarize (with a deterministic fallback),
