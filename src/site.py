@@ -335,8 +335,11 @@ def family_color(family):
 def chart_families(report):
     """Families present in the chart, in a stable order, with their colours."""
     chart = report.get("chart") or {}
+    model_families = {
+        model.get("id"): model.get("family") for model in report.get("models") or []
+    }
     names = {
-        str(point.get("family") or "").strip().lower()
+        str(point.get("family") or model_families.get(point.get("id")) or "").strip().lower()
         for point in list(chart.get("points") or []) + list(chart.get("free_band") or [])
     }
     names.discard("")
@@ -493,9 +496,16 @@ def place_labels(markers, obstacles):
     return fragments
 
 
-def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
+def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None, family_by_id=None):
     """Marks coloured by family, the frontier curve, labels, the free band, and legend."""
     best_ids = set(best_ids or set())
+    family_by_id = family_by_id or {}
+
+    def family_of(point):
+        # Snapshots written before colours existed carry the family only on the
+        # model records, so the chart falls back to that lookup.
+        return point.get("family") or family_by_id.get(point.get("id")) or ""
+
     parts = []
     band_center = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
     if band:
@@ -547,7 +557,8 @@ def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
         x = x_pos(point["cost"])
         y = y_pos(point["quality"])
         is_best = point["id"] in best_ids
-        colour = family_color(point.get("family"))
+        family = family_of(point)
+        colour = family_color(family)
         ring = "ring ring-best" if is_best else "ring"
         parts.append(
             '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="false">'
@@ -568,7 +579,7 @@ def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
                 "<title>%s (%s): quality %s, mean cost %s%s</title>"
                 % (
                     escape(point["name"]),
-                    escape(point.get("family") or "unknown"),
+                    escape(family or "unknown"),
                     point["quality"],
                     fmt_usd(point["cost"]),
                     " - best value" if is_best else "",
@@ -583,7 +594,8 @@ def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
         x = band_center
         y = y_pos(point["quality"])
         is_best = point["id"] in best_ids
-        colour = family_color(point.get("family"))
+        family = family_of(point)
+        colour = family_color(family)
         parts.append(
             '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="true">'
             % (
@@ -600,7 +612,7 @@ def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
                 y,
                 colour,
                 "<title>%s (%s): quality %s, $0 (free) - not on the log axis</title>"
-                % (escape(point["name"]), escape(point.get("family") or "unknown"), point["quality"]),
+                % (escape(point["name"]), escape(family or "unknown"), point["quality"]),
             )
         )
         parts.append("</g>")
@@ -755,7 +767,14 @@ def render_chart(report, config=None):
         "Index</text>" % (AXIS_TITLE_X, (CHART_TOP + CHART_BOTTOM) // 2)
     )
 
-    parts.append(_chart_series(points, band, x_pos, y_pos, best_ids, obstacles=tick_labels))
+    family_by_id = {
+        model.get("id"): model.get("family") for model in report.get("models") or []
+    }
+    parts.append(
+        _chart_series(
+            points, band, x_pos, y_pos, best_ids, obstacles=tick_labels, family_by_id=family_by_id
+        )
+    )
     parts.append("</svg>")
     return "".join(parts)
 

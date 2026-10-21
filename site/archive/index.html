@@ -121,6 +121,10 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
 .chart .point-free { fill: var(--warn); }
 .chart .ring { fill: none; stroke: var(--frontier); stroke-width: 1.5; opacity: .9; }
 .chart .ring-best { stroke: var(--best); stroke-width: 2; }
+.chart .leader { stroke: var(--muted); stroke-width: 1; opacity: .55; }
+/* A card-coloured halo keeps a label readable where it crosses a grid line. */
+.chart .chart-label { paint-order: stroke; stroke: var(--card); stroke-width: 2.5;
+  stroke-linejoin: round; }
 .chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
 .chart .legend-box { fill: var(--card); stroke: var(--line); }
 footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
