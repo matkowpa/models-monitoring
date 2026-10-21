@@ -12,6 +12,7 @@ from __future__ import annotations
 import html
 import json
 import math
+import zlib
 from datetime import date, datetime
 from pathlib import Path
 
@@ -255,6 +256,10 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
 .chart .point-free { fill: var(--warn); }
 .chart .ring { fill: none; stroke: var(--frontier); stroke-width: 1.5; opacity: .9; }
 .chart .ring-best { stroke: var(--best); stroke-width: 2; }
+.chart .leader { stroke: var(--muted); stroke-width: 1; opacity: .55; }
+/* A card-coloured halo keeps a label readable where it crosses a grid line. */
+.chart .chart-label { paint-order: stroke; stroke: var(--card); stroke-width: 2.5;
+  stroke-linejoin: round; }
 .chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
 .chart .legend-box { fill: var(--card); stroke: var(--line); }
 footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
@@ -278,6 +283,370 @@ LOG_TICK_CANDIDATES = (
     0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5,
     1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0,
 )
+
+# One colour per model family, so a reader can see at a glance whether the cheap
+# point is a DeepSeek or a Qwen. The hues deliberately avoid the frontier green
+# and best-value gold, which stay reserved for the role rings.
+FAMILY_PALETTE = (
+    "#0b6bcb", "#8250df", "#c2410c", "#0e7490", "#a21caf", "#b45309",
+    "#1d4ed8", "#db2777", "#475569", "#7c2d12", "#0369a1", "#6d28d9",
+    "#0f766e", "#be123c", "#4d7c0f", "#9333ea",
+)
+FAMILY_COLOR_OVERRIDES = {
+    "deepseek": "#0b6bcb",
+    "glm": "#8250df",
+    "kimi": "#c2410c",
+    "mimo": "#0e7490",
+    "minimax": "#a21caf",
+    "muse": "#b45309",
+    "qwen": "#1d4ed8",
+    "solar": "#db2777",
+    "step": "#475569",
+    "reflection": "#7c2d12",
+    "nvidia": "#0369a1",
+    "nemotron": "#0f766e",
+    "poolside": "#9333ea",
+}
+
+LABEL_MAX_CHARS = 26
+# Measured in Chromium at 11px: a 26-character label renders 152px wide, i.e.
+# 5.85px per character, so the estimate errs on the wide side and the placement
+# never promises a gap the real glyphs do not have.
+LABEL_CHAR_WIDTH = 5.9
+LABEL_HEIGHT = 11
+LABEL_LEFT = CHART_LEFT + 3
+LABEL_RIGHT = CHART_RIGHT - 3
+LABEL_TOP = ANNOTATION_MIN_Y
+LABEL_BOTTOM = ANNOTATION_MAX_Y
+LEGEND_WIDTH = 206
+LEGEND_HEIGHT = 72
+LEGEND_X = CHART_RIGHT - 216
+LEGEND_Y = CHART_BOTTOM - 82
+
+
+def family_color(family):
+    """A stable colour for a model family, from the fixed palette."""
+    key = str(family or "").strip().lower()
+    if key in FAMILY_COLOR_OVERRIDES:
+        return FAMILY_COLOR_OVERRIDES[key]
+    return FAMILY_PALETTE[zlib.crc32(key.encode("utf-8")) % len(FAMILY_PALETTE)]
+
+
+def chart_families(report):
+    """Families present in the chart, in a stable order, with their colours."""
+    chart = report.get("chart") or {}
+    names = {
+        str(point.get("family") or "").strip().lower()
+        for point in list(chart.get("points") or []) + list(chart.get("free_band") or [])
+    }
+    names.discard("")
+    return [(name, family_color(name)) for name in sorted(names)]
+
+
+def label_text(name, limit=LABEL_MAX_CHARS):
+    """A point label short enough to fit next to a marker.
+
+    A leading "Vendor: " prefix is dropped - the dot's colour and the family
+    legend already say who made the model - and a label that still does not fit
+    is cut at a word boundary so it never reads like a typo.
+    """
+    text = " ".join(str(name or "").split())
+    if ": " in text:
+        head, _, rest = text.partition(": ")
+        if rest.strip() and len(head) <= 24:
+            text = rest.strip()
+    if len(text) <= limit:
+        return text
+    kept = ""
+    for word in text.split():
+        candidate = (kept + " " + word).strip()
+        if len(candidate) + 3 > limit:
+            if not kept:
+                # A single long token (a slug-like name) has no boundary to cut at.
+                kept = word[: limit - 3]
+            break
+        kept = candidate
+    return (kept or text[: limit - 3].rstrip()) + "..."
+
+
+def _label_rect(text, x, y, anchor):
+    width = len(text) * LABEL_CHAR_WIDTH + 2
+    left = x - width if anchor == "end" else (x - width / 2.0 if anchor == "middle" else x)
+    return (left, y - LABEL_HEIGHT + 2, left + width, y + 2)
+
+
+def _rects_collide(first, second, pad=2.0):
+    return not (
+        first[2] + pad <= second[0]
+        or second[2] + pad <= first[0]
+        or first[3] + pad <= second[1]
+        or second[3] + pad <= first[1]
+    )
+
+
+def _label_candidates(point_x, point_y, band_point):
+    """Places to try for a label, best first."""
+    if band_point:
+        # A $0 marker sits in the band, left of the axis: its label starts just
+        # inside the plot so it cannot climb onto the tick labels.
+        for step in range(0, 11):
+            for offset in (0, -1, 1):
+                yield "start", CHART_LEFT + 6, point_y + 4 + offset * 13 * step
+        return
+    offsets = (
+        ("start", 9, 4),
+        ("end", -9, 4),
+        ("middle", 0, -11),
+        ("middle", 0, 16),
+        ("start", 9, -12),
+        ("end", -9, -12),
+        ("start", 9, 17),
+        ("end", -9, 17),
+    )
+    for anchor, dx, dy in offsets:
+        yield anchor, point_x + dx, point_y + dy
+    for step in range(1, 11):
+        for anchor, dx in (("start", 9), ("end", -9)):
+            yield anchor, point_x + dx, point_y + 4 - 13 * step
+            yield anchor, point_x + dx, point_y + 4 + 13 * step
+
+
+def _first_free_slot(text, occupied, near_x, near_y):
+    """The free slot closest to a point, for a label that found no room nearby."""
+    width = len(text) * LABEL_CHAR_WIDTH + 2
+    best = None
+    y = LABEL_TOP
+    while y <= LABEL_BOTTOM:
+        x = LABEL_LEFT
+        while x + width <= LABEL_RIGHT:
+            rect = (x, y - LABEL_HEIGHT + 2, x + width, y + 2)
+            if all(not _rects_collide(rect, other) for other in occupied):
+                distance = abs(y - near_y) + 0.3 * abs(x - near_x)
+                if best is None or distance < best[0]:
+                    best = (distance, x, y)
+            x += 26
+        y += 13
+    return None if best is None else (best[1], best[2])
+
+
+def place_labels(markers, obstacles):
+    """Place one label per marker without overlaps, returning SVG fragments.
+
+    Every marker gets a label: the placement tries eight positions around the
+    point, then walks further away, and finally falls back to the free slot
+    closest to the point anywhere in the plot. A leader line is drawn whenever
+    the label ends up far from its marker, so the association stays readable.
+    """
+    occupied = list(obstacles)
+    fragments = []
+    ordered = sorted(markers, key=lambda item: (-item[0]["quality"], item[1]))
+    for point, x, y in ordered:
+        text = label_text(point.get("name") or point.get("id"))
+        band_point = x < CHART_LEFT
+        chosen = None
+        for anchor, label_x, label_y in _label_candidates(x, y, band_point):
+            if not LABEL_TOP <= label_y <= LABEL_BOTTOM:
+                continue
+            rect = _label_rect(text, label_x, label_y, anchor)
+            if rect[0] < LABEL_LEFT or rect[2] > LABEL_RIGHT:
+                continue
+            if rect[1] < CHART_TOP + 2 or rect[3] > CHART_BOTTOM - 2:
+                continue
+            if any(_rects_collide(rect, other) for other in occupied):
+                continue
+            chosen = (anchor, label_x, label_y, rect)
+            break
+        if chosen is None:
+            slot = _first_free_slot(text, occupied, x, y)
+            if slot is not None:
+                anchor = "start"
+                rect = _label_rect(text, slot[0], slot[1], anchor)
+                chosen = (anchor, slot[0], slot[1], rect)
+        if chosen is None:
+            # Last resort: the label still has to exist, so keep it beside the
+            # point even if the plot is saturated.
+            anchor = "start"
+            label_y = min(max(y + 4, LABEL_TOP), LABEL_BOTTOM)
+            label_x = CHART_LEFT + 6 if band_point else x + 9
+            chosen = (anchor, label_x, label_y, _label_rect(text, label_x, label_y, anchor))
+        anchor, label_x, label_y, rect = chosen
+        occupied.append(rect)
+        near_x = min(max(x, rect[0]), rect[2])
+        near_y = min(max(y, rect[1]), rect[3])
+        distance = math.hypot(near_x - x, near_y - y)
+        if distance > 20:
+            length = distance or 1.0
+            fragments.append(
+                '<line class="leader" x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f"/>'
+                % (
+                    x + (near_x - x) / length * 6,
+                    y + (near_y - y) / length * 6,
+                    near_x,
+                    near_y,
+                )
+            )
+        fragments.append(
+            '<text data-role="annotation" data-model-id="%s" class="chart-label" '
+            'x="%.1f" y="%.1f" text-anchor="%s">%s</text>'
+            % (escape(point.get("id")), label_x, label_y, anchor, escape(text))
+        )
+    return fragments
+
+
+def _chart_series(points, band, x_pos, y_pos, best_ids=None, obstacles=None):
+    """Marks coloured by family, the frontier curve, labels, the free band, and legend."""
+    best_ids = set(best_ids or set())
+    parts = []
+    band_center = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
+    if band:
+        parts.append(
+            '<rect class="band" x="%d" y="%d" width="%d" height="%d" data-role="free-band"/>'
+            % (
+                FREE_BAND_LEFT,
+                CHART_TOP,
+                FREE_BAND_RIGHT - FREE_BAND_LEFT,
+                CHART_BOTTOM - CHART_TOP,
+            )
+        )
+        parts.append(
+            '<text x="%.1f" y="%d" text-anchor="middle" data-role="free-band-label">$0 free</text>'
+            % (band_center, CHART_TOP - 10)
+        )
+
+    frontier_points = sorted(
+        (point for point in points if point.get("frontier")), key=lambda point: point["cost"]
+    )
+    if frontier_points:
+        # A Pareto frontier in quality-vs-cost space reads as a staircase: each
+        # step moves right (more cost) to reach a higher quality, so connect the
+        # ordered members with horizontal-then-vertical segments. The curve is
+        # extended to both plot edges so a one-member frontier still draws a
+        # visible line: to the left, nothing paid is cheaper than the cheapest
+        # frontier member; to the right, no paid model at any higher cost beats
+        # the top frontier quality.
+        path = [
+            "M %d,%.1f" % (CHART_LEFT, y_pos(frontier_points[0]["quality"])),
+            "L %.1f,%.1f" % (x_pos(frontier_points[0]["cost"]), y_pos(frontier_points[0]["quality"])),
+        ]
+        for previous, current in zip(frontier_points, frontier_points[1:]):
+            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(previous["quality"])))
+            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(current["quality"])))
+        path.append("L %d,%.1f" % (CHART_RIGHT, y_pos(frontier_points[-1]["quality"])))
+        parts.append('<path class="frontier" data-role="frontier" d="%s"/>' % "".join(path))
+        area = list(path)
+        area.append("L %d,%d" % (CHART_RIGHT, CHART_BOTTOM))
+        area.append("L %d,%d" % (CHART_LEFT, CHART_BOTTOM))
+        area.append("Z")
+        parts.append('<path class="frontier-area" data-role="frontier-area" d="%s"/>' % "".join(area))
+
+    blockers = list(obstacles or [])
+    blockers.append((LEGEND_X, LEGEND_Y, LEGEND_X + LEGEND_WIDTH, LEGEND_Y + LEGEND_HEIGHT))
+    markers = []
+
+    for point in points:
+        x = x_pos(point["cost"])
+        y = y_pos(point["quality"])
+        is_best = point["id"] in best_ids
+        colour = family_color(point.get("family"))
+        ring = "ring ring-best" if is_best else "ring"
+        parts.append(
+            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="false">'
+            % (
+                escape(point["id"]),
+                "true" if point.get("frontier") else "false",
+                "true" if is_best else "false",
+            )
+        )
+        if point.get("frontier"):
+            parts.append('<circle class="%s" cx="%.1f" cy="%.1f" r="9"/>' % (ring, x, y))
+        parts.append(
+            '<circle class="point" cx="%.1f" cy="%.1f" r="5" style="fill:%s">%s</circle>'
+            % (
+                x,
+                y,
+                colour,
+                "<title>%s (%s): quality %s, mean cost %s%s</title>"
+                % (
+                    escape(point["name"]),
+                    escape(point.get("family") or "unknown"),
+                    point["quality"],
+                    fmt_usd(point["cost"]),
+                    " - best value" if is_best else "",
+                ),
+            )
+        )
+        parts.append("</g>")
+        blockers.append((x - 8, y - 8, x + 8, y + 8))
+        markers.append((point, x, y))
+
+    for point in band:
+        x = band_center
+        y = y_pos(point["quality"])
+        is_best = point["id"] in best_ids
+        colour = family_color(point.get("family"))
+        parts.append(
+            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="true">'
+            % (
+                escape(point["id"]),
+                "true" if point.get("frontier") else "false",
+                "true" if is_best else "false",
+            )
+        )
+        parts.append(
+            '<circle class="point point-free%s" cx="%.1f" cy="%.1f" r="5" style="fill:%s">%s</circle>'
+            % (
+                " point-best" if is_best else "",
+                x,
+                y,
+                colour,
+                "<title>%s (%s): quality %s, $0 (free) - not on the log axis</title>"
+                % (escape(point["name"]), escape(point.get("family") or "unknown"), point["quality"]),
+            )
+        )
+        parts.append("</g>")
+        blockers.append((x - 7, y - 7, x + 7, y + 7))
+        markers.append((point, x, y))
+
+    parts.extend(place_labels(markers, blockers))
+    parts.append(_chart_legend())
+    parts.append(
+        '<text x="%d" y="%d" data-role="chart-note">Free models carry a zero task cost, which '
+        "cannot be shown on a logarithmic axis, so they are drawn in the left band and stay in the "
+        "non-dominated set.</text>" % (CHART_LEFT, CHART_HEIGHT - 10)
+    )
+    return "".join(parts)
+
+
+def _chart_legend():
+    """The in-chart legend: roles as ring shapes, colour meaning spelled out."""
+    rows = (
+        ("model (colour = family)", "dot"),
+        ("efficient frontier", "frontier"),
+        ("Pareto / efficient frontier", "line"),
+        ("best value", "best"),
+        ("$0 free (left band)", "free"),
+    )
+    parts = [
+        '<g data-role="legend" data-x="%d" data-y="%d" transform="translate(%d,%d)">'
+        % (LEGEND_X, LEGEND_Y, LEGEND_X, LEGEND_Y),
+        '<rect class="legend-box" width="%d" height="%d" rx="6"/>' % (LEGEND_WIDTH, LEGEND_HEIGHT),
+    ]
+    for index, (label, kind) in enumerate(rows):
+        y = 15 + index * 13
+        if kind == "dot":
+            parts.append('<circle class="point" cx="14" cy="%d" r="5"/>' % (y - 4))
+        elif kind == "frontier":
+            parts.append('<circle class="point point-frontier" cx="14" cy="%d" r="5"/>' % (y - 4))
+        elif kind == "line":
+            parts.append('<line class="frontier" x1="6" y1="%d" x2="22" y2="%d"/>' % (y - 4, y - 4))
+        elif kind == "best":
+            parts.append('<circle class="point point-best" cx="14" cy="%d" r="5"/>' % (y - 4))
+        else:
+            parts.append('<circle class="point point-free" cx="14" cy="%d" r="5"/>' % (y - 4))
+        parts.append('<text x="26" y="%d">%s</text>' % (y, escape(label)))
+    parts.append("</g>")
+    return "".join(parts)
+
 
 
 def _log_ticks(low, high, count=6):
@@ -348,6 +717,7 @@ def render_chart(report, config=None):
         '<svg viewBox="0 0 %d %d" role="img" aria-label="Model quality against task cost">'
         % (CHART_WIDTH, CHART_HEIGHT)
     ]
+    tick_labels = []
     for tick in _quality_ticks(q_low, q_high):
         y = y_pos(tick)
         parts.append(
@@ -357,6 +727,7 @@ def render_chart(report, config=None):
         parts.append(
             '<text x="%d" y="%.1f" text-anchor="end">%.1f</text>' % (CHART_LEFT - 8, y + 4, tick)
         )
+        tick_labels.append((CHART_LEFT - 44, y - 7, CHART_LEFT - 8, y + 5))
     for tick in _log_ticks(low, high):
         x = x_pos(tick)
         parts.append(
@@ -384,163 +755,8 @@ def render_chart(report, config=None):
         "Index</text>" % (AXIS_TITLE_X, (CHART_TOP + CHART_BOTTOM) // 2)
     )
 
-    parts.append(_chart_series(points, band, x_pos, y_pos, best_ids))
+    parts.append(_chart_series(points, band, x_pos, y_pos, best_ids, obstacles=tick_labels))
     parts.append("</svg>")
-    return "".join(parts)
-
-
-def _chart_series(points, band, x_pos, y_pos, best_ids=None):
-    """Marks, the efficient-frontier curve, annotations, the free band, and legend."""
-    best_ids = set(best_ids or set())
-    parts = []
-    band_center = (FREE_BAND_LEFT + FREE_BAND_RIGHT) / 2.0
-    if band:
-        parts.append(
-            '<rect class="band" x="%d" y="%d" width="%d" height="%d" data-role="free-band"/>'
-            % (
-                FREE_BAND_LEFT,
-                CHART_TOP,
-                FREE_BAND_RIGHT - FREE_BAND_LEFT,
-                CHART_BOTTOM - CHART_TOP,
-            )
-        )
-        parts.append(
-            '<text x="%.1f" y="%d" text-anchor="middle" data-role="free-band-label">$0 free</text>'
-            % (band_center, CHART_TOP - 10)
-        )
-
-    frontier_points = sorted(
-        (point for point in points if point.get("frontier")), key=lambda point: point["cost"]
-    )
-    if frontier_points:
-        # A Pareto frontier in quality-vs-cost space reads as a staircase: each
-        # step moves right (more cost) to reach a higher quality, so connect the
-        # ordered members with horizontal-then-vertical segments. The curve is
-        # extended to both plot edges so a one-member frontier still draws a
-        # visible line: to the left, nothing paid is cheaper than the cheapest
-        # frontier member; to the right, no paid model at any higher cost beats
-        # the top frontier quality.
-        path = [
-            "M %d,%.1f" % (CHART_LEFT, y_pos(frontier_points[0]["quality"])),
-            "L %.1f,%.1f" % (x_pos(frontier_points[0]["cost"]), y_pos(frontier_points[0]["quality"])),
-        ]
-        for previous, current in zip(frontier_points, frontier_points[1:]):
-            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(previous["quality"])))
-            path.append("L %.1f,%.1f" % (x_pos(current["cost"]), y_pos(current["quality"])))
-        path.append("L %d,%.1f" % (CHART_RIGHT, y_pos(frontier_points[-1]["quality"])))
-        parts.append('<path class="frontier" data-role="frontier" d="%s"/>' % "".join(path))
-        area = list(path)
-        area.append("L %d,%d" % (CHART_RIGHT, CHART_BOTTOM))
-        area.append("L %d,%d" % (CHART_LEFT, CHART_BOTTOM))
-        area.append("Z")
-        parts.append('<path class="frontier-area" data-role="frontier-area" d="%s"/>' % "".join(area))
-
-    for index, point in enumerate(points):
-        x = x_pos(point["cost"])
-        y = y_pos(point["quality"])
-        is_best = point["id"] in best_ids
-        point_class = "point point-best" if is_best else (
-            "point point-frontier" if point.get("frontier") else "point"
-        )
-        ring_class = "ring ring-best" if is_best else "ring"
-        parts.append(
-            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="false">'
-            % (
-                escape(point["id"]),
-                "true" if point.get("frontier") else "false",
-                "true" if is_best else "false",
-            )
-        )
-        if point.get("frontier"):
-            parts.append('<circle class="%s" cx="%.1f" cy="%.1f" r="9"/>' % (ring_class, x, y))
-        parts.append(
-            '<circle class="%s" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, mean cost %s%s'
-            "</title></circle>"
-            % (
-                point_class,
-                x,
-                y,
-                escape(point["name"]),
-                point["quality"],
-                fmt_usd(point["cost"]),
-                " - best value" if is_best else "",
-            )
-        )
-        parts.append("</g>")
-        if point.get("frontier"):
-            # Keep labels inside the plot area so they cannot collide with the
-            # x tick labels or the axis title below the chart.
-            label_y = max(ANNOTATION_MIN_Y, min(ANNOTATION_MAX_Y, y + (16 if index % 2 == 0 else -10)))
-            anchor = "start" if x < (CHART_LEFT + CHART_RIGHT) / 2 else "end"
-            offset = 9 if anchor == "start" else -9
-            if anchor == "start":
-                offset = min(offset, float(CHART_RIGHT - x - 4))
-            else:
-                offset = max(offset, float(CHART_LEFT - x + 4))
-            parts.append(
-                '<text data-role="annotation" data-model-id="%s" x="%.1f" y="%.1f" '
-                'text-anchor="%s">%s</text>'
-                % (
-                    escape(point["id"]),
-                    x + offset,
-                    label_y,
-                    anchor,
-                    escape(point["name"]),
-                )
-            )
-
-    for point in band:
-        x = band_center
-        y = y_pos(point["quality"])
-        is_best = point["id"] in best_ids
-        point_class = "point point-free point-best" if is_best else "point point-free"
-        parts.append(
-            '<g data-role="point" data-model-id="%s" data-frontier="%s" data-best="%s" data-free="true">'
-            % (
-                escape(point["id"]),
-                "true" if point.get("frontier") else "false",
-                "true" if is_best else "false",
-            )
-        )
-        parts.append(
-            '<circle class="%s" cx="%.1f" cy="%.1f" r="5"><title>%s: quality %s, '
-            "$0 (free) - not on the log axis</title></circle>"
-            % (point_class, x, y, escape(point["name"]), point["quality"])
-        )
-        parts.append("</g>")
-        parts.append(
-            '<text data-role="annotation" data-model-id="%s" x="%.1f" y="%.1f" '
-            'text-anchor="middle">$0 (free)</text>'
-            % (
-                escape(point["id"]),
-                x,
-                max(ANNOTATION_MIN_Y, min(ANNOTATION_MAX_Y, y - 10)),
-            )
-        )
-
-    legend_x = CHART_RIGHT - 216
-    legend_y = CHART_BOTTOM - 82
-    parts.append(
-        '<g data-role="legend" data-x="%d" data-y="%d" transform="translate(%d,%d)">'
-        % (legend_x, legend_y, legend_x, legend_y)
-    )
-    parts.append('<rect class="legend-box" width="206" height="72" rx="6"/>')
-    parts.append('<circle class="point" cx="14" cy="15" r="5"/>')
-    parts.append('<text x="26" y="19">paid model</text>')
-    parts.append('<circle class="point point-frontier" cx="14" cy="31" r="5"/>')
-    parts.append('<text x="26" y="35">efficient frontier</text>')
-    parts.append('<line class="frontier" x1="6" y1="42" x2="22" y2="42"/>')
-    parts.append('<text x="26" y="46">Pareto / efficient frontier</text>')
-    parts.append('<circle class="point point-best" cx="14" cy="58" r="5"/>')
-    parts.append('<text x="26" y="62">best value</text>')
-    parts.append('<circle class="point point-free" cx="14" cy="70" r="5"/>')
-    parts.append('<text x="26" y="74">$0 free (off the log axis)</text>')
-    parts.append("</g>")
-    parts.append(
-        '<text x="%d" y="%d" data-role="chart-note">Free models carry a zero task cost, which '
-        "cannot be shown on a logarithmic axis, so they are drawn in the left band and stay in the "
-        "non-dominated set.</text>" % (CHART_LEFT, CHART_HEIGHT - 10)
-    )
     return "".join(parts)
 
 
@@ -1036,6 +1252,31 @@ def _change_panel(snapshot, config):
     )
 
 
+def _chart_legend_list(snapshot):
+    """Role rings first, then one colour swatch per model family in the chart."""
+    roles = (
+        (
+            '<span class="sw" style="background:transparent; border:2px solid var(--frontier)"></span>',
+            "on the efficient frontier",
+        ),
+        (
+            '<span class="sw" style="background:transparent; border:2px solid var(--best)"></span>',
+            "best value",
+        ),
+        (
+            '<span class="sw" style="background: var(--warn)"></span>',
+            "$0 free (left band, off the log axis)",
+        ),
+    )
+    items = ["<li>%s%s</li>" % (swatch, label) for swatch, label in roles]
+    for family, colour in chart_families(snapshot):
+        items.append(
+            '<li><span class="sw" style="background:%s"></span>%s</li>'
+            % (colour, escape(family))
+        )
+    return '<ul class="legend">%s</ul>' % "".join(items)
+
+
 def render_dashboard(snapshot, config, archive_entries=None, depth=0):
     """The current dashboard: counts, best values, chart, table, and links.
 
@@ -1073,17 +1314,12 @@ def render_dashboard(snapshot, config, archive_entries=None, depth=0):
     body.append('<div class="section-head"><h2>Cost vs quality</h2><span class="muted small">Pareto inside</span></div>')
     body.append(
         '<p class="sub">Mean of the available planning and execution task costs (USD, log scale) '
-        "against the AA Intelligence Index. The green staircase is the Pareto / efficient frontier; "
-        "green markers sit on the frontier and gold markers are the best-value winners.</p>"
+        "against the AA Intelligence Index. Each dot is coloured by model family and labelled; a "
+        "green ring marks the efficient frontier, a gold ring the best-value winner, and free "
+        "models sit in the band on the left.</p>"
     )
     body.append('<div class="chart">%s</div>' % render_chart(snapshot, config))
-    body.append(
-        '<ul class="legend"><li><span class="sw" '
-        'style="background: var(--accent)"></span>paid model</li>'
-        '<li><span class="sw" style="background: var(--frontier)"></span>efficient frontier</li>'
-        '<li><span class="sw" style="background: var(--best)"></span>best value</li>'
-        '<li><span class="sw" style="background: var(--warn)"></span>$0 free</li></ul>'
-    )
+    body.append(_chart_legend_list(snapshot))
     body.append('<p class="eyebrow">Best value by workload</p>')
     body.append(_profile_cards(snapshot, config))
     body.append('<div class="section-head"><h2>Models</h2><span class="muted small">sortable</span></div>')
@@ -1261,8 +1497,12 @@ def _methodology_scoring(config):
         "card always names the best paid model, while free models dominate on price.</p>"
         "<p>The chart shows one point per eligible model, using the mean of its available profile "
         "costs on a logarithmic axis against the Intelligence Index, with a single non-dominated "
-        "frontier and an annotation for every frontier model. A zero cost has no place on a logarithmic "
-        "axis, so free models are drawn in the band on the left and stay in the non-dominated set.</p>",
+        "frontier. Each point is coloured by model family, carries its own label, and is ringed in "
+        "green when it sits on the frontier and in gold when it is a best-value winner; labels are "
+        "placed to avoid each other, the markers, the tick labels and the legend, and a leader line "
+        "connects a label to its point when it has to move away. A zero cost has no place on a "
+        "logarithmic axis, so free models are drawn in the band on the left and stay in the "
+        "non-dominated set.</p>",
     ]
 
 

@@ -1132,6 +1132,7 @@ def _with_chart(records, profiles, medians, best_value):
         point = {
             "id": record["id"],
             "name": record["name"],
+            "family": record.get("family") or "",
             "quality": quality,
             "free": record["free"],
             "profiles": sorted(name for name, value in available.items() if value is not None),
