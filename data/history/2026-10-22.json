@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report": {
-    "generated_at": "2026-10-22T00:05:01.506847+02:00",
+    "generated_at": "2026-10-22T00:21:36.334763+02:00",
     "date": "2026-10-22",
     "weekday": "Thursday",
     "timezone": "Europe/Warsaw",
@@ -14,7 +14,7 @@
       "model_count": 19
     },
     "narrative": {
-      "summary": "**Weekly Change Summary** No changes detected this week. The catalog is unchanged (no models added or removed). Observed blend composition, quality metrics, and rates all remained stable compared to the previous run. No action required.",
+      "summary": "Weekly summary: No changes detected. No catalog entries were added or removed, no blend configuration changes were observed, and no quality or rate metric changes were recorded compared to the previous run. The monitoring report is stable week-over-week.",
       "model": "cline-pass/glm-5.3-flash",
       "source": "narrative"
     },
@@ -83,18 +83,18 @@
       "limits": [
         {
           "type": "five_hour",
-          "percentUsed": 7,
-          "resetsAt": "2026-10-22T00:52:55.500793291Z"
+          "percentUsed": 8,
+          "resetsAt": "2026-10-22T00:52:55.284358532Z"
         },
         {
           "type": "weekly",
           "percentUsed": 20,
-          "resetsAt": "2026-10-23T12:36:31.50265579Z"
+          "resetsAt": "2026-10-23T12:36:31.286383242Z"
         },
         {
           "type": "monthly",
           "percentUsed": 63,
-          "resetsAt": "2026-10-30T19:06:34.50486235Z"
+          "resetsAt": "2026-10-30T19:06:35.288744172Z"
         }
       ]
     },
@@ -109,18 +109,18 @@
     "unit": "per 1M tokens"
   },
   "observation": {
-    "rows_total": 10318,
-    "rows_dropped": 82,
-    "rows_in_window": 10280,
-    "pages": 52,
-    "rows_fetched": 10400,
+    "rows_total": 10517,
+    "rows_dropped": 83,
+    "rows_in_window": 10331,
+    "pages": 53,
+    "rows_fetched": 10600,
     "paging_stopped_at_window_start": true,
     "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "fit_rejections": {
       "cline-pass/mimo-v2.6-pro": "0 usable ClinePass rows in the window, minimum is 12 (credits: 1 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.8-max": "1 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/kimi-k3": "2 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
-      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000730464 USD exceeds the allowed 0.000210953 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
+      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000730275 USD exceeds the allowed 0.000210844 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.7-max": "1 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/minimax-m3": "1 usable ClinePass rows in the window, minimum is 12 (credits: 4 usable ClinePass rows in the window, minimum is 12)"
     },
@@ -199,7 +199,7 @@
           "execution",
           "planning"
         ],
-        "cost": 0.015228041,
+        "cost": 0.015223859000000001,
         "frontier": false
       },
       {
@@ -387,37 +387,37 @@
       "openrouter_id": "deepseek/deepseek-v4.1-flash-1017",
       "rates": {
         "input": {
-          "usd_per_mtok": 0.146212,
+          "usd_per_mtok": 0.146213,
           "provenance": "measured-credits",
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
-          "rows": 1847,
-          "rms_residual_usd": 0.00073655,
-          "median_relative_error": 0.004109,
-          "condition_number": 1.488
+          "rows": 1897,
+          "rms_residual_usd": 0.00072678,
+          "median_relative_error": 0.003998,
+          "condition_number": 1.497
         },
         "output": {
-          "usd_per_mtok": 0.610134,
+          "usd_per_mtok": 0.609766,
           "provenance": "measured-credits",
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
-          "rows": 1847,
-          "rms_residual_usd": 0.00073655,
-          "median_relative_error": 0.004109,
-          "condition_number": 1.488
+          "rows": 1897,
+          "rms_residual_usd": 0.00072678,
+          "median_relative_error": 0.003998,
+          "condition_number": 1.497
         },
         "cache_read": {
           "usd_per_mtok": 0.003003,
           "provenance": "measured-credits",
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
-          "rows": 1847,
-          "rms_residual_usd": 0.00073655,
-          "median_relative_error": 0.004109,
-          "condition_number": 1.488
+          "rows": 1897,
+          "rms_residual_usd": 0.00072678,
+          "median_relative_error": 0.003998,
+          "condition_number": 1.497
         },
         "cache_write": {
-          "usd_per_mtok": 0.146212,
+          "usd_per_mtok": 0.146213,
           "provenance": "input-fallback",
           "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
@@ -426,21 +426,21 @@
           "status": "measured",
           "reason": null,
           "rates": {
-            "input": 0.146212,
-            "output": 0.610134,
+            "input": 0.146213,
+            "output": 0.609766,
             "cache_read": 0.003003
           },
-          "rows": 1847,
-          "rows_in_window": 1850,
+          "rows": 1897,
+          "rows_in_window": 1900,
           "dropped_rows": 3,
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
-          "condition_number": 1.488,
-          "rms_residual_usd": 0.00073655,
+          "condition_number": 1.497,
+          "rms_residual_usd": 0.00072678,
           "allowed_rms_residual_usd": null,
-          "median_relative_error": 0.004109,
-          "p90_relative_error": 0.014888,
-          "total_reconciliation_error": 0.002683
+          "median_relative_error": 0.003998,
+          "p90_relative_error": 0.014968,
+          "total_reconciliation_error": 0.00266
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -451,21 +451,21 @@
           "status": "measured",
           "reason": null,
           "rates": {
-            "input": 0.146212,
-            "output": 0.610134,
+            "input": 0.146213,
+            "output": 0.609766,
             "cache_read": 0.003003
           },
-          "rows": 1847,
-          "rows_in_window": 1850,
+          "rows": 1897,
+          "rows_in_window": 1900,
           "dropped_rows": 3,
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
-          "condition_number": 1.488,
-          "rms_residual_usd": 0.00073655,
+          "condition_number": 1.497,
+          "rms_residual_usd": 0.00072678,
           "allowed_rms_residual_usd": null,
-          "median_relative_error": 0.004109,
-          "p90_relative_error": 0.014888,
-          "total_reconciliation_error": 0.002683
+          "median_relative_error": 0.003998,
+          "p90_relative_error": 0.014968,
+          "total_reconciliation_error": 0.00266
         }
       },
       "quality": {
@@ -474,21 +474,21 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash 1017 (Max)",
         "aa_slug": "deepseek-v4-1-flash-1017",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
-        "planning": 0.011330152,
-        "execution": 0.01912593
+        "planning": 0.011327248000000002,
+        "execution": 0.01912047
       },
       "efficiency": {
-        "planning": 55.36707119546256,
-        "execution": 61.96041769989668
+        "planning": 55.36892029837007,
+        "execution": 61.96371301238696
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 0.2389964,
+      "blended_input_output_usd_per_mtok": 0.2389236,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
       "priced": true
@@ -572,7 +572,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash (Max)",
         "aa_slug": "deepseek-v4-1-flash",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.011401088,
@@ -587,8 +587,8 @@
         "execution": false
       },
       "blended_input_output_usd_per_mtok": 0.2400158,
-      "observed_blended_usd_per_mtok": 0.011072,
-      "observed_rows": 4393,
+      "observed_blended_usd_per_mtok": 0.011073,
+      "observed_rows": 4437,
       "priced": true
     },
     {
@@ -670,7 +670,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Flash",
         "aa_slug": "mimo-v2-6-flash",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0084,
@@ -769,7 +769,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Pro",
         "aa_slug": "mimo-v2-6-pro",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": null,
@@ -867,7 +867,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3 (Max)",
         "aa_slug": "glm-5-3",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.15752,
@@ -965,7 +965,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4 Pro 0813 (Max)",
         "aa_slug": "deepseek-v4-pro",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.1176,
@@ -1163,7 +1163,7 @@
         "coding_index_display_only": true,
         "aa_name": "Muse Spark 1.3 (Max)",
         "aa_slug": "muse-spark-1-3",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.005999992,
@@ -1269,7 +1269,7 @@
         "coding_index_display_only": true,
         "aa_name": "Kimi K3 (Max)",
         "aa_slug": "kimi-k3",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.345,
@@ -1296,7 +1296,7 @@
       "description": "Latest natively multimodal model in the GLM-5 series",
       "free": false,
       "family": "glm",
-      "context_window": 1048576,
+      "context_window": 1048575,
       "openrouter_id": "z-ai/glm-5.3-flash",
       "rates": {
         "input": {
@@ -1325,22 +1325,22 @@
         "catalog_free": false,
         "fit": {
           "status": "rejected",
-          "reason": "per-row RMS residual 0.000730464 USD exceeds the allowed 0.000210953 USD",
+          "reason": "per-row RMS residual 0.000730275 USD exceeds the allowed 0.000210844 USD",
           "rates": {
             "input": 0.149585,
             "output": 0.467501,
             "cache_read": 0.030041
           },
-          "rows": 1934,
-          "rows_in_window": 1936,
+          "rows": 1935,
+          "rows_in_window": 1937,
           "dropped_rows": 2,
           "window_start": "2026-09-23",
           "window_end": "2026-10-22",
           "condition_number": 1.206,
-          "rms_residual_usd": 0.00073046,
-          "allowed_rms_residual_usd": 0.00021095,
-          "median_relative_error": 0.001253,
-          "p90_relative_error": 0.014498,
+          "rms_residual_usd": 0.00073027,
+          "allowed_rms_residual_usd": 0.00021084,
+          "median_relative_error": 0.001254,
+          "p90_relative_error": 0.014547,
           "total_reconciliation_error": 0.003168
         },
         "reference_source": {
@@ -1375,7 +1375,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3-Flash",
         "aa_slug": "glm-5-3-flash",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.016,
@@ -1391,7 +1391,7 @@
       },
       "blended_input_output_usd_per_mtok": 0.22,
       "observed_blended_usd_per_mtok": 0.045063,
-      "observed_rows": 1934,
+      "observed_rows": 1935,
       "priced": true
     },
     {
@@ -1474,7 +1474,7 @@
         "coding_index_display_only": true,
         "aa_name": "Qwen3.7 Plus",
         "aa_slug": "qwen3-7-plus",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.060460008,
@@ -1581,7 +1581,7 @@
         "coding_index_display_only": true,
         "aa_name": "Qwen3.7 Max",
         "aa_slug": "qwen3-7-max",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.26625,
@@ -1687,7 +1687,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3",
         "aa_slug": "minimax-m3",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0336,
@@ -1747,7 +1747,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3.1-Flash",
         "aa_slug": "minimax-m3-1-flash",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -1860,7 +1860,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Super VL",
         "aa_slug": "nemotron-3-5-super-vl",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -1920,7 +1920,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Lightning",
         "aa_slug": "nemotron-3-5-lightning",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -2033,7 +2033,7 @@
         "coding_index_display_only": true,
         "aa_name": "Solar Mini 4",
         "aa_slug": "solar-mini4",
-        "retrieved_at": "2026-10-22T00:05:01.506847+02:00"
+        "retrieved_at": "2026-10-22T00:21:36.334763+02:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -2062,5 +2062,5 @@
     "rate_changed": {},
     "observed_blend_changed": {}
   },
-  "summary": "**Weekly Change Summary** No changes detected this week. The catalog is unchanged (no models added or removed). Observed blend composition, quality metrics, and rates all remained stable compared to the previous run. No action required."
+  "summary": "Weekly summary: No changes detected. No catalog entries were added or removed, no blend configuration changes were observed, and no quality or rate metric changes were recorded compared to the previous run. The monitoring report is stable week-over-week."
 }
