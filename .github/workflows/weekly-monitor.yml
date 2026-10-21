@@ -49,12 +49,26 @@ jobs:
       - name: Run the monitor
         id: monitor
         run: |
-          python -m src.run | tee run.log
+          set -o pipefail
+          python -m src.run 2>&1 | tee run.log
+          if grep -q '^RUN_FAILED' run.log; then
+            echo "the monitor refused to publish; see run.log" >&2
+            exit 1
+          fi
           if grep -q '^SCHEDULE_SKIPPED' run.log; then
             echo "skipped=true" >> "$GITHUB_OUTPUT"
           else
             echo "skipped=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Keep the run log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-log
+          path: run.log
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Commit report history and site
         if: steps.monitor.outputs.skipped == 'false'

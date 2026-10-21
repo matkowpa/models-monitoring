@@ -30,32 +30,95 @@ HISTORY_DIR = DATA_DIR / "history"
 SITE_DIR = ROOT / "site"
 
 RETRYABLE_STATUSES = {408, 425, 429, 500, 502, 503, 504}
+RATE_LIMITED_STATUS = 429
+MAX_RETRY_DELAY_SECONDS = 60.0
 
 
 class HttpError(RuntimeError):
     """A non-retryable HTTP failure after retries."""
 
 
-def http_json(url, headers=None, timeout=30, retries=2, backoff=0.5, parse=monitor.ApiError):
-    """GET a URL and return parsed JSON, retrying transient failures."""
+def _sleep(seconds):
+    """Sleep helper, so tests can replace the wait without patching ``time``."""
+    if seconds and seconds > 0:
+        time.sleep(seconds)
+
+
+def _retry_delay(error, attempt, backoff, maximum=MAX_RETRY_DELAY_SECONDS):
+    """Seconds to wait before the next attempt.
+
+    A ``Retry-After`` header always wins over the computed backoff: Cline's
+    usage endpoint rate-limits by the minute, so waiting the interval the server
+    asks for is the only thing that makes a retry land inside the budget.
+    """
+    headers = getattr(error, "headers", None)
+    if headers is not None:
+        try:
+            raw = headers.get("Retry-After")
+        except AttributeError:
+            raw = None
+        if raw:
+            try:
+                seconds = float(str(raw).strip())
+            except (TypeError, ValueError):
+                seconds = None
+            if seconds is not None and seconds >= 0:
+                return min(seconds, maximum)
+    return min(backoff * (2**attempt), maximum)
+
+
+def _request_json(
+    url,
+    headers=None,
+    data=None,
+    timeout=30,
+    retries=2,
+    backoff=0.5,
+    rate_limit_retries=5,
+    rate_limit_backoff=2.0,
+):
+    """GET/POST a URL and return parsed JSON, retrying transient failures.
+
+    A 429 gets its own, larger budget (``rate_limit_retries``) on top of the
+    ordinary one, because a rate limit is a "come back later" answer rather than
+    a transient blip: the default 0.5 s + 1 s window is far too short to clear
+    one and used to abort a whole report.
+    """
     header_block = {"Accept": "application/json"}
     header_block.update(headers or {})
+    if data is not None:
+        header_block["Content-Type"] = "application/json"
+    method = "POST" if data is not None else "GET"
+    attempts = 0
+    rate_limited = 0
     last_error = None
-    for attempt in range(max(1, retries + 1)):
+    while True:
         try:
-            request = urllib.request.Request(url, headers=header_block)
+            request = urllib.request.Request(
+                url, data=data, headers=header_block, method=method
+            )
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 return json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as error:
-            if error.code in RETRYABLE_STATUSES and attempt < retries:
-                time.sleep(backoff * (2**attempt))
+            if error.code == RATE_LIMITED_STATUS and rate_limited < rate_limit_retries:
+                delay = _retry_delay(error, rate_limited, rate_limit_backoff)
+                rate_limited += 1
                 last_error = HttpError("HTTP %s from %s" % (error.code, url))
+                _sleep(delay)
+                continue
+            if error.code in RETRYABLE_STATUSES and attempts < retries:
+                delay = _retry_delay(error, attempts, backoff)
+                attempts += 1
+                last_error = HttpError("HTTP %s from %s" % (error.code, url))
+                _sleep(delay)
                 continue
             raise HttpError("HTTP %s from %s" % (error.code, url)) from error
         except (urllib.error.URLError, TimeoutError, OSError) as error:
-            if attempt < retries:
-                time.sleep(backoff * (2**attempt))
+            if attempts < retries:
+                delay = _retry_delay(error, attempts, backoff)
+                attempts += 1
                 last_error = error
+                _sleep(delay)
                 continue
             raise HttpError("%s while requesting %s" % (error, url)) from error
         except ValueError as error:
@@ -63,32 +126,48 @@ def http_json(url, headers=None, timeout=30, retries=2, backoff=0.5, parse=monit
     raise HttpError(str(last_error))
 
 
-def post_json_chat(url, headers, payload, timeout=30, retries=2, backoff=0.5):
+def http_json(
+    url,
+    headers=None,
+    timeout=30,
+    retries=2,
+    backoff=0.5,
+    rate_limit_retries=5,
+    rate_limit_backoff=2.0,
+):
+    """GET a URL and return parsed JSON, retrying transient failures."""
+    return _request_json(
+        url,
+        headers=headers,
+        timeout=timeout,
+        retries=retries,
+        backoff=backoff,
+        rate_limit_retries=rate_limit_retries,
+        rate_limit_backoff=rate_limit_backoff,
+    )
+
+
+def post_json_chat(
+    url,
+    headers,
+    payload,
+    timeout=30,
+    retries=2,
+    backoff=0.5,
+    rate_limit_retries=5,
+    rate_limit_backoff=2.0,
+):
     """POST a chat completion and return parsed JSON with the same retry policy."""
-    header_block = {"Content-Type": "application/json"}
-    header_block.update(headers or {})
-    body = json.dumps(payload).encode("utf-8")
-    last_error = None
-    for attempt in range(max(1, retries + 1)):
-        try:
-            request = urllib.request.Request(url, data=body, headers=header_block, method="POST")
-            with urllib.request.urlopen(request, timeout=timeout) as response:
-                return json.loads(response.read().decode("utf-8"))
-        except urllib.error.HTTPError as error:
-            if error.code in RETRYABLE_STATUSES and attempt < retries:
-                time.sleep(backoff * (2**attempt))
-                last_error = HttpError("HTTP %s from %s" % (error.code, url))
-                continue
-            raise HttpError("HTTP %s from %s" % (error.code, url)) from error
-        except (urllib.error.URLError, TimeoutError, OSError) as error:
-            if attempt < retries:
-                time.sleep(backoff * (2**attempt))
-                last_error = error
-                continue
-            raise HttpError("%s while requesting %s" % (error, url)) from error
-        except ValueError as error:
-            raise HttpError("invalid JSON from %s" % url) from error
-    raise HttpError(str(last_error))
+    return _request_json(
+        url,
+        headers=headers,
+        data=json.dumps(payload).encode("utf-8"),
+        timeout=timeout,
+        retries=retries,
+        backoff=backoff,
+        rate_limit_retries=rate_limit_retries,
+        rate_limit_backoff=rate_limit_backoff,
+    )
 
 
 def load_json(path):
@@ -168,13 +247,42 @@ def fetch_openrouter_metadata(config):
         return None
 
 
-def fetch_usage_rows(config):
-    """All billing usage rows for this account, following the server cursor.
+def _page_reached_window_start(items, window_start):
+    """True when a page has already moved past the rate-window start.
 
-    ``GET /users/{id}/usages`` is paged with ``nextToken``; a repeated cursor is
-    treated as a server fault rather than an infinite loop. ``GET /users/me``
-    resolves the account id and is checked against ``CLINE_USER_ID`` when that
-    variable is set, so the report can never price the wrong account silently.
+    ``/usages`` returns rows newest-first and ignores ``startDate``/``endDate``
+    (verified against the live API), so the only way to bound the walk is to
+    stop client-side. The check demands a descending page: an oldest-first or
+    unordered payload returns False so a lucky ordering can never truncate the
+    history the fit depends on.
+    """
+    if not window_start:
+        return False
+    dates = [
+        str(item.get("createdAt") or "")[:10]
+        for item in items or []
+        if isinstance(item, dict)
+    ]
+    dates = [value for value in dates if value]
+    if not dates or dates[0] < dates[-1]:
+        return False
+    return min(dates) < window_start
+
+
+def fetch_usage_rows(config, window_start=None):
+    """All billing usage rows this account needs, following the server cursor.
+
+    ``GET /users/{id}/usages`` is paged with ``cursor``; a repeated cursor is
+    treated as a server fault rather than an infinite loop, and a hard page
+    ceiling keeps a misbehaving server from looping forever. The server caps a
+    page at 200 rows whatever ``limit`` asks for, and rate-limits the walk, so
+    the pages are paced and the walk stops as soon as ``window_start`` is
+    covered - the pipeline only fits rates over that window, so paging through
+    older history only burns the request budget and trips 429.
+
+    ``GET /users/me`` resolves the account id and is checked against
+    ``CLINE_USER_ID`` when that variable is set, so the report can never price
+    the wrong account silently.
     """
     cline = config.get("cline") or {}
     base = cline.get("api_base_url", "https://api.cline.bot")
@@ -182,10 +290,24 @@ def fetch_usage_rows(config):
     headers = auth_headers(api_key)
     timeout = cline.get("request_timeout_seconds", 30)
     retries = cline.get("max_retries", 2)
-    limit = cline.get("usage_page_limit", 1000)
+    rate_limit_retries = int(cline.get("rate_limit_retries", 5))
+    rate_limit_backoff = float(cline.get("rate_limit_backoff_seconds", 2.0))
+    limit = int(cline.get("usage_page_limit", 200))
+    pause = float(cline.get("usage_page_pause_seconds", 0.3))
+    max_pages = int(cline.get("usage_max_pages", 400))
+
+    def get_json(url):
+        return http_json(
+            url,
+            headers=headers,
+            timeout=timeout,
+            retries=retries,
+            rate_limit_retries=rate_limit_retries,
+            rate_limit_backoff=rate_limit_backoff,
+        )
 
     me = monitor.unwrap_envelope(
-        http_json(base + "/api/v1/users/me", headers=headers, timeout=timeout, retries=retries),
+        get_json(base + "/api/v1/users/me"),
         context="users/me",
     )
     user_id = str((me or {}).get("id") or "")
@@ -202,26 +324,39 @@ def fetch_usage_rows(config):
     seen = set()
     pages = 0
     cursor = None
+    stopped_at_window_start = False
     while True:
         query = {"limit": str(limit)}
         if cursor:
             query["cursor"] = cursor
-        payload = http_json(
-            base + "/api/v1/users/%s/usages?%s" % (user_id, urllib.parse.urlencode(query)),
-            headers=headers,
-            timeout=timeout,
-            retries=retries,
+        if pages:
+            _sleep(pause)
+        payload = get_json(
+            base + "/api/v1/users/%s/usages?%s" % (user_id, urllib.parse.urlencode(query))
         )
         items, next_token, _total = monitor.parse_usage_page(payload)
         rows.extend(items)
         pages += 1
+        if _page_reached_window_start(items, window_start):
+            stopped_at_window_start = True
+            break
         cursor = next_token
         if not cursor:
             break
         if cursor in seen:
             raise HttpError("Cline API returned a repeated pagination cursor")
         seen.add(cursor)
-    return rows, {"user_id": user_id, "pages": pages}
+        if pages >= max_pages:
+            raise HttpError(
+                "Cline API returned more than %d usage pages without reaching the rate "
+                "window; refusing to page further" % max_pages
+            )
+    return rows, {
+        "user_id": user_id,
+        "pages": pages,
+        "rows_fetched": len(rows),
+        "stopped_at_window_start": stopped_at_window_start,
+    }
 
 
 def fetch_aa_models(config):
@@ -540,8 +675,15 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
         )
     reference_models, reference_meta = load_reference_rates()
 
+    window_days = int(config.get("rate_window_days", 30))
+    window = {
+        "days": window_days,
+        "end": day,
+        "start": (generated.date() - timedelta(days=window_days - 1)).isoformat(),
+    }
+
     if mode == monitor.MODE_LIVE:
-        raw_rows, usage_stats = fetch_usage_rows(config)
+        raw_rows, usage_stats = fetch_usage_rows(config, window_start=window["start"])
         quota = fetch_quota_context(config, usage_stats.get("user_id"))
     else:
         raw_rows = load_fixture_usage_rows(fixtures_dir)
@@ -549,12 +691,6 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
         quota = load_fixture_quota(fixtures_dir)
 
     rows, dropped = prepare_usage(raw_rows, config)
-    window_days = int(config.get("rate_window_days", 30))
-    window = {
-        "days": window_days,
-        "end": day,
-        "start": (generated.date() - timedelta(days=window_days - 1)).isoformat(),
-    }
     rows_in_window = sum(
         1
         for row in rows
@@ -630,6 +766,8 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
             "rows_dropped": dropped,
             "rows_in_window": rows_in_window,
             "pages": usage_stats.get("pages"),
+            "rows_fetched": usage_stats.get("rows_fetched"),
+            "paging_stopped_at_window_start": usage_stats.get("stopped_at_window_start"),
             "account_id": usage_stats.get("user_id"),
             "fit_rejections": rejected,
             "aa_matches": matched,

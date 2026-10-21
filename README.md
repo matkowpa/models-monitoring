@@ -34,9 +34,11 @@ plan).
 1. Discover the ClinePass catalog and the free promotions from Cline's recommended-models
    endpoint, falling back to the pinned list when it is unavailable; a fallback run is labelled
    as such in the report and snapshot.
-2. Read this account's billing usage (`/usages` with cursor paging, `/usages/daily` in windows
-   of at most 31 days) and **fit** per-class input, output, and cache-read rates by
-   non-negative least squares over the last `rate_window_days` (default 30).
+2. Read this account's billing usage (`/usages` with cursor paging) and **fit** per-class input,
+   output, and cache-read rates by non-negative least squares over the last `rate_window_days`
+   (default 30). The endpoint ignores date filters, so the walk is paced, stops as soon as the
+   window is covered, and retries a 429 for the interval the server asks for in `Retry-After`
+   instead of aborting the report.
 3. Fall back to Cline's dated published reference table for models whose fit cannot be
    estimated and for cache write, which usage rows do not report separately. Measured and
    reference classes are never mixed inside one model, and every rate field carries its
@@ -100,7 +102,9 @@ and GitHub.
 - **Manual dispatch** bypasses all checks.
 - **Tests run before** the live pipeline, then the site is committed to `main` and deployed as
   a Pages artifact (`actions/upload-pages-artifact@v3` + `actions/deploy-pages@v4`). A skipped
-  schedule skips both the commit and the deployment.
+  schedule skips both the commit and the deployment, and a failed run fails the job - it keeps
+  `run.log` as an artifact and commits and deploys nothing, so a broken run can never publish
+  the previous report and still look green.
 - Pushes made with the workflow's own token cannot re-trigger the workflow.
 
 One-time repository setup:

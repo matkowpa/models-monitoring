@@ -5,8 +5,11 @@
     "chat_completions_path": "/api/v1/chat/completions",
     "api_key_env": "CLINE_API_KEY",
     "user_id_env": "CLINE_USER_ID",
-    "usage_page_limit": 1000,
-    "daily_window_days": 31,
+    "usage_page_limit": 200,
+    "usage_page_pause_seconds": 0.3,
+    "usage_max_pages": 400,
+    "rate_limit_retries": 5,
+    "rate_limit_backoff_seconds": 2.0,
     "request_timeout_seconds": 30,
     "max_retries": 2
   },
