@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "report": {
-    "generated_at": "2026-10-23T10:50:21.005228+02:00",
-    "date": "2026-10-23",
-    "weekday": "Friday",
+    "generated_at": "2026-10-26T10:21:34.931389+01:00",
+    "date": "2026-10-26",
+    "weekday": "Monday",
     "timezone": "Europe/Warsaw",
     "mode": "live",
     "title": "ClinePass Models Monitoring",
@@ -11,17 +11,17 @@
       "source": "recommended-models",
       "reason": null,
       "endpoint": "https://api.cline.bot/api/v1/ai/cline/recommended-models",
-      "model_count": 19
+      "model_count": 20
     },
     "narrative": {
-      "summary": "**Weekly Model Monitoring Summary** Catalog changes: `cline-pass/minimax-m3.1-flash` was added and `cline-free/minimax-m3.1-flash` was removed. Observed blend: one change \u2014 Xiaomi: MiMo-V2.6-Flash (`cline-pass/mimo-v2.6-flash`) rose from 2.12% to 2.95%, a change ratio of ~39.3%. No quality changes and no rate changes were detected this week.",
+      "summary": "**Weekly Model Monitoring Summary** - **Catalog changes:** Added 1 model \u2014 cline-pass/kimi-k3.1-pro. No models removed. - **Blend changes:** cline-pass/deepseek-v4-pro (DeepSeek: DeepSeek V4 Pro 0423) shifted from 13.7485% to 20.3566%, a change ratio of 48.0642%. - **Quality:** No changes. - **Rates:** No changes.",
       "model": "cline-pass/glm-5.3-flash",
       "source": "narrative"
     },
     "rate_window": {
       "days": 30,
-      "end": "2026-10-23",
-      "start": "2026-09-24"
+      "end": "2026-10-26",
+      "start": "2026-09-27"
     },
     "money_scales": {
       "cost_usd": 100000000,
@@ -30,13 +30,13 @@
     "warnings": [
       "measured rates differ from the dated reference table by more than 1.5x for: deepseek-v4.1-flash (0.50x of the reference), qwen3.7-plus (1.68x of the reference); the measured fit is published, so treat the reference table as stale for these models"
     ],
-    "previous_snapshot": "2026-10-22.json"
+    "previous_snapshot": "2026-10-23.json"
   },
   "account": {
     "user_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "balance": {
       "userId": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
-      "balance": 3870951
+      "balance": 3870914
     },
     "plan": {
       "planHistoryId": "iph-01M3SDXBAV1RN1RWK9SVYK1606",
@@ -83,22 +83,22 @@
       "limits": [
         {
           "type": "five_hour",
-          "percentUsed": 5,
-          "resetsAt": "2026-10-23T10:39:22.72843972Z"
+          "percentUsed": 1,
+          "resetsAt": "2026-10-26T11:00:52.342301476Z"
         },
         {
           "type": "weekly",
-          "percentUsed": 26,
-          "resetsAt": "2026-10-23T12:36:30.7305408Z"
+          "percentUsed": 4,
+          "resetsAt": "2026-10-30T16:56:13.34500057Z"
         },
         {
           "type": "monthly",
-          "percentUsed": 66,
-          "resetsAt": "2026-10-30T19:06:34.733224375Z"
+          "percentUsed": 68,
+          "resetsAt": "2026-10-30T19:06:35.34772756Z"
         }
       ]
     },
-    "balance_usd": 3.870951,
+    "balance_usd": 3.870914,
     "plan_name": "Cline Pass (Monthly)"
   },
   "reference_rates": {
@@ -109,24 +109,26 @@
     "unit": "per 1M tokens"
   },
   "observation": {
-    "rows_total": 11117,
-    "rows_dropped": 83,
-    "rows_in_window": 11034,
-    "pages": 56,
-    "rows_fetched": 11200,
+    "rows_total": 11320,
+    "rows_dropped": 80,
+    "rows_in_window": 11194,
+    "pages": 57,
+    "rows_fetched": 11400,
     "paging_stopped_at_window_start": true,
     "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "fit_rejections": {
+      "cline-pass/kimi-k3.1-pro": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/minimax-m3.1-flash": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/mimo-v2.6-pro": "0 usable ClinePass rows in the window, minimum is 12 (credits: 1 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.8-max": "1 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/kimi-k3": "2 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
-      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000729521 USD exceeds the allowed 0.000210411 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
-      "cline-pass/minimax-m3": "1 usable ClinePass rows in the window, minimum is 12 (credits: 4 usable ClinePass rows in the window, minimum is 12)",
-      "cline-pass/qwen3.7-max": "1 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)"
+      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000701503 USD exceeds the allowed 0.000214462 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
+      "cline-pass/qwen3.7-max": "1 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
+      "cline-pass/minimax-m3": "1 usable ClinePass rows in the window, minimum is 12 (credits: 4 usable ClinePass rows in the window, minimum is 12)"
     },
-    "aa_matches": 16,
+    "aa_matches": 17,
     "catalog_ids": [
+      "cline-pass/kimi-k3.1-pro",
       "cline-pass/minimax-m3.1-flash",
       "cline-pass/deepseek-v4.1-flash-1017",
       "cline-pass/deepseek-v4.1-flash",
@@ -138,9 +140,9 @@
       "cline-pass/muse-spark-1.3-contributor",
       "cline-pass/kimi-k3",
       "cline-pass/glm-5.3-flash",
-      "cline-pass/minimax-m3",
       "cline-pass/qwen3.7-plus",
       "cline-pass/qwen3.7-max",
+      "cline-pass/minimax-m3",
       "reflection/beam-free",
       "cline-free/nemotron-3.5-super-vl",
       "nvidia/nemotron-3.5-lightning-free",
@@ -149,16 +151,16 @@
     ]
   },
   "stats": {
-    "discovered": 19,
+    "discovered": 20,
     "priced": 17,
-    "benchmarked": 16,
+    "benchmarked": 17,
     "measured_rates": 7,
     "measured_credits_rates": 2,
     "free_models": 5,
     "highest_quality": {
-      "id": "cline-pass/muse-spark-1.3-contributor",
-      "name": "Meta: Muse Spark 1.3 Contributor",
-      "quality": 48.1
+      "id": "cline-pass/kimi-k3.1-pro",
+      "name": "MoonshotAI: Kimi K3.1 Pro",
+      "quality": 55.1
     },
     "lowest_cost": {
       "id": "reflection/beam-free",
@@ -201,7 +203,7 @@
           "execution",
           "planning"
         ],
-        "cost": 0.0152390325,
+        "cost": 0.0152314645,
         "frontier": false
       },
       {
@@ -214,7 +216,7 @@
           "execution",
           "planning"
         ],
-        "cost": 0.015301136500000001,
+        "cost": 0.015300925,
         "frontier": false
       },
       {
@@ -296,19 +298,6 @@
         "frontier": false
       },
       {
-        "id": "cline-pass/minimax-m3",
-        "name": "MiniMax: MiniMax M3",
-        "family": "minimax",
-        "quality": 29.2,
-        "free": false,
-        "profiles": [
-          "execution",
-          "planning"
-        ],
-        "cost": 0.046799999999999994,
-        "frontier": false
-      },
-      {
         "id": "cline-pass/qwen3.7-plus",
         "name": "Qwen: Qwen3.7 Plus",
         "family": "qwen",
@@ -332,6 +321,19 @@
           "planning"
         ],
         "cost": 0.370625,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/minimax-m3",
+        "name": "MiniMax: MiniMax M3",
+        "family": "minimax",
+        "quality": 29.2,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.046799999999999994,
         "frontier": false
       }
     ],
@@ -379,6 +381,85 @@
   },
   "models": [
     {
+      "id": "cline-pass/kimi-k3.1-pro",
+      "slug": "kimi-k3.1-pro",
+      "name": "MoonshotAI: Kimi K3.1 Pro",
+      "catalog_name": "cline-pass/kimi-k3.1-pro",
+      "description": "Frontier model from Moonshot AI for complex reasoning, coding, and agentic workflows",
+      "free": false,
+      "family": "kimi",
+      "context_window": 1048576,
+      "openrouter_id": "moonshotai/kimi-k3.1-pro",
+      "rates": {
+        "input": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "output": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "cache_read": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "cache_write": {
+          "usd_per_mtok": null,
+          "provenance": null
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        }
+      },
+      "quality": {
+        "intelligence_index": 55.1,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "Kimi K3.1 Pro",
+        "aa_slug": "kimi-k3-1-pro",
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
+      },
+      "cost_usd": {
+        "planning": null,
+        "execution": null
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": null,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": false
+    },
+    {
       "id": "cline-pass/minimax-m3.1-flash",
       "slug": "minimax-m3.1-flash",
       "name": "MiniMax: MiniMax M3.1 Flash",
@@ -417,8 +498,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -438,7 +519,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3.1-Flash",
         "aa_slug": "minimax-m3-1-flash",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": null,
@@ -469,37 +550,37 @@
       "openrouter_id": "deepseek/deepseek-v4.1-flash-1017",
       "rates": {
         "input": {
-          "usd_per_mtok": 0.147123,
+          "usd_per_mtok": 0.14726,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 2552,
-          "rms_residual_usd": 0.00063002,
-          "median_relative_error": 0.003383,
-          "condition_number": 1.441
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 3429,
+          "rms_residual_usd": 0.00054395,
+          "median_relative_error": 0.00368,
+          "condition_number": 1.382
         },
         "output": {
-          "usd_per_mtok": 0.607155,
+          "usd_per_mtok": 0.605823,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 2552,
-          "rms_residual_usd": 0.00063002,
-          "median_relative_error": 0.003383,
-          "condition_number": 1.441
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 3429,
+          "rms_residual_usd": 0.00054395,
+          "median_relative_error": 0.00368,
+          "condition_number": 1.382
         },
         "cache_read": {
-          "usd_per_mtok": 0.003002,
+          "usd_per_mtok": 0.003005,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 2552,
-          "rms_residual_usd": 0.00063002,
-          "median_relative_error": 0.003383,
-          "condition_number": 1.441
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 3429,
+          "rms_residual_usd": 0.00054395,
+          "median_relative_error": 0.00368,
+          "condition_number": 1.382
         },
         "cache_write": {
-          "usd_per_mtok": 0.147123,
+          "usd_per_mtok": 0.14726,
           "provenance": "input-fallback",
           "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
@@ -508,21 +589,21 @@
           "status": "measured",
           "reason": null,
           "rates": {
-            "input": 0.147123,
-            "output": 0.607155,
-            "cache_read": 0.003002
+            "input": 0.14726,
+            "output": 0.605823,
+            "cache_read": 0.003005
           },
-          "rows": 2552,
-          "rows_in_window": 2560,
-          "dropped_rows": 8,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": 1.441,
-          "rms_residual_usd": 0.00063002,
+          "rows": 3429,
+          "rows_in_window": 3445,
+          "dropped_rows": 16,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": 1.382,
+          "rms_residual_usd": 0.00054395,
           "allowed_rms_residual_usd": null,
-          "median_relative_error": 0.003383,
-          "p90_relative_error": 0.011675,
-          "total_reconciliation_error": 0.002513
+          "median_relative_error": 0.00368,
+          "p90_relative_error": 0.012243,
+          "total_reconciliation_error": 0.003052
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -533,21 +614,21 @@
           "status": "measured",
           "reason": null,
           "rates": {
-            "input": 0.147123,
-            "output": 0.607155,
-            "cache_read": 0.003002
+            "input": 0.14726,
+            "output": 0.605823,
+            "cache_read": 0.003005
           },
-          "rows": 2552,
-          "rows_in_window": 2560,
-          "dropped_rows": 8,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": 1.441,
-          "rms_residual_usd": 0.00063002,
+          "rows": 3429,
+          "rows_in_window": 3445,
+          "dropped_rows": 16,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": 1.382,
+          "rms_residual_usd": 0.00054395,
           "allowed_rms_residual_usd": null,
-          "median_relative_error": 0.003383,
-          "p90_relative_error": 0.011675,
-          "total_reconciliation_error": 0.002513
+          "median_relative_error": 0.00368,
+          "p90_relative_error": 0.012243,
+          "total_reconciliation_error": 0.003052
         }
       },
       "quality": {
@@ -556,21 +637,21 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash 1017 (Max)",
         "aa_slug": "deepseek-v4-1-flash-1017",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
-        "planning": 0.01134256,
-        "execution": 0.019135505
+        "planning": 0.011337984,
+        "execution": 0.019124945
       },
       "efficiency": {
-        "planning": 55.35917581803507,
-        "execution": 61.95464110304719
+        "planning": 55.362086582696044,
+        "execution": 61.96101211437346
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 0.23912940000000002,
+      "blended_input_output_usd_per_mtok": 0.23897260000000003,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
       "priced": true
@@ -587,37 +668,37 @@
       "openrouter_id": "deepseek/deepseek-v4.1-flash",
       "rates": {
         "input": {
-          "usd_per_mtok": 0.150057,
+          "usd_per_mtok": 0.150053,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 4360,
-          "rms_residual_usd": 2.138e-05,
-          "median_relative_error": 8.1e-05,
-          "condition_number": 1.723
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 4161,
+          "rms_residual_usd": 2.038e-05,
+          "median_relative_error": 8.2e-05,
+          "condition_number": 1.72
         },
         "output": {
-          "usd_per_mtok": 0.599851,
+          "usd_per_mtok": 0.59985,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 4360,
-          "rms_residual_usd": 2.138e-05,
-          "median_relative_error": 8.1e-05,
-          "condition_number": 1.723
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 4161,
+          "rms_residual_usd": 2.038e-05,
+          "median_relative_error": 8.2e-05,
+          "condition_number": 1.72
         },
         "cache_read": {
           "usd_per_mtok": 0.003,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 4360,
-          "rms_residual_usd": 2.138e-05,
-          "median_relative_error": 8.1e-05,
-          "condition_number": 1.723
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 4161,
+          "rms_residual_usd": 2.038e-05,
+          "median_relative_error": 8.2e-05,
+          "condition_number": 1.72
         },
         "cache_write": {
-          "usd_per_mtok": 0.150057,
+          "usd_per_mtok": 0.150053,
           "provenance": "input-fallback",
           "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
@@ -626,21 +707,21 @@
           "status": "measured",
           "reason": null,
           "rates": {
-            "input": 0.150057,
-            "output": 0.599851,
+            "input": 0.150053,
+            "output": 0.59985,
             "cache_read": 0.003
           },
-          "rows": 4360,
-          "rows_in_window": 4363,
+          "rows": 4161,
+          "rows_in_window": 4164,
           "dropped_rows": 3,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": 1.723,
-          "rms_residual_usd": 2.138e-05,
-          "allowed_rms_residual_usd": 3.587e-05,
-          "median_relative_error": 8.1e-05,
-          "p90_relative_error": 0.000212,
-          "total_reconciliation_error": 0.000152
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": 1.72,
+          "rms_residual_usd": 2.038e-05,
+          "allowed_rms_residual_usd": 3.658e-05,
+          "median_relative_error": 8.2e-05,
+          "p90_relative_error": 0.000202,
+          "total_reconciliation_error": 0.0001
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -654,23 +735,23 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash (Max)",
         "aa_slug": "deepseek-v4-1-flash",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
-        "planning": 0.011401088,
-        "execution": 0.019201185000000003
+        "planning": 0.01140092,
+        "execution": 0.01920093
       },
       "efficiency": {
-        "planning": 49.72204974145117,
-        "execution": 56.31509410908601
+        "planning": 49.722156035934916,
+        "execution": 56.31524738699184
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 0.2400158,
-      "observed_blended_usd_per_mtok": 0.011067,
-      "observed_rows": 4430,
+      "blended_input_output_usd_per_mtok": 0.24001240000000001,
+      "observed_blended_usd_per_mtok": 0.011213,
+      "observed_rows": 4161,
       "priced": true
     },
     {
@@ -687,8 +768,8 @@
         "input": {
           "usd_per_mtok": 0.14,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -697,8 +778,8 @@
         "output": {
           "usd_per_mtok": 0.279999,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -707,8 +788,8 @@
         "cache_read": {
           "usd_per_mtok": 0.0028,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -731,8 +812,8 @@
           "rows": 118,
           "rows_in_window": 118,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 1.652,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": 6.879e-05,
@@ -752,7 +833,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Flash",
         "aa_slug": "mimo-v2-6-flash",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.008399992,
@@ -810,8 +891,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -835,8 +916,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -851,7 +932,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Pro",
         "aa_slug": "mimo-v2-6-pro",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": null,
@@ -884,9 +965,9 @@
         "input": {
           "usd_per_mtok": 1.4,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 29,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 30,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
           "condition_number": 2.694
@@ -894,9 +975,9 @@
         "output": {
           "usd_per_mtok": 4.4,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 29,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 30,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
           "condition_number": 2.694
@@ -904,9 +985,9 @@
         "cache_read": {
           "usd_per_mtok": 0.26,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 29,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 30,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
           "condition_number": 2.694
@@ -925,14 +1006,14 @@
             "output": 4.4,
             "cache_read": 0.26
           },
-          "rows": 29,
-          "rows_in_window": 30,
+          "rows": 30,
+          "rows_in_window": 31,
           "dropped_rows": 1,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 2.694,
           "rms_residual_usd": 0.0,
-          "allowed_rms_residual_usd": 0.00047642,
+          "allowed_rms_residual_usd": 0.0004606,
           "median_relative_error": 0.0,
           "p90_relative_error": 0.0,
           "total_reconciliation_error": 0.0
@@ -949,7 +1030,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3 (Max)",
         "aa_slug": "glm-5-3",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.15752,
@@ -964,8 +1045,8 @@
         "execution": false
       },
       "blended_input_output_usd_per_mtok": 2.0,
-      "observed_blended_usd_per_mtok": 0.666121,
-      "observed_rows": 29,
+      "observed_blended_usd_per_mtok": 0.666189,
+      "observed_rows": 30,
       "priced": true
     },
     {
@@ -982,32 +1063,32 @@
         "input": {
           "usd_per_mtok": 1.65,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 120,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 17,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 1.573
+          "condition_number": 1.989
         },
         "output": {
           "usd_per_mtok": 4.95,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 120,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 17,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 1.573
+          "condition_number": 1.989
         },
         "cache_read": {
           "usd_per_mtok": 0.06,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "rows": 120,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "rows": 17,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 1.573
+          "condition_number": 1.989
         },
         "cache_write": {
           "usd_per_mtok": 1.65,
@@ -1023,14 +1104,14 @@
             "output": 4.95,
             "cache_read": 0.06
           },
-          "rows": 120,
-          "rows_in_window": 120,
+          "rows": 17,
+          "rows_in_window": 17,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": 1.573,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": 1.989,
           "rms_residual_usd": 0.0,
-          "allowed_rms_residual_usd": 0.00032425,
+          "allowed_rms_residual_usd": 0.00062036,
           "median_relative_error": 0.0,
           "p90_relative_error": 0.0,
           "total_reconciliation_error": 0.0
@@ -1047,7 +1128,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4 Pro 0813 (Max)",
         "aa_slug": "deepseek-v4-pro",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.1176,
@@ -1062,8 +1143,8 @@
         "execution": false
       },
       "blended_input_output_usd_per_mtok": 2.31,
-      "observed_blended_usd_per_mtok": 0.137485,
-      "observed_rows": 120,
+      "observed_blended_usd_per_mtok": 0.203566,
+      "observed_rows": 17,
       "priced": true
     },
     {
@@ -1113,8 +1194,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1160,8 +1241,8 @@
         "input": {
           "usd_per_mtok": 0.1,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1170,8 +1251,8 @@
         "output": {
           "usd_per_mtok": 0.199999,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1180,8 +1261,8 @@
         "cache_read": {
           "usd_per_mtok": 0.002,
           "provenance": "measured-credits",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1204,8 +1285,8 @@
           "rows": 125,
           "rows_in_window": 125,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 1.852,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
@@ -1229,8 +1310,8 @@
           "rows": 125,
           "rows_in_window": 125,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 1.852,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
@@ -1245,7 +1326,7 @@
         "coding_index_display_only": true,
         "aa_name": "Muse Spark 1.3 (Max)",
         "aa_slug": "muse-spark-1-3",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.005999992,
@@ -1310,8 +1391,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1335,8 +1416,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1351,7 +1432,7 @@
         "coding_index_display_only": true,
         "aa_name": "Kimi K3 (Max)",
         "aa_slug": "kimi-k3",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.345,
@@ -1378,7 +1459,7 @@
       "description": "Latest natively multimodal model in the GLM-5 series",
       "free": false,
       "family": "glm",
-      "context_window": 1048576,
+      "context_window": 1048575,
       "openrouter_id": "z-ai/glm-5.3-flash",
       "rates": {
         "input": {
@@ -1407,23 +1488,23 @@
         "catalog_free": false,
         "fit": {
           "status": "rejected",
-          "reason": "per-row RMS residual 0.000729521 USD exceeds the allowed 0.000210411 USD",
+          "reason": "per-row RMS residual 0.000701503 USD exceeds the allowed 0.000214462 USD",
           "rates": {
-            "input": 0.149585,
-            "output": 0.467502,
+            "input": 0.149633,
+            "output": 0.467312,
             "cache_read": 0.030041
           },
-          "rows": 1939,
-          "rows_in_window": 1941,
+          "rows": 1888,
+          "rows_in_window": 1890,
           "dropped_rows": 2,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 1.206,
-          "rms_residual_usd": 0.00072952,
-          "allowed_rms_residual_usd": 0.00021041,
-          "median_relative_error": 0.001255,
-          "p90_relative_error": 0.015254,
-          "total_reconciliation_error": 0.003167
+          "rms_residual_usd": 0.0007015,
+          "allowed_rms_residual_usd": 0.00021446,
+          "median_relative_error": 0.001233,
+          "p90_relative_error": 0.016174,
+          "total_reconciliation_error": 0.002821
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -1441,8 +1522,8 @@
           "rows": 8,
           "rows_in_window": 8,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1457,7 +1538,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3-Flash",
         "aa_slug": "glm-5-3-flash",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.016,
@@ -1472,114 +1553,8 @@
         "execution": false
       },
       "blended_input_output_usd_per_mtok": 0.22,
-      "observed_blended_usd_per_mtok": 0.045064,
-      "observed_rows": 1939,
-      "priced": true
-    },
-    {
-      "id": "cline-pass/minimax-m3",
-      "slug": "minimax-m3",
-      "name": "MiniMax: MiniMax M3",
-      "catalog_name": "cline-pass/minimax-m3",
-      "description": "Frontier coding and agent model with 1M context window",
-      "free": false,
-      "family": "minimax",
-      "context_window": 524288,
-      "openrouter_id": "minimax/minimax-m3",
-      "rates": {
-        "input": {
-          "usd_per_mtok": 0.3,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        },
-        "output": {
-          "usd_per_mtok": 1.2,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        },
-        "cache_read": {
-          "usd_per_mtok": 0.06,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        },
-        "cache_write": {
-          "usd_per_mtok": 0.3,
-          "provenance": "input-fallback",
-          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
-        },
-        "catalog_free": false,
-        "fit": {
-          "status": "rejected",
-          "reason": "1 usable ClinePass rows in the window, minimum is 12",
-          "rates": {
-            "input": null,
-            "output": null,
-            "cache_read": null
-          },
-          "rows": 1,
-          "rows_in_window": 1,
-          "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": null,
-          "rms_residual_usd": null,
-          "allowed_rms_residual_usd": null,
-          "median_relative_error": null,
-          "p90_relative_error": null,
-          "total_reconciliation_error": null
-        },
-        "reference_source": {
-          "source_name": "Cline ClinePass reference pricing",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        },
-        "credits_fit": {
-          "status": "rejected",
-          "reason": "4 usable ClinePass rows in the window, minimum is 12",
-          "rates": {
-            "input": null,
-            "output": null,
-            "cache_read": null
-          },
-          "rows": 4,
-          "rows_in_window": 4,
-          "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
-          "condition_number": null,
-          "rms_residual_usd": null,
-          "allowed_rms_residual_usd": null,
-          "median_relative_error": null,
-          "p90_relative_error": null,
-          "total_reconciliation_error": null
-        }
-      },
-      "quality": {
-        "intelligence_index": 29.2,
-        "coding_index": 58.6,
-        "coding_index_display_only": true,
-        "aa_name": "MiniMax-M3",
-        "aa_slug": "minimax-m3",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
-      },
-      "cost_usd": {
-        "planning": 0.0336,
-        "execution": 0.06
-      },
-      "efficiency": {
-        "planning": 31.625601109480442,
-        "execution": 32.864956899583476
-      },
-      "pareto": {
-        "planning": false,
-        "execution": false
-      },
-      "blended_input_output_usd_per_mtok": 0.48,
-      "observed_blended_usd_per_mtok": 0.228488,
-      "observed_rows": 1,
+      "observed_blended_usd_per_mtok": 0.04506,
+      "observed_rows": 1921,
       "priced": true
     },
     {
@@ -1596,8 +1571,8 @@
         "input": {
           "usd_per_mtok": 0.67,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 48,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1606,8 +1581,8 @@
         "output": {
           "usd_per_mtok": 2.670001,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 48,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1616,8 +1591,8 @@
         "cache_read": {
           "usd_per_mtok": 0.07,
           "provenance": "measured",
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "rows": 48,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1641,8 +1616,8 @@
           "rows": 48,
           "rows_in_window": 48,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": 2.074,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": 0.00049961,
@@ -1662,7 +1637,7 @@
         "coding_index_display_only": true,
         "aa_name": "Qwen3.7 Plus",
         "aa_slug": "qwen3-7-plus",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.060460008,
@@ -1728,8 +1703,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1753,8 +1728,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-24",
-          "window_end": "2026-10-23",
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1769,7 +1744,7 @@
         "coding_index_display_only": true,
         "aa_name": "Qwen3.7 Max",
         "aa_slug": "qwen3-7-max",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.26625,
@@ -1785,6 +1760,112 @@
       },
       "blended_input_output_usd_per_mtok": 3.5,
       "observed_blended_usd_per_mtok": 11.180396,
+      "observed_rows": 1,
+      "priced": true
+    },
+    {
+      "id": "cline-pass/minimax-m3",
+      "slug": "minimax-m3",
+      "name": "MiniMax: MiniMax M3",
+      "catalog_name": "cline-pass/minimax-m3",
+      "description": "Frontier coding and agent model with 1M context window",
+      "free": false,
+      "family": "minimax",
+      "context_window": 524288,
+      "openrouter_id": "minimax/minimax-m3",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.3,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 1.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.06,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.3,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "1 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 1,
+          "rows_in_window": 1,
+          "dropped_rows": 0,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "credits_fit": {
+          "status": "rejected",
+          "reason": "4 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 4,
+          "rows_in_window": 4,
+          "dropped_rows": 0,
+          "window_start": "2026-09-27",
+          "window_end": "2026-10-26",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        }
+      },
+      "quality": {
+        "intelligence_index": 29.2,
+        "coding_index": 58.6,
+        "coding_index_display_only": true,
+        "aa_name": "MiniMax-M3",
+        "aa_slug": "minimax-m3",
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
+      },
+      "cost_usd": {
+        "planning": 0.0336,
+        "execution": 0.06
+      },
+      "efficiency": {
+        "planning": 31.625601109480442,
+        "execution": 32.864956899583476
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.48,
+      "observed_blended_usd_per_mtok": 0.228488,
       "observed_rows": 1,
       "priced": true
     },
@@ -1882,7 +1963,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Super VL",
         "aa_slug": "nemotron-3-5-super-vl",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -1942,7 +2023,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Lightning",
         "aa_slug": "nemotron-3-5-lightning",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -2055,7 +2136,7 @@
         "coding_index_display_only": true,
         "aa_name": "Solar Mini 4",
         "aa_slug": "solar-mini4",
-        "retrieved_at": "2026-10-23T10:50:21.005228+02:00"
+        "retrieved_at": "2026-10-26T10:21:34.931389+01:00"
       },
       "cost_usd": {
         "planning": 0.0,
@@ -2079,21 +2160,19 @@
     "has_previous": true,
     "first_run": false,
     "catalog_added": [
-      "cline-pass/minimax-m3.1-flash"
+      "cline-pass/kimi-k3.1-pro"
     ],
-    "catalog_removed": [
-      "cline-free/minimax-m3.1-flash"
-    ],
+    "catalog_removed": [],
     "quality_changed": {},
     "rate_changed": {},
     "observed_blend_changed": {
-      "cline-pass/mimo-v2.6-flash": {
-        "name": "Xiaomi: MiMo-V2.6-Flash",
-        "from": 0.021199,
-        "to": 0.029521,
-        "change_ratio": 0.392566
+      "cline-pass/deepseek-v4-pro": {
+        "name": "DeepSeek: DeepSeek V4 Pro 0423",
+        "from": 0.137485,
+        "to": 0.203566,
+        "change_ratio": 0.480642
       }
     }
   },
-  "summary": "**Weekly Model Monitoring Summary** Catalog changes: `cline-pass/minimax-m3.1-flash` was added and `cline-free/minimax-m3.1-flash` was removed. Observed blend: one change \u2014 Xiaomi: MiMo-V2.6-Flash (`cline-pass/mimo-v2.6-flash`) rose from 2.12% to 2.95%, a change ratio of ~39.3%. No quality changes and no rate changes were detected this week."
+  "summary": "**Weekly Model Monitoring Summary** - **Catalog changes:** Added 1 model \u2014 cline-pass/kimi-k3.1-pro. No models removed. - **Blend changes:** cline-pass/deepseek-v4-pro (DeepSeek: DeepSeek V4 Pro 0423) shifted from 13.7485% to 20.3566%, a change ratio of 48.0642%. - **Quality:** No changes. - **Rates:** No changes."
 }
