@@ -847,12 +847,41 @@ def _model_row(model, is_frontier=False, is_best=False):
         model_cell += '<br/><span class="muted small">rate window %s</span>' % escape(window)
 
     if quality_record:
-        evidence = '%s<br/><span class="muted small">retrieved %s</span>' % (
-            escape(quality_record.get("aa_name") or "-"),
-            escape(str(quality_record.get("retrieved_at") or "")[:10]),
-        )
+        retrieved = str(quality_record.get("retrieved_at") or "")[:10]
+        if quality_record.get("fresh", True):
+            evidence = '%s<br/><span class="muted small">retrieved %s</span>' % (
+                escape(quality_record.get("aa_name") or "-"),
+                escape(retrieved),
+            )
+        else:
+            evidence = (
+                '%s<br/><span class="muted small">stale since %s - the feed no longer carries '
+                "this model</span>"
+                % (
+                    escape(quality_record.get("aa_name") or "-"),
+                    escape(str(quality_record.get("stale_since") or retrieved)),
+                )
+            )
+        if (model.get("quality_evidence") or {}).get("via") == "identity":
+            evidence += '<br/><span class="muted small">matched by identity key</span>'
     else:
+        route = model.get("quality_evidence") or {}
         evidence = '<span class="muted">no current AA score</span>'
+        if route.get("reason") == "pre-revision" and route.get("last_value") is not None:
+            evidence += (
+                '<br/><span class="muted small">last %s on %s, before the index revision on %s '
+                "- not comparable with current scores</span>"
+                % (
+                    fmt_points(route["last_value"]),
+                    escape(str(route.get("last_seen") or "")),
+                    escape(str(route.get("revision_day") or "")),
+                )
+            )
+        elif route.get("last_seen"):
+            evidence += (
+                '<br/><span class="muted small">last seen %s</span>'
+                % escape(str(route["last_seen"]))
+            )
 
     def numeric(value):
         return "" if value is None else value
@@ -1144,7 +1173,12 @@ def _stat_cards(snapshot, config):
         _card(
             "Priced / benchmarked",
             "%s / %s" % (stats.get("priced", 0), stats.get("benchmarked", 0)),
-            "usable rates / current AA score",
+            "usable rates / current AA score"
+            + (
+                " (%d carried forward from an earlier feed)" % stats["quality_carried"]
+                if stats.get("quality_carried")
+                else ""
+            ),
         ),
         _card(
             "Measured rates",
@@ -1212,19 +1246,44 @@ def _change_panel(snapshot, config):
     counts = monitor.change_counts(changes)
     summary = snapshot.get("summary") or ""
     narrative = (snapshot.get("report") or {}).get("narrative") or {}
-    labels = (
-        ("Catalog added", counts["catalog_added"]),
-        ("Catalog removed", counts["catalog_removed"]),
-        ("AA quality changes", counts["quality_changed"]),
-        ("Rate changes", counts["rate_changed"]),
-        ("Observed billing-rate drift", counts["observed_blend_changed"]),
-    )
+    epoch = changes.get("quality_epoch") or {}
+    if epoch.get("detected"):
+        labels = (
+            ("Catalog added", counts["catalog_added"]),
+            ("Catalog removed", counts["catalog_removed"]),
+            (
+                "AA index revision",
+                "%d models, median %+.0f%%"
+                % (epoch.get("compared", 0), (epoch.get("median_change") or 0.0) * 100.0),
+            ),
+            ("Rate changes", counts["rate_changed"]),
+            ("Observed billing-rate drift", counts["observed_blend_changed"]),
+        )
+    else:
+        labels = (
+            ("Catalog added", counts["catalog_added"]),
+            ("Catalog removed", counts["catalog_removed"]),
+            ("AA quality changes", counts["quality_changed"]),
+            ("Rate changes", counts["rate_changed"]),
+            ("Observed billing-rate drift", counts["observed_blend_changed"]),
+        )
     if changes.get("first_run"):
         labels = labels + (("First recorded snapshot", "yes"),)
     items = "".join(
         '<span class="badge">%s: %s</span>' % (escape(label), escape(value))
         for label, value in labels
     )
+    banner = ""
+    if epoch.get("detected"):
+        banner = (
+            '<p class="sub"><strong>Index revision, not a model regression.</strong> %s '
+            "The comparison snapshot is %s; scores either side of it are not on the same "
+            "scale.</p>"
+            % (
+                escape(epoch.get("note") or ""),
+                escape(epoch.get("previous_snapshot") or "an earlier one"),
+            )
+        )
 
     detail = []
     for model_id, entry in sorted((changes.get("rate_changed") or {}).items()):
@@ -1261,10 +1320,11 @@ def _change_panel(snapshot, config):
     return (
         '<div class="panel"><h3>Weekly change summary</h3>'
         '<p class="sub">Produced by %s (%s). It reports only the detected changes and available '
-        "model evidence.</p><p>%s</p>%s%s</div>"
+        "model evidence.</p>%s<p>%s</p>%s%s</div>"
     ) % (
         escape(narrative.get("model") or "the deterministic fallback"),
         escape(narrative.get("source") or "deterministic"),
+        banner,
         escape(summary),
         '<div class="badges">%s</div>' % items,
         ("<ul>%s</ul>" % "".join(detail)) if detail else "",

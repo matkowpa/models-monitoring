@@ -9,7 +9,9 @@ import json
 import sys
 import tempfile
 import unittest
+from datetime import datetime, timedelta
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -57,6 +59,29 @@ def paid_entries():
     ]
 
 
+def fixture_now(config=None):
+    """The offline clock: one day after the newest fixture usage row.
+
+    The report window is relative to "now", so an offline run pinned to the wall
+    clock drifts past the fixture as the calendar advances: rows fall out of the
+    30-day window, every fit is rejected, and the suite starts failing on a date
+    with no code change at all. Anchoring the clock to the fixture keeps an
+    offline run reproducible.
+    """
+    latest = None
+    for row in fixture_rows():
+        stamp = row.get("createdAt") or row.get("created_at")
+        if not stamp:
+            continue
+        moment = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+        if latest is None or moment > latest:
+            latest = moment
+    if latest is None:
+        return None
+    timezone_name = ((config or {}).get("report") or {}).get("timezone") or "Europe/Warsaw"
+    return (latest + timedelta(days=1)).astimezone(ZoneInfo(timezone_name))
+
+
 class FixtureTestCase(unittest.TestCase):
     """Base class that points the site and history output at a temporary tree."""
 
@@ -71,6 +96,7 @@ class FixtureTestCase(unittest.TestCase):
         self._tmp.cleanup()
 
     def run_offline(self, **kwargs):
+        kwargs.setdefault("now", fixture_now(self.config))
         snapshot, site_dir, history_dir = run.run_report(
             self.config,
             mode=monitor.MODE_OFFLINE,
