@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "report": {
-    "generated_at": "2026-10-28T11:00:26.857150+01:00",
-    "date": "2026-10-28",
-    "weekday": "Wednesday",
+    "generated_at": "2026-10-30T11:27:47.102913+01:00",
+    "date": "2026-10-30",
+    "weekday": "Friday",
     "timezone": "Europe/Warsaw",
     "mode": "live",
     "title": "ClinePass Models Monitoring",
@@ -14,29 +14,31 @@
       "model_count": 20
     },
     "narrative": {
-      "summary": "**Weekly Monitoring Summary** No catalog, blend, or rate changes this week. Quality scores declined across the board for 17 models. Ten models dropped measurably, with the steepest declines from Qwen3.7 Max (29.5 \u2192 null), Kimi K3.1 Pro (55.1 \u2192 46.0), MiMo-V2.6-Pro (46.3 \u2192 29.9), GLM 5.3 (44.8 \u2192 31.7), and DeepSeek V4.1 Flash 1017 (45.1 \u2192 32.5). Seven models now report no score: Solar Mini 4, DeepSeek V4.1 Flash, GLM 5.3 Flash, Kimi K3, Qwen3.7 Max, Qwen3.7 Plus, and Nemotron 3.5 Lightning (free). No models improved; investigation into the missing scores is recommended.",
+      "summary": "# Weekly Monitoring Summary **Blended usage shifts:** DeepSeek V4 Pro 0423 rose from 0.20 to 2.46 (11.1\u00d7) and Qwen3.7 Plus from 0.13 to 2.49 (17.5\u00d7). **Quality scores added:** GLM 5.3 Flash (27.8), Nemotron 3.5 Lightning free (5.5), Beam (17.7). **Rate changes:** Both models moved from \"measured\" to \"reference\" provenance, so price drops aren't directly comparable. Qwen3.7 Plus fell ~40% (input 0.67\u21920.40, output 2.67\u21921.60); DeepSeek V4 Pro fell 20\u201327% across classes. **Catalog:** No models added or removed.",
       "model": "cline-pass/glm-5.3-flash",
       "source": "narrative"
     },
     "rate_window": {
       "days": 30,
-      "end": "2026-10-28",
-      "start": "2026-09-29"
+      "end": "2026-10-30",
+      "start": "2026-10-01"
     },
     "money_scales": {
       "cost_usd": 100000000,
       "credit_usd": 1000000
     },
     "warnings": [
-      "measured rates differ from the dated reference table by more than 1.5x for: deepseek-v4.1-flash (0.50x of the reference), qwen3.7-plus (1.68x of the reference); the measured fit is published, so treat the reference table as stale for these models"
+      "measured rates differ from the dated reference table by more than 1.5x for: deepseek-v4.1-flash (0.50x of the reference); the measured fit is published, so treat the reference table as stale for these models",
+      "the reference rate table was published 28 days ago (2026-10-02); catalog entries added since then have no fallback rate and are published without a price unless their own fit is estimable",
+      "4 catalog model(s) have no reference rate entry: deepseek-v4.1-flash-1017, kimi-k3.1-pro, mimo-v2.6-pro, minimax-m3.1-flash; they are priced only when their own usage fit is accepted"
     ],
-    "previous_snapshot": "2026-10-26.json"
+    "previous_snapshot": "2026-10-28.json"
   },
   "account": {
     "user_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "balance": {
       "userId": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
-      "balance": 3870914
+      "balance": 3870892
     },
     "plan": {
       "planHistoryId": "iph-01M3SDXBAV1RN1RWK9SVYK1606",
@@ -83,22 +85,22 @@
       "limits": [
         {
           "type": "five_hour",
-          "percentUsed": 1,
-          "resetsAt": "2026-10-28T11:00:52.322438317Z"
+          "percentUsed": 10,
+          "resetsAt": "2026-10-30T10:54:07.722642507Z"
         },
         {
           "type": "weekly",
-          "percentUsed": 8,
-          "resetsAt": "2026-10-30T16:56:13.325618411Z"
+          "percentUsed": 18,
+          "resetsAt": "2026-10-30T16:56:12.724721879Z"
         },
         {
           "type": "monthly",
-          "percentUsed": 70,
-          "resetsAt": "2026-10-30T19:06:35.328763182Z"
+          "percentUsed": 75,
+          "resetsAt": "2026-10-30T19:06:34.726718309Z"
         }
       ]
     },
-    "balance_usd": 3.870914,
+    "balance_usd": 3.870892,
     "plan_name": "Cline Pass (Monthly)"
   },
   "reference_rates": {
@@ -109,25 +111,232 @@
     "unit": "per 1M tokens"
   },
   "observation": {
-    "rows_total": 11720,
-    "rows_dropped": 80,
-    "rows_in_window": 11587,
+    "rows_total": 11722,
+    "rows_dropped": 78,
+    "rows_in_window": 11616,
     "pages": 59,
     "rows_fetched": 11800,
     "paging_stopped_at_window_start": true,
     "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "fit_rejections": {
-      "cline-pass/deepseek-v4.1-flash-1017": "0 usable ClinePass rows in the window, minimum is 12 (credits: total reconciliation error 0.022336329078744332 exceeds 0.01)",
+      "cline-pass/deepseek-v4.1-flash-1017": "0 usable ClinePass rows in the window, minimum is 12 (credits: total reconciliation error 0.05636587400703394 exceeds 0.01)",
       "cline-pass/kimi-k3.1-pro": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/minimax-m3.1-flash": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/mimo-v2.6-pro": "0 usable ClinePass rows in the window, minimum is 12 (credits: 1 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.8-max": "1 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/deepseek-v4-pro": "1 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/kimi-k3": "2 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
-      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000701131 USD exceeds the allowed 0.000214236 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
+      "cline-pass/glm-5.3-flash": "per-row RMS residual 0.000442843 USD exceeds the allowed 0.00022768 USD (credits: 8 usable ClinePass rows in the window, minimum is 12)",
+      "cline-pass/qwen3.7-plus": "3 usable ClinePass rows in the window, minimum is 12 (credits: 5 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.7-max": "1 usable ClinePass rows in the window, minimum is 12 (credits: 2 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/minimax-m3": "1 usable ClinePass rows in the window, minimum is 12 (credits: 4 usable ClinePass rows in the window, minimum is 12)"
     },
-    "aa_matches": 10,
+    "aa_matches": 13,
+    "aa_carried": 0,
+    "quality_evidence": {
+      "cline-pass/deepseek-v4.1-flash-1017": {
+        "via": "exact",
+        "key": "deepseek-v4.1-flash-1017",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/deepseek-v4.1-flash": {
+        "via": "exact",
+        "key": "deepseek-v4-1-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 39.5,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/kimi-k3.1-pro": {
+        "via": "exact",
+        "key": "kimi-k3.1-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/minimax-m3.1-flash": {
+        "via": "exact",
+        "key": "minimax-m3.1-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/mimo-v2.6-flash": {
+        "via": "exact",
+        "key": "mimo-v2-6-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/mimo-v2.6-pro": {
+        "via": "exact",
+        "key": "mimo-v2.6-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/glm-5.3": {
+        "via": "exact",
+        "key": "glm-5-3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/qwen3.8-max": {
+        "via": "unmatched",
+        "key": null,
+        "candidates": [],
+        "carried_from": null,
+        "reason": "absent-from-feed",
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/deepseek-v4-pro": {
+        "via": "exact",
+        "key": "deepseek-v4-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/muse-spark-1.3-contributor": {
+        "via": "exact",
+        "key": "muse-spark-1-3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/kimi-k3": {
+        "via": "exact",
+        "key": "kimi-k3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 43.6,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/glm-5.3-flash": {
+        "via": "exact",
+        "key": "glm-5-3-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/qwen3.7-plus": {
+        "via": "exact",
+        "key": "qwen3-7-plus",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 25.2,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/qwen3.7-max": {
+        "via": "exact",
+        "key": "qwen3-7-max",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 29.5,
+        "revision_day": "2026-10-28"
+      },
+      "cline-pass/minimax-m3": {
+        "via": "exact",
+        "key": "minimax-m3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "reflection/beam-free": {
+        "via": "identity",
+        "key": "reflection/beam-free",
+        "candidates": [
+          "Beam 1.0"
+        ],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-free/nemotron-3.5-super-vl": {
+        "via": "exact",
+        "key": "nemotron-3.5-super-vl",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "nvidia/nemotron-3.5-lightning-free": {
+        "via": "exact",
+        "key": "Nemotron 3.5 Lightning",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "poolside/laguna-s-2.1-free": {
+        "via": "unmatched",
+        "key": null,
+        "candidates": [],
+        "carried_from": null,
+        "reason": "absent-from-feed",
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      },
+      "cline-free/solar-mini4": {
+        "via": "exact",
+        "key": "solar-mini4",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 24.1,
+        "revision_day": "2026-10-28"
+      }
+    },
     "catalog_ids": [
       "cline-pass/deepseek-v4.1-flash-1017",
       "cline-pass/deepseek-v4.1-flash",
@@ -141,8 +350,8 @@
       "cline-pass/muse-spark-1.3-contributor",
       "cline-pass/kimi-k3",
       "cline-pass/glm-5.3-flash",
-      "cline-pass/qwen3.7-max",
       "cline-pass/qwen3.7-plus",
+      "cline-pass/qwen3.7-max",
       "cline-pass/minimax-m3",
       "reflection/beam-free",
       "cline-free/nemotron-3.5-super-vl",
@@ -154,8 +363,8 @@
   "stats": {
     "discovered": 20,
     "priced": 16,
-    "benchmarked": 10,
-    "measured_rates": 6,
+    "benchmarked": 13,
+    "measured_rates": 4,
     "measured_credits_rates": 1,
     "free_models": 5,
     "highest_quality": {
@@ -168,17 +377,19 @@
       "name": "Beam",
       "cost_usd": 0.0,
       "free": true
-    }
+    },
+    "quality_fresh": 13,
+    "quality_carried": 0
   },
   "medians": {
-    "planning": 0.060460008,
-    "execution": 0.104850015
+    "planning": 0.0378,
+    "execution": 0.066
   },
   "best_value": {
     "planning": {
       "id": "cline-pass/muse-spark-1.3-contributor",
       "name": "Meta: Muse Spark 1.3 Contributor",
-      "efficiency": 53.06,
+      "efficiency": 49.68,
       "cost_usd": 0.006,
       "quality": 36.4,
       "basis": "highest_efficiency_pareto"
@@ -186,7 +397,7 @@
     "execution": {
       "id": "cline-pass/muse-spark-1.3-contributor",
       "name": "Meta: Muse Spark 1.3 Contributor",
-      "efficiency": 63.76,
+      "efficiency": 58.41,
       "cost_usd": 0.0098,
       "quality": 36.4,
       "basis": "highest_efficiency_pareto"
@@ -230,7 +441,7 @@
           "execution",
           "planning"
         ],
-        "cost": 0.157425,
+        "cost": 0.12474,
         "frontier": false
       },
       {
@@ -245,6 +456,19 @@
         ],
         "cost": 0.0078999885,
         "frontier": true
+      },
+      {
+        "id": "cline-pass/glm-5.3-flash",
+        "name": "Z.ai: GLM 5.3 Flash",
+        "family": "glm",
+        "quality": 27.8,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.02225,
+        "frontier": false
       },
       {
         "id": "cline-pass/minimax-m3",
@@ -262,6 +486,19 @@
     ],
     "free_band": [
       {
+        "id": "reflection/beam-free",
+        "name": "Beam",
+        "family": "reflection",
+        "quality": 17.7,
+        "free": true,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0,
+        "frontier": true
+      },
+      {
         "id": "cline-free/nemotron-3.5-super-vl",
         "name": "NVIDIA: Nemotron 3.5 Super VL",
         "family": "nemotron",
@@ -272,7 +509,20 @@
           "planning"
         ],
         "cost": 0.0,
-        "frontier": true
+        "frontier": false
+      },
+      {
+        "id": "nvidia/nemotron-3.5-lightning-free",
+        "name": "NVIDIA: Nemotron 3.5 Lightning (free)",
+        "family": "nvidia",
+        "quality": 5.5,
+        "free": true,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0,
+        "frontier": false
       }
     ]
   },
@@ -316,8 +566,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -332,23 +582,23 @@
         },
         "credits_fit": {
           "status": "rejected",
-          "reason": "total reconciliation error 0.022336329078744332 exceeds 0.01",
+          "reason": "total reconciliation error 0.05636587400703394 exceeds 0.01",
           "rates": {
-            "input": 0.14952,
-            "output": 0.713355,
-            "cache_read": 0.002871
+            "input": 0.154458,
+            "output": 0.923753,
+            "cache_read": 0.002801
           },
-          "rows": 3815,
-          "rows_in_window": 3835,
-          "dropped_rows": 20,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 1.373,
-          "rms_residual_usd": 0.00096644,
+          "rows": 4702,
+          "rows_in_window": 4724,
+          "dropped_rows": 22,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": 1.367,
+          "rms_residual_usd": 0.00139019,
           "allowed_rms_residual_usd": null,
-          "median_relative_error": 0.042369,
-          "p90_relative_error": 0.130368,
-          "total_reconciliation_error": 0.022336
+          "median_relative_error": 0.191263,
+          "p90_relative_error": 0.428627,
+          "total_reconciliation_error": 0.056366
         }
       },
       "quality": {
@@ -357,7 +607,8 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash 1017 (Max)",
         "aa_slug": "deepseek-v4-1-flash-1017",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": null,
@@ -374,7 +625,17 @@
       "blended_input_output_usd_per_mtok": null,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false
+      "priced": false,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "deepseek-v4.1-flash-1017",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/deepseek-v4.1-flash",
@@ -390,32 +651,32 @@
         "input": {
           "usd_per_mtok": 0.150053,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 4162,
-          "rms_residual_usd": 2.038e-05,
-          "median_relative_error": 8.2e-05,
-          "condition_number": 1.72
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 3798,
+          "rms_residual_usd": 2.133e-05,
+          "median_relative_error": 8.4e-05,
+          "condition_number": 1.738
         },
         "output": {
-          "usd_per_mtok": 0.59985,
+          "usd_per_mtok": 0.599841,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 4162,
-          "rms_residual_usd": 2.038e-05,
-          "median_relative_error": 8.2e-05,
-          "condition_number": 1.72
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 3798,
+          "rms_residual_usd": 2.133e-05,
+          "median_relative_error": 8.4e-05,
+          "condition_number": 1.738
         },
         "cache_read": {
           "usd_per_mtok": 0.003,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 4162,
-          "rms_residual_usd": 2.038e-05,
-          "median_relative_error": 8.2e-05,
-          "condition_number": 1.72
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 3798,
+          "rms_residual_usd": 2.133e-05,
+          "median_relative_error": 8.4e-05,
+          "condition_number": 1.738
         },
         "cache_write": {
           "usd_per_mtok": 0.150053,
@@ -428,20 +689,20 @@
           "reason": null,
           "rates": {
             "input": 0.150053,
-            "output": 0.59985,
+            "output": 0.599841,
             "cache_read": 0.003
           },
-          "rows": 4162,
-          "rows_in_window": 4165,
+          "rows": 3798,
+          "rows_in_window": 3801,
           "dropped_rows": 3,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 1.72,
-          "rms_residual_usd": 2.038e-05,
-          "allowed_rms_residual_usd": 3.658e-05,
-          "median_relative_error": 8.2e-05,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": 1.738,
+          "rms_residual_usd": 2.133e-05,
+          "allowed_rms_residual_usd": 3.783e-05,
+          "median_relative_error": 8.4e-05,
           "p90_relative_error": 0.000203,
-          "total_reconciliation_error": 0.000102
+          "total_reconciliation_error": 0.000109
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -451,8 +712,8 @@
       },
       "quality": null,
       "cost_usd": {
-        "planning": 0.01140092,
-        "execution": 0.01920093
+        "planning": 0.011400848,
+        "execution": 0.019200795
       },
       "efficiency": {
         "planning": null,
@@ -462,10 +723,20 @@
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 0.24001240000000001,
-      "observed_blended_usd_per_mtok": 0.011213,
-      "observed_rows": 4162,
-      "priced": true
+      "blended_input_output_usd_per_mtok": 0.2400106,
+      "observed_blended_usd_per_mtok": 0.01116,
+      "observed_rows": 3834,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "deepseek-v4-1-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 39.5,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/kimi-k3.1-pro",
@@ -506,8 +777,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -527,7 +798,8 @@
         "coding_index_display_only": true,
         "aa_name": "Kimi K3.1 Pro",
         "aa_slug": "kimi-k3-1-pro",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": null,
@@ -544,7 +816,17 @@
       "blended_input_output_usd_per_mtok": null,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false
+      "priced": false,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "kimi-k3.1-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/minimax-m3.1-flash",
@@ -585,8 +867,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -606,7 +888,8 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3.1-Flash",
         "aa_slug": "minimax-m3-1-flash",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": null,
@@ -623,7 +906,17 @@
       "blended_input_output_usd_per_mtok": null,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false
+      "priced": false,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "minimax-m3.1-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/mimo-v2.6-flash",
@@ -639,8 +932,8 @@
         "input": {
           "usd_per_mtok": 0.14,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -649,8 +942,8 @@
         "output": {
           "usd_per_mtok": 0.279999,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -659,8 +952,8 @@
         "cache_read": {
           "usd_per_mtok": 0.0028,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 118,
           "rms_residual_usd": 0.0,
           "median_relative_error": 3e-06,
@@ -683,8 +976,8 @@
           "rows": 118,
           "rows_in_window": 118,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": 1.652,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": 6.879e-05,
@@ -704,15 +997,16 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Flash",
         "aa_slug": "mimo-v2-6-flash",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": 0.008399992,
         "execution": 0.013719985
       },
       "efficiency": {
-        "planning": 40.93760655426654,
-        "execution": 50.17181006797301
+        "planning": 37.54963187719122,
+        "execution": 44.82949696201379
       },
       "pareto": {
         "planning": false,
@@ -721,7 +1015,17 @@
       "blended_input_output_usd_per_mtok": 0.16799980000000003,
       "observed_blended_usd_per_mtok": 0.029521,
       "observed_rows": 118,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "mimo-v2-6-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/mimo-v2.6-pro",
@@ -762,8 +1066,8 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -787,8 +1091,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -803,7 +1107,8 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Pro",
         "aa_slug": "mimo-v2-6-pro",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": null,
@@ -820,7 +1125,17 @@
       "blended_input_output_usd_per_mtok": null,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false
+      "priced": false,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "mimo-v2.6-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/glm-5.3",
@@ -836,32 +1151,32 @@
         "input": {
           "usd_per_mtok": 1.4,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 30,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 16,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 2.694
+          "condition_number": 2.952
         },
         "output": {
           "usd_per_mtok": 4.4,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 30,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 16,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 2.694
+          "condition_number": 2.952
         },
         "cache_read": {
           "usd_per_mtok": 0.26,
           "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 30,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "rows": 16,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
-          "condition_number": 2.694
+          "condition_number": 2.952
         },
         "cache_write": {
           "usd_per_mtok": 1.4,
@@ -877,14 +1192,14 @@
             "output": 4.4,
             "cache_read": 0.26
           },
-          "rows": 30,
-          "rows_in_window": 31,
+          "rows": 16,
+          "rows_in_window": 17,
           "dropped_rows": 1,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 2.694,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": 2.952,
           "rms_residual_usd": 0.0,
-          "allowed_rms_residual_usd": 0.0004606,
+          "allowed_rms_residual_usd": 0.00063728,
           "median_relative_error": 0.0,
           "p90_relative_error": 0.0,
           "total_reconciliation_error": 0.0
@@ -897,19 +1212,20 @@
       },
       "quality": {
         "intelligence_index": 31.7,
-        "coding_index": 74.8,
+        "coding_index": null,
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3 (Max)",
         "aa_slug": "glm-5-3",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": 0.15752,
         "execution": 0.27940000000000004
       },
       "efficiency": {
-        "planning": 24.792590293109726,
-        "execution": 20.38796037665004
+        "planning": 21.404615616034405,
+        "execution": 15.045647270690822
       },
       "pareto": {
         "planning": false,
@@ -918,7 +1234,17 @@
       "blended_input_output_usd_per_mtok": 2.0,
       "observed_blended_usd_per_mtok": 0.666189,
       "observed_rows": 30,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "glm-5-3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/qwen3.8-max",
@@ -967,8 +1293,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -998,7 +1324,17 @@
       "blended_input_output_usd_per_mtok": 2.8000000000000003,
       "observed_blended_usd_per_mtok": 4.66573,
       "observed_rows": 1,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "unmatched",
+        "key": null,
+        "candidates": [],
+        "carried_from": null,
+        "reason": "absent-from-feed",
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/deepseek-v4-pro",
@@ -1012,91 +1348,110 @@
       "openrouter_id": "deepseek/deepseek-v4-pro",
       "rates": {
         "input": {
-          "usd_per_mtok": 1.65,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 17,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 1.989
+          "usd_per_mtok": 1.32,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
         },
         "output": {
-          "usd_per_mtok": 4.95,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 17,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 1.989
+          "usd_per_mtok": 3.96,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
         },
         "cache_read": {
-          "usd_per_mtok": 0.06,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 17,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 1.989
+          "usd_per_mtok": 0.044,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
         },
         "cache_write": {
-          "usd_per_mtok": 1.65,
+          "usd_per_mtok": 1.32,
           "provenance": "input-fallback",
           "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
         "catalog_free": false,
         "fit": {
-          "status": "measured",
-          "reason": null,
+          "status": "rejected",
+          "reason": "1 usable ClinePass rows in the window, minimum is 12",
           "rates": {
-            "input": 1.65,
-            "output": 4.95,
-            "cache_read": 0.06
+            "input": null,
+            "output": null,
+            "cache_read": null
           },
-          "rows": 17,
-          "rows_in_window": 17,
+          "rows": 1,
+          "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 1.989,
-          "rms_residual_usd": 0.0,
-          "allowed_rms_residual_usd": 0.00062036,
-          "median_relative_error": 0.0,
-          "p90_relative_error": 0.0,
-          "total_reconciliation_error": 0.0
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
           "retrieved_at": "2026-10-02"
+        },
+        "credits_fit": {
+          "status": "rejected",
+          "reason": "2 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 2,
+          "rows_in_window": 2,
+          "dropped_rows": 0,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
         }
       },
       "quality": {
         "intelligence_index": 23.1,
-        "coding_index": 68.8,
+        "coding_index": null,
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4 Pro 0813 (Max)",
         "aa_slug": "deepseek-v4-pro",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
-        "planning": 0.1176,
-        "execution": 0.19725
+        "planning": 0.09328,
+        "execution": 0.1562
       },
       "efficiency": {
-        "planning": 18.300825073998862,
-        "execution": 15.80641414071918
+        "planning": 16.584092229539696,
+        "execution": 13.157147808830693
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 2.31,
-      "observed_blended_usd_per_mtok": 0.203566,
-      "observed_rows": 17,
-      "priced": true
+      "blended_input_output_usd_per_mtok": 1.848,
+      "observed_blended_usd_per_mtok": 2.461017,
+      "observed_rows": 1,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "deepseek-v4-pro",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/muse-spark-1.3-contributor",
@@ -1112,8 +1467,8 @@
         "input": {
           "usd_per_mtok": 0.1,
           "provenance": "measured-credits",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1122,8 +1477,8 @@
         "output": {
           "usd_per_mtok": 0.199999,
           "provenance": "measured-credits",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1132,8 +1487,8 @@
         "cache_read": {
           "usd_per_mtok": 0.002,
           "provenance": "measured-credits",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "rows": 125,
           "rms_residual_usd": 0.0,
           "median_relative_error": 0.0,
@@ -1156,8 +1511,8 @@
           "rows": 125,
           "rows_in_window": 125,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": 1.852,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
@@ -1181,8 +1536,8 @@
           "rows": 125,
           "rows_in_window": 125,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": 1.852,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
@@ -1193,19 +1548,20 @@
       },
       "quality": {
         "intelligence_index": 36.4,
-        "coding_index": 75.8,
+        "coding_index": null,
         "coding_index_display_only": true,
         "aa_name": "Muse Spark 1.3 (Max)",
         "aa_slug": "muse-spark-1-3",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": 0.005999992,
         "execution": 0.009799985
       },
       "efficiency": {
-        "planning": 53.06474343811144,
-        "execution": 63.75522973267116
+        "planning": 49.67676876103612,
+        "execution": 58.41291662671194
       },
       "pareto": {
         "planning": true,
@@ -1214,7 +1570,17 @@
       "blended_input_output_usd_per_mtok": 0.11999980000000002,
       "observed_blended_usd_per_mtok": 0.099554,
       "observed_rows": 1,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "muse-spark-1-3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/kimi-k3",
@@ -1262,8 +1628,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1287,8 +1653,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1313,7 +1679,17 @@
       "blended_input_output_usd_per_mtok": 5.4,
       "observed_blended_usd_per_mtok": 19.087091,
       "observed_rows": 2,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "kimi-k3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 43.6,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/glm-5.3-flash",
@@ -1352,23 +1728,23 @@
         "catalog_free": false,
         "fit": {
           "status": "rejected",
-          "reason": "per-row RMS residual 0.000701131 USD exceeds the allowed 0.000214236 USD",
+          "reason": "per-row RMS residual 0.000442843 USD exceeds the allowed 0.00022768 USD",
           "rates": {
-            "input": 0.149633,
-            "output": 0.467312,
-            "cache_read": 0.030041
+            "input": 0.149803,
+            "output": 0.498281,
+            "cache_read": 0.030003
           },
-          "rows": 1890,
-          "rows_in_window": 1892,
+          "rows": 1705,
+          "rows_in_window": 1707,
           "dropped_rows": 2,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 1.206,
-          "rms_residual_usd": 0.00070113,
-          "allowed_rms_residual_usd": 0.00021424,
-          "median_relative_error": 0.001237,
-          "p90_relative_error": 0.016308,
-          "total_reconciliation_error": 0.002821
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": 1.224,
+          "rms_residual_usd": 0.00044284,
+          "allowed_rms_residual_usd": 0.00022768,
+          "median_relative_error": 9e-05,
+          "p90_relative_error": 0.00133,
+          "total_reconciliation_error": 0.000948
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
@@ -1386,8 +1762,126 @@
           "rows": 8,
           "rows_in_window": 8,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        }
+      },
+      "quality": {
+        "intelligence_index": 27.8,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "GLM-5.3-Flash",
+        "aa_slug": "glm-5-3-flash",
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
+      },
+      "cost_usd": {
+        "planning": 0.016,
+        "execution": 0.0285
+      },
+      "efficiency": {
+        "planning": 34.00157164666855,
+        "execution": 37.492032841549694
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 0.22,
+      "observed_blended_usd_per_mtok": 0.044807,
+      "observed_rows": 1761,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "glm-5-3-flash",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
+    },
+    {
+      "id": "cline-pass/qwen3.7-plus",
+      "slug": "qwen3.7-plus",
+      "name": "Qwen: Qwen3.7 Plus",
+      "catalog_name": "cline-pass/qwen3.7-plus",
+      "description": "Fast multimodal agent model with vision and video input",
+      "free": false,
+      "family": "qwen",
+      "context_window": 1000000,
+      "openrouter_id": "qwen/qwen3.7-plus",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.4,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "output": {
+          "usd_per_mtok": 1.6,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.04,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.5,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "3 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 3,
+          "rows_in_window": 3,
+          "dropped_rows": 0,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-10-02"
+        },
+        "credits_fit": {
+          "status": "rejected",
+          "reason": "5 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 5,
+          "rows_in_window": 5,
+          "dropped_rows": 0,
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1398,8 +1892,8 @@
       },
       "quality": null,
       "cost_usd": {
-        "planning": 0.016,
-        "execution": 0.0285
+        "planning": 0.0378,
+        "execution": 0.066
       },
       "efficiency": {
         "planning": null,
@@ -1409,10 +1903,20 @@
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": 0.22,
-      "observed_blended_usd_per_mtok": 0.045058,
-      "observed_rows": 1926,
-      "priced": true
+      "blended_input_output_usd_per_mtok": 0.6400000000000001,
+      "observed_blended_usd_per_mtok": 2.489005,
+      "observed_rows": 3,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "qwen3-7-plus",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 25.2,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/qwen3.7-max",
@@ -1461,8 +1965,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1486,8 +1990,8 @@
           "rows": 2,
           "rows_in_window": 2,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1512,99 +2016,17 @@
       "blended_input_output_usd_per_mtok": 3.5,
       "observed_blended_usd_per_mtok": 11.180396,
       "observed_rows": 1,
-      "priced": true
-    },
-    {
-      "id": "cline-pass/qwen3.7-plus",
-      "slug": "qwen3.7-plus",
-      "name": "Qwen: Qwen3.7 Plus",
-      "catalog_name": "cline-pass/qwen3.7-plus",
-      "description": "Fast multimodal agent model with vision and video input",
-      "free": false,
-      "family": "qwen",
-      "context_window": 1000000,
-      "openrouter_id": "qwen/qwen3.7-plus",
-      "rates": {
-        "input": {
-          "usd_per_mtok": 0.67,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 48,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 2.074
-        },
-        "output": {
-          "usd_per_mtok": 2.670001,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 48,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 2.074
-        },
-        "cache_read": {
-          "usd_per_mtok": 0.07,
-          "provenance": "measured",
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "rows": 48,
-          "rms_residual_usd": 0.0,
-          "median_relative_error": 0.0,
-          "condition_number": 2.074
-        },
-        "cache_write": {
-          "usd_per_mtok": 0.5,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        },
-        "catalog_free": false,
-        "fit": {
-          "status": "measured",
-          "reason": null,
-          "rates": {
-            "input": 0.67,
-            "output": 2.670001,
-            "cache_read": 0.07
-          },
-          "rows": 48,
-          "rows_in_window": 48,
-          "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
-          "condition_number": 2.074,
-          "rms_residual_usd": 0.0,
-          "allowed_rms_residual_usd": 0.00049961,
-          "median_relative_error": 0.0,
-          "p90_relative_error": 0.0,
-          "total_reconciliation_error": 0.0
-        },
-        "reference_source": {
-          "source_name": "Cline ClinePass reference pricing",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
-        }
-      },
-      "quality": null,
-      "cost_usd": {
-        "planning": 0.060460008,
-        "execution": 0.104850015
-      },
-      "efficiency": {
-        "planning": null,
-        "execution": null
-      },
-      "pareto": {
-        "planning": false,
-        "execution": false
-      },
-      "blended_input_output_usd_per_mtok": 1.0700002,
-      "observed_blended_usd_per_mtok": 0.134322,
-      "observed_rows": 48,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "qwen3-7-max",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 29.5,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-pass/minimax-m3",
@@ -1652,8 +2074,8 @@
           "rows": 1,
           "rows_in_window": 1,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1677,8 +2099,8 @@
           "rows": 4,
           "rows_in_window": 4,
           "dropped_rows": 0,
-          "window_start": "2026-09-29",
-          "window_end": "2026-10-28",
+          "window_start": "2026-10-01",
+          "window_end": "2026-10-30",
           "condition_number": null,
           "rms_residual_usd": null,
           "allowed_rms_residual_usd": null,
@@ -1689,19 +2111,20 @@
       },
       "quality": {
         "intelligence_index": 18.7,
-        "coding_index": 58.6,
+        "coding_index": null,
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3",
         "aa_slug": "minimax-m3",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": 0.0336,
         "execution": 0.06
       },
       "efficiency": {
-        "planning": 22.93759968428688,
-        "execution": 25.142341295958698
+        "planning": 19.54962500721156,
+        "execution": 19.80002818999948
       },
       "pareto": {
         "planning": false,
@@ -1710,7 +2133,17 @@
       "blended_input_output_usd_per_mtok": 0.48,
       "observed_blended_usd_per_mtok": 0.228488,
       "observed_rows": 1,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "minimax-m3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "reflection/beam-free",
@@ -1747,7 +2180,15 @@
           "retrieved_at": "2026-10-02"
         }
       },
-      "quality": null,
+      "quality": {
+        "intelligence_index": 17.7,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "Beam 1.0",
+        "aa_slug": "reflection-beam",
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
+      },
       "cost_usd": {
         "planning": 0.0,
         "execution": 0.0
@@ -1757,13 +2198,25 @@
         "execution": null
       },
       "pareto": {
-        "planning": false,
-        "execution": false
+        "planning": true,
+        "execution": true
       },
       "blended_input_output_usd_per_mtok": 0.0,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "identity",
+        "key": "reflection/beam-free",
+        "candidates": [
+          "Beam 1.0"
+        ],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-free/nemotron-3.5-super-vl",
@@ -1806,7 +2259,8 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Super VL",
         "aa_slug": "nemotron-3-5-super-vl",
-        "retrieved_at": "2026-10-28T11:00:26.857150+01:00"
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
       },
       "cost_usd": {
         "planning": 0.0,
@@ -1817,13 +2271,23 @@
         "execution": null
       },
       "pareto": {
-        "planning": true,
-        "execution": true
+        "planning": false,
+        "execution": false
       },
       "blended_input_output_usd_per_mtok": 0.0,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "nemotron-3.5-super-vl",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "nvidia/nemotron-3.5-lightning-free",
@@ -1860,7 +2324,15 @@
           "retrieved_at": "2026-10-02"
         }
       },
-      "quality": null,
+      "quality": {
+        "intelligence_index": 5.5,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "Nemotron 3.5 Lightning",
+        "aa_slug": "nemotron-3-5-lightning",
+        "retrieved_at": "2026-10-30T11:27:47.102913+01:00",
+        "fresh": true
+      },
       "cost_usd": {
         "planning": 0.0,
         "execution": 0.0
@@ -1876,7 +2348,17 @@
       "blended_input_output_usd_per_mtok": 0.0,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "Nemotron 3.5 Lightning",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "poolside/laguna-s-2.1-free",
@@ -1929,7 +2411,17 @@
       "blended_input_output_usd_per_mtok": 0.0,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "unmatched",
+        "key": null,
+        "candidates": [],
+        "carried_from": null,
+        "reason": "absent-from-feed",
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": "2026-10-28"
+      }
     },
     {
       "id": "cline-free/solar-mini4",
@@ -1982,7 +2474,17 @@
       "blended_input_output_usd_per_mtok": 0.0,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": true
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "solar-mini4",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "pre-revision",
+        "last_seen": "2026-10-26",
+        "last_value": 24.1,
+        "revision_day": "2026-10-28"
+      }
     }
   ],
   "changes": {
@@ -1991,94 +2493,113 @@
     "catalog_added": [],
     "catalog_removed": [],
     "quality_changed": {
-      "cline-free/nemotron-3.5-super-vl": {
-        "name": "NVIDIA: Nemotron 3.5 Super VL",
-        "from": 26.5,
-        "to": 13.6
-      },
-      "cline-free/solar-mini4": {
-        "name": "Upstage: Solar Mini 4",
-        "from": 24.1,
-        "to": null
-      },
-      "cline-pass/deepseek-v4-pro": {
-        "name": "DeepSeek: DeepSeek V4 Pro 0423",
-        "from": 36.0,
-        "to": 23.1
-      },
-      "cline-pass/deepseek-v4.1-flash": {
-        "name": "DeepSeek: DeepSeek V4.1 Flash",
-        "from": 39.5,
-        "to": null
-      },
-      "cline-pass/deepseek-v4.1-flash-1017": {
-        "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
-        "from": 45.1,
-        "to": 32.5
-      },
-      "cline-pass/glm-5.3": {
-        "name": "Z.ai: GLM 5.3",
-        "from": 44.8,
-        "to": 31.7
-      },
       "cline-pass/glm-5.3-flash": {
         "name": "Z.ai: GLM 5.3 Flash",
-        "from": 41.8,
-        "to": null
-      },
-      "cline-pass/kimi-k3": {
-        "name": "MoonshotAI: Kimi K3",
-        "from": 43.6,
-        "to": null
-      },
-      "cline-pass/kimi-k3.1-pro": {
-        "name": "MoonshotAI: Kimi K3.1 Pro",
-        "from": 55.1,
-        "to": 46.0
-      },
-      "cline-pass/mimo-v2.6-flash": {
-        "name": "Xiaomi: MiMo-V2.6-Flash",
-        "from": 37.9,
-        "to": 26.7
-      },
-      "cline-pass/mimo-v2.6-pro": {
-        "name": "Xiaomi: MiMo-V2.6-Pro",
-        "from": 46.3,
-        "to": 29.9
-      },
-      "cline-pass/minimax-m3": {
-        "name": "MiniMax: MiniMax M3",
-        "from": 29.2,
-        "to": 18.7
-      },
-      "cline-pass/minimax-m3.1-flash": {
-        "name": "MiniMax: MiniMax M3.1 Flash",
-        "from": 42.7,
-        "to": 28.9
-      },
-      "cline-pass/muse-spark-1.3-contributor": {
-        "name": "Meta: Muse Spark 1.3 Contributor",
-        "from": 48.1,
-        "to": 36.4
-      },
-      "cline-pass/qwen3.7-max": {
-        "name": "Qwen: Qwen3.7 Max",
-        "from": 29.5,
-        "to": null
-      },
-      "cline-pass/qwen3.7-plus": {
-        "name": "Qwen: Qwen3.7 Plus",
-        "from": 25.2,
-        "to": null
+        "from": null,
+        "to": 27.8
       },
       "nvidia/nemotron-3.5-lightning-free": {
         "name": "NVIDIA: Nemotron 3.5 Lightning (free)",
-        "from": 12.9,
-        "to": null
+        "from": null,
+        "to": 5.5
+      },
+      "reflection/beam-free": {
+        "name": "Beam",
+        "from": null,
+        "to": 17.7
       }
     },
-    "rate_changed": {},
-    "observed_blend_changed": {}
+    "rate_changed": {
+      "cline-pass/deepseek-v4-pro": {
+        "name": "DeepSeek: DeepSeek V4 Pro 0423",
+        "classes": {
+          "input": {
+            "from": 1.65,
+            "to": 1.32,
+            "change_ratio": -0.2,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          },
+          "output": {
+            "from": 4.95,
+            "to": 3.96,
+            "change_ratio": -0.2,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          },
+          "cache_read": {
+            "from": 0.06,
+            "to": 0.044,
+            "change_ratio": -0.266667,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          },
+          "cache_write": {
+            "from": 1.65,
+            "to": 1.32,
+            "change_ratio": -0.2
+          }
+        }
+      },
+      "cline-pass/qwen3.7-plus": {
+        "name": "Qwen: Qwen3.7 Plus",
+        "classes": {
+          "input": {
+            "from": 0.67,
+            "to": 0.4,
+            "change_ratio": -0.402985,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          },
+          "output": {
+            "from": 2.670001,
+            "to": 1.6,
+            "change_ratio": -0.400749,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          },
+          "cache_read": {
+            "from": 0.07,
+            "to": 0.04,
+            "change_ratio": -0.428571,
+            "provenance_change": {
+              "from": "measured",
+              "to": "reference"
+            },
+            "note": "provenance changed; these two values are not directly comparable"
+          }
+        }
+      }
+    },
+    "observed_blend_changed": {
+      "cline-pass/deepseek-v4-pro": {
+        "name": "DeepSeek: DeepSeek V4 Pro 0423",
+        "from": 0.203566,
+        "to": 2.461017,
+        "change_ratio": 11.089529
+      },
+      "cline-pass/qwen3.7-plus": {
+        "name": "Qwen: Qwen3.7 Plus",
+        "from": 0.134322,
+        "to": 2.489005,
+        "change_ratio": 17.530137
+      }
+    }
   },
-  "summary": "**Weekly Monitoring Summary** No catalog, blend, or rate changes this week. Quality scores declined across the board for 17 models. Ten models dropped measurably, with the steepest declines from Qwen3.7 Max (29.5 \u2192 null), Kimi K3.1 Pro (55.1 \u2192 46.0), MiMo-V2.6-Pro (46.3 \u2192 29.9), GLM 5.3 (44.8 \u2192 31.7), and DeepSeek V4.1 Flash 1017 (45.1 \u2192 32.5). Seven models now report no score: Solar Mini 4, DeepSeek V4.1 Flash, GLM 5.3 Flash, Kimi K3, Qwen3.7 Max, Qwen3.7 Plus, and Nemotron 3.5 Lightning (free). No models improved; investigation into the missing scores is recommended."
+  "summary": "# Weekly Monitoring Summary **Blended usage shifts:** DeepSeek V4 Pro 0423 rose from 0.20 to 2.46 (11.1\u00d7) and Qwen3.7 Plus from 0.13 to 2.49 (17.5\u00d7). **Quality scores added:** GLM 5.3 Flash (27.8), Nemotron 3.5 Lightning free (5.5), Beam (17.7). **Rate changes:** Both models moved from \"measured\" to \"reference\" provenance, so price drops aren't directly comparable. Qwen3.7 Plus fell ~40% (input 0.67\u21920.40, output 2.67\u21921.60); DeepSeek V4 Pro fell 20\u201327% across classes. **Catalog:** No models added or removed."
 }

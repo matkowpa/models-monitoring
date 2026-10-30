@@ -2,6 +2,21 @@
   "version": 1,
   "entries": [
     {
+      "date": "2026-10-30",
+      "generated_at": "2026-10-30T11:27:47.102913+01:00",
+      "mode": "live",
+      "narrative_model": "cline-pass/glm-5.3-flash",
+      "report": "2026-10-30.html",
+      "snapshot": "2026-10-30.json",
+      "counts": {
+        "catalog_added": 0,
+        "catalog_removed": 0,
+        "quality_changed": 3,
+        "rate_changed": 2,
+        "observed_blend_changed": 2
+      }
+    },
+    {
       "date": "2026-10-28",
       "generated_at": "2026-10-28T11:00:26.857150+01:00",
       "mode": "live",
