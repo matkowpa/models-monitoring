@@ -43,13 +43,22 @@ plan).
    looser median-based profile, and publish those rates as `measured-credits`; a model Cline
    only serves through credits (a fresh catalog id) would otherwise have no price at all.
    Fall back to Cline's dated published reference table for models where neither fit works
-   and for cache write, which usage rows do not report separately. Measured and reference
-   classes are never mixed inside one model, and every rate field carries its provenance into
-   the report. A measured rate that disagrees with the reference entry by more than 1.5x
+   and for cache write, which usage rows do not report separately. A single fit never mixes
+   the subscription and credit bases; individual rate classes can still come from different
+   sources, and every rate field carries its provenance into the report (including
+   `input-fallback`, used when cache write has neither a measured nor a published value).
+   A measured rate that disagrees with the reference entry by more than 1.5x
    raises a run warning: the reference table is stale for that model.
 4. Fetch the current AA Intelligence Index. A live run **fails closed** when the key is
    missing, the feed fails, or no catalog model matches a current score.
-5. Score, compare against the previous snapshot, summarize (with a deterministic fallback),
+5. Match by exact name first, then by an identity key that drops the vendor prefix, the
+   bracketed variant suffix and the trailing checkpoint date, so a dated AA record
+   ("DeepSeek V4.1 Flash 1017 (Max)") still scores the catalog endpoint it belongs to.
+   A model missing from the feed keeps its last score for up to 28 days, marked stale
+   with the date it was last seen. When most models move down together while the coding
+   index holds, the run is labelled an index revision and the per-model diffs are
+   withheld instead of being published as regressions.
+6. Score, compare against the previous snapshot, summarize (with a deterministic fallback),
    then write the site, the snapshot, and the archive.
 
 The pipeline uses only the Python 3.11+ standard library: no third-party dependencies, no CDN

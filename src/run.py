@@ -17,7 +17,7 @@ import time
 import urllib.error
 import urllib.request
 import urllib.parse
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -654,17 +654,120 @@ def resolve_model_rates(entries, rows, config, reference_models, reference_meta,
     return rates_by_id, fits_by_slug, rejected
 
 
-def collect_quality(entries, aa_index, mapping, retrieved_at):
-    """Match AA evidence per model; returns the records and the match count."""
+def _revision_day(history):
+    """Newest snapshot date that starts a republished-index series.
+
+    Reads the stored flag when a run wrote one, and also re-tests adjacent
+    snapshots: the revision that matters here happened before this code existed,
+    so those snapshots carry no flag and the only way to know is to compare them.
+    """
+    newest = None
+    for snapshot in history or []:
+        epoch = (snapshot.get("changes") or {}).get("quality_epoch") or {}
+        if not epoch.get("detected"):
+            continue
+        day_seen = str(
+            (snapshot.get("report") or {}).get("date") or snapshot.get("generated") or ""
+        )[:10]
+        if day_seen and (newest is None or day_seen > newest):
+            newest = day_seen
+    chronological = list(reversed(history or []))
+    for older, newer in zip(chronological, chronological[1:]):
+        epoch = monitor.detect_quality_epoch(older, newer)
+        if not epoch:
+            continue
+        day_seen = str(
+            (newer.get("report") or {}).get("date") or newer.get("generated") or ""
+        )[:10]
+        if day_seen and (newest is None or day_seen > newest):
+            newest = day_seen
+    return newest
+
+
+def collect_quality(
+    entries, aa_index, mapping, retrieved_at, previous_snapshots=None, max_carry_days=28
+):
+    """Match AA evidence per model; returns records, evidence, and counts.
+
+    A model the current feed no longer carries keeps its most recent known score,
+    marked ``fresh: False`` with the date it was last seen. Without that, a feed
+    change silently turns a scored model into a dash and the reader cannot tell a
+    missing measurement from a missing model. The carry is bounded by
+    ``max_carry_days`` so an abandoned score cannot age into the table forever.
+    """
     quality_by_id = {}
+    evidence_by_id = {}
     matched = 0
+    carried = 0
+    today = str(retrieved_at or "")[:10]
+    history = [snap for snap in (previous_snapshots or []) if isinstance(snap, dict)]
+    revision_day = _revision_day(history)
     for entry in entries:
-        record, _key = monitor.match_aa_record(entry, aa_index, mapping)
-        quality = monitor.quality_record(record, retrieved_at)
-        quality_by_id[entry["id"]] = quality
+        evidence = monitor.match_aa_evidence(entry, aa_index, mapping)
+        quality = monitor.quality_record(evidence["record"], retrieved_at)
+        reason = None
+        last_seen = None
+        last_value = None
         if quality:
             matched += 1
-    return quality_by_id, matched
+        else:
+            reason = "absent-from-feed"
+            for snapshot in history:
+                prior = next(
+                    (m for m in snapshot.get("models") or [] if m.get("id") == entry["id"]),
+                    None,
+                )
+                prior_quality = (prior or {}).get("quality") or {}
+                if prior_quality.get("intelligence_index") is None:
+                    continue
+                seen = str(prior_quality.get("retrieved_at") or snapshot.get("generated") or "")[:10]
+                if today and seen and (date.fromisoformat(today) - date.fromisoformat(seen)).days > max_carry_days:
+                    continue
+                last_seen = seen
+                last_value = prior_quality.get("intelligence_index")
+                if revision_day and seen and seen <= revision_day:
+                    # The score predates a republished index, so it is on a scale
+                    # the rest of the table no longer uses. Carrying it would put
+                    # two incomparable numbers side by side; the value is kept in
+                    # the evidence for anyone who needs it, not in the ranking.
+                    reason = "pre-revision"
+                    break
+                quality = monitor.carried_quality(prior_quality, seen)
+                if quality:
+                    carried += 1
+                    evidence = dict(evidence, via="carried", carried_from=seen)
+                break
+        quality_by_id[entry["id"]] = quality
+        evidence_by_id[entry["id"]] = {
+            "via": evidence.get("via") or "unmatched",
+            "key": evidence.get("key"),
+            "candidates": evidence.get("candidates") or [],
+            "carried_from": evidence.get("carried_from"),
+            "reason": reason,
+            "last_seen": last_seen,
+            "last_value": last_value,
+            "revision_day": revision_day,
+        }
+    return quality_by_id, evidence_by_id, matched, carried
+
+
+def recent_snapshots(history_path, day, mode, limit=6):
+    """Prior snapshots, newest first, for carry-forward and change detection."""
+    snapshots = []
+    try:
+        paths = site_module.history_snapshots(history_path, mode)
+    except Exception:
+        return snapshots
+    for path in paths:
+        if path.name.split(".")[0] >= day:
+            continue
+        try:
+            snapshots.append(site_module.read_snapshot(path))
+        except Exception:
+            continue
+        if len(snapshots) >= limit:
+            break
+    return snapshots
 
 
 def collect_observations(entries, rows):
@@ -688,9 +791,9 @@ def append_bounded(items, value, limit=20):
 FIXTURES_DIR = ROOT / "tests" / "fixtures"
 
 
-def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, fixtures_dir=None):
+def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, fixtures_dir=None, now=None):
     """Collect, score, compare, render, and persist one report."""
-    generated = warsaw_now(config)
+    generated = now or warsaw_now(config)
     day = generated.date().isoformat()
     history_path = Path(history_dir or HISTORY_DIR)
     output_dir = Path(
@@ -742,10 +845,20 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
     )
     if drift_warning:
         append_bounded(warnings, drift_warning)
+    reference_age = monitor.reference_age_warning(reference_meta, generated.date())
+    if reference_age:
+        append_bounded(warnings, reference_age)
+    coverage_warning = monitor.reference_coverage_warning(entries, reference_models)
+    if coverage_warning:
+        append_bounded(warnings, coverage_warning)
+
+    prior_snapshots = recent_snapshots(history_path, day, mode)
 
     if mode == monitor.MODE_LIVE:
         aa_index = fetch_aa_models(config)
-        quality_by_id, matched = collect_quality(entries, aa_index, mapping, generated.isoformat())
+        quality_by_id, quality_evidence, matched, carried = collect_quality(
+            entries, aa_index, mapping, generated.isoformat(), prior_snapshots
+        )
         if matched == 0:
             raise HttpError(
                 "no catalog model matched a current AA Intelligence Index; refusing to publish "
@@ -753,7 +866,9 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
             )
     else:
         aa_index = load_fixture_aa_models(config, fixtures_dir)
-        quality_by_id, matched = collect_quality(entries, aa_index, mapping, generated.isoformat())
+        quality_by_id, quality_evidence, matched, carried = collect_quality(
+            entries, aa_index, mapping, generated.isoformat(), prior_snapshots
+        )
         if matched == 0:
             append_bounded(warnings, "offline fixtures matched no AA quality score")
 
@@ -761,11 +876,32 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
     scoring = monitor.score_models(
         entries, rates_by_id, quality_by_id, metadata_by_id, observations, config
     )
+    for record in scoring["models"]:
+        record["quality_evidence"] = quality_evidence.get(record["id"])
 
     previous, previous_path = site_module.find_previous_snapshot(history_path, day, mode)
     changes = monitor.detect_changes(
         previous, {"models": scoring["models"]}, config.get("change_detection")
     )
+    epoch = monitor.detect_quality_epoch(
+        previous, {"models": scoring["models"]}, config.get("change_detection")
+    )
+    if epoch:
+        monitor.apply_quality_epoch(changes, epoch)
+        append_bounded(
+            warnings,
+            "AA index revision: %d of %d shared models moved down (median %+.0f%%) while the "
+            "coding index did not move; per-model quality diffs are withheld as a revision, "
+            "not published as regressions"
+            % (
+                epoch["compared"],
+                epoch["compared"],
+                epoch["median_change"] * 100.0,
+            ),
+        )
+    stats = dict(scoring["stats"])
+    stats["quality_fresh"] = matched
+    stats["quality_carried"] = carried
     if mode == monitor.MODE_LIVE:
         narrative = narrative_summary(changes, [entry["id"] for entry in entries], config)
     else:
@@ -810,9 +946,11 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
             "account_id": usage_stats.get("user_id"),
             "fit_rejections": rejected,
             "aa_matches": matched,
+            "aa_carried": carried,
+            "quality_evidence": quality_evidence,
             "catalog_ids": [entry["id"] for entry in entries],
         },
-        "stats": scoring["stats"],
+        "stats": stats,
         "medians": scoring["medians"],
         "best_value": scoring["best_value"],
         "chart": scoring["chart"],

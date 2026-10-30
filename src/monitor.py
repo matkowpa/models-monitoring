@@ -64,6 +64,55 @@ def normalize_key(value):
     return re.sub(r"[^a-z0-9]+", "", str(value or "").lower())
 
 
+VARIANT_RE = re.compile(
+    r"\((?:max|high|medium|low|reasoning|non[- ]?reasoning|thinking|non[- ]?thinking|default)\)",
+    re.IGNORECASE,
+)
+CHANNEL_TAIL_RE = re.compile(r"[-_ ](?:free|contributor)\s*$", re.IGNORECASE)
+DATE_TAIL_RE = re.compile(r"[-_ ](\d{4}|\d{6}|\d{8})\s*$")
+
+
+def identity_key(value):
+    """Fold a model name or slug into a checkpoint- and variant-tolerant key.
+
+    Artificial Analysis publishes one record per checkpoint and effort level
+    ("DeepSeek V4.1 Flash 1017 (Max)") while a catalog usually carries one entry
+    per billable endpoint ("deepseek-v4.1-flash"). Comparing exact keys misses
+    that pair in both directions, so a second pass compares identity keys: the
+    vendor prefix, a bracketed variant suffix, a channel suffix and a trailing
+    date code are removed first.
+
+    Only the trailing date code is dropped. Version numbers keep their digits,
+    and a bare tier word without brackets ("Qwen3.7 Max") stays part of the name,
+    because those distinguish real products.
+    """
+    text = str(value or "").strip().lower()
+    if ":" in text:
+        _vendor, _sep, tail = text.partition(":")
+        if tail.strip():
+            text = tail
+    text = VARIANT_RE.sub(" ", text)
+    while True:
+        stripped = CHANNEL_TAIL_RE.sub("", text)
+        if stripped == text:
+            break
+        text = stripped
+    text = DATE_TAIL_RE.sub("", text.strip())
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+
+class AAIndex(dict):
+    """Exact-key index of AA records, plus an identity-key index beside it.
+
+    Subclassing ``dict`` keeps every existing ``index[key]`` / ``key in index``
+    caller working while carrying the second, more tolerant index along.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.identity = {}
+
+
 def model_slug(model_id):
     """Catalog slug for a model id.
 
@@ -219,7 +268,7 @@ def parse_aa_models(payload, intelligence_key, coding_key=None, default_scale=No
     one AA model is recorded as ambiguous (``None``) so the model is published
     without a score rather than with a guessed one.
     """
-    index = {}
+    index = AAIndex()
     ambiguous = set()
     for rank, item in enumerate(_aa_items(payload)):
         if not isinstance(item, dict):
@@ -245,19 +294,56 @@ def parse_aa_models(payload, intelligence_key, coding_key=None, default_scale=No
             if key in index:
                 ambiguous.add(key)
             index.setdefault(key, record)
+        for key in {identity_key(record["aa_slug"]), identity_key(record["name"])}:
+            if key:
+                index.identity.setdefault(key, []).append(record)
     for key in ambiguous:
         index[key] = None
     return index
 
 
-def match_aa_record(entry, aa_index, mapping):
-    """Return ``(aa_record, matched_key)`` for a catalog entry, or ``(None, None)``.
+def _date_code(record):
+    """Trailing date code of an AA name, as an int, for checkpoint ordering.
 
-    Candidates come from the explicit mapping first, then from the catalog's own
-    id, slug, and display name. An ambiguous key yields no match.
+    The code can sit before a variant suffix ("... Flash 0813 (Max)"), so the last
+    numeric token anywhere in the name is used rather than only the tail.
     """
+    text = VARIANT_RE.sub(" ", str(record.get("name") or "").lower())
+    codes = re.findall(r"(?<![\d.])(\d{4}|\d{6}|\d{8})(?![\d.])", text)
+    return int(codes[-1]) if codes else None
+
+
+def resolve_identity_candidates(records):
+    """Pick one record out of the records sharing an identity key.
+
+    Two situations land here. The same checkpoint listed twice under different
+    names is resolved by AA's own ordering. A model and its later checkpoint
+    ("DeepSeek V4.1 Flash" and "DeepSeek V4.1 Flash 1017") share an identity, and
+    the catalog entry is an undated endpoint, so the newest checkpoint is the one
+    it currently serves. Both rules are deterministic and are reported back to
+    the caller as an ambiguity, never applied silently.
+    """
+    if not records:
+        return None
+    if len(records) == 1:
+        return records[0]
+    dated = [(code, record) for code, record in ((_date_code(r), r) for r in records) if code]
+    if dated:
+        return max(dated, key=lambda pair: (pair[0], -pair[1].get("order", 0)))[1]
+    return min(records, key=lambda r: r.get("order", 0))
+
+
+def match_aa_evidence(entry, aa_index, mapping):
+    """Resolve a catalog entry to an AA record and explain how it resolved.
+
+    Returns ``{"record", "key", "via", "candidates"}``. ``via`` is ``exact`` when
+    a normalized name matched outright and ``identity`` when only the tolerant
+    key matched; ``candidates`` lists the competing AA names when the identity
+    key was not unique, so a published score can always be traced to a record.
+    """
+    evidence = {"record": None, "key": None, "via": None, "candidates": []}
     if not aa_index:
-        return None, None
+        return evidence
     mapped = (mapping or {}).get(entry["slug"]) or {}
     candidates = [
         mapped.get("aa_slug"),
@@ -274,8 +360,48 @@ def match_aa_record(entry, aa_index, mapping):
             continue
         seen.add(key)
         if aa_index.get(key):
-            return aa_index[key], candidate
-    return None, None
+            return {
+                "record": aa_index[key],
+                "key": candidate,
+                "via": "exact",
+                "candidates": [],
+            }
+    identity = getattr(aa_index, "identity", {}) or {}
+    seen = set()
+    for candidate in candidates:
+        key = identity_key(candidate)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        exact = normalize_key(candidate)
+        if exact in aa_index and aa_index.get(exact) is None:
+            # A known duplicate stays unmatched: a heuristic tie-break must not
+            # resolve an ambiguity the exact pass deliberately refuses.
+            continue
+        records = identity.get(key) or []
+        if not records:
+            continue
+        record = resolve_identity_candidates(records)
+        if record is None:
+            continue
+        return {
+            "record": record,
+            "key": candidate,
+            "via": "identity",
+            "candidates": [r.get("name") for r in records if r.get("name")],
+        }
+    return evidence
+
+
+def match_aa_record(entry, aa_index, mapping):
+    """Return ``(aa_record, matched_key)`` for a catalog entry, or ``(None, None)``.
+
+    Candidates come from the explicit mapping first, then from the catalog's own
+    id, slug, and display name, first on exact normalized keys and then on
+    identity keys. An ambiguous exact key yields no match.
+    """
+    evidence = match_aa_evidence(entry, aa_index, mapping)
+    return evidence["record"], evidence["key"]
 
 
 def normalize_quality(score, scale=None):
@@ -312,7 +438,26 @@ def quality_record(record, retrieved_at):
         "aa_name": record.get("name"),
         "aa_slug": record.get("aa_slug"),
         "retrieved_at": retrieved_at,
+        "fresh": True,
     }
+
+
+def carried_quality(previous_quality, missing_since):
+    """Last known score for a model the current feed no longer carries.
+
+    A model that disappears from the feed has not stopped existing; dropping it
+    to ``None`` loses information the reader needs and hides the fact that the
+    feed changed. The previous score is republished with ``fresh: False`` and the
+    date it was last seen, so the report shows a stale number instead of a dash.
+    """
+    if not isinstance(previous_quality, dict):
+        return None
+    if previous_quality.get("intelligence_index") is None:
+        return None
+    carried = dict(previous_quality)
+    carried["fresh"] = False
+    carried["stale_since"] = missing_since or str(previous_quality.get("retrieved_at") or "")[:10] or None
+    return carried
 
 
 # ---------------------------------------------------------------------------
@@ -879,6 +1024,49 @@ def reference_drift_warning(fits_by_slug, reference_models, threshold=1.5):
     )
 
 
+def reference_age_warning(reference_meta, today, max_age_days=14):
+    """Warn when the reference table is old enough to miss a new catalog entry.
+
+    Every model added to the catalog after the table was published has no
+    fallback rate, so a model with too few usage rows is published with no price
+    at all. The table is committed by hand and nothing re-checks its date.
+    """
+    retrieved = str((reference_meta or {}).get("retrieved_at") or "")[:10]
+    if not retrieved:
+        return None
+    try:
+        published = date.fromisoformat(retrieved)
+    except ValueError:
+        return None
+    age = (today - published).days
+    if age <= int(max_age_days):
+        return None
+    return (
+        "the reference rate table was published %d days ago (%s); catalog entries added "
+        "since then have no fallback rate and are published without a price unless their "
+        "own fit is estimable" % (age, retrieved)
+    )
+
+
+def reference_coverage_warning(entries, reference_models):
+    """Name the catalog models the reference table has no entry for."""
+    covered = reference_models or {}
+    missing = sorted(
+        entry["slug"]
+        for entry in entries or []
+        if not entry.get("free") and entry["slug"] not in covered
+    )
+    if not missing:
+        return None
+    listed = ", ".join(missing[:6])
+    if len(missing) > 6:
+        listed += ", and %d more" % (len(missing) - 6)
+    return (
+        "%d catalog model(s) have no reference rate entry: %s; they are priced only when "
+        "their own usage fit is accepted" % (len(missing), listed)
+    )
+
+
 def observed_blended_rate(rows):
     """What this account actually paid per million tokens, from billing rows."""
     cost = 0.0
@@ -1311,6 +1499,104 @@ def detect_changes(previous, current, change_config=None):
     return changes
 
 
+def _median(values):
+    ordered = sorted(values)
+    if not ordered:
+        return 0.0
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2.0
+
+
+def detect_quality_epoch(previous, current, change_config=None):
+    """Detect a republished Intelligence Index rather than N model regressions.
+
+    Artificial Analysis can change what its index measures. When that happens
+    every model moves at once, the direction is the same, and the coding index
+    (a different benchmark set) does not move at all. Publishing that as a list
+    of per-model quality changes tells the reader the models got worse, which is
+    the one conclusion the data does not support.
+
+    The test is deliberately conservative: at least ``epoch_min_models`` models
+    scored on both sides, at least ``epoch_share_lower`` of them lower, a median
+    drop of at least ``epoch_min_median_drop``, and — when a coding index exists
+    on both sides — at least ``epoch_share_coding_unchanged`` of them unchanged.
+    """
+    change_config = change_config or {}
+    min_models = int(change_config.get("epoch_min_models", 4))
+    share_lower = float(change_config.get("epoch_share_lower", 0.8))
+    min_drop = float(change_config.get("epoch_min_median_drop", 0.10))
+    share_coding = float(change_config.get("epoch_share_coding_unchanged", 0.8))
+
+    before = models_by_id((previous or {}).get("models"))
+    after = models_by_id((current or {}).get("models"))
+    pairs = []
+    for model_id in sorted(set(before) & set(after)):
+        old = before[model_id].get("quality") or {}
+        new = after[model_id].get("quality") or {}
+        if old.get("intelligence_index") is None or new.get("intelligence_index") is None:
+            continue
+        pairs.append((old, new))
+    if len(pairs) < min_models:
+        return None
+
+    lower = sum(1 for old, new in pairs if new["intelligence_index"] < old["intelligence_index"])
+    relative = [
+        (new["intelligence_index"] - old["intelligence_index"]) / old["intelligence_index"]
+        for old, new in pairs
+        if old["intelligence_index"]
+    ]
+    median_change = _median(relative)
+    coding_pairs = [
+        (old.get("coding_index"), new.get("coding_index"))
+        for old, new in pairs
+        if old.get("coding_index") is not None and new.get("coding_index") is not None
+    ]
+    coding_same = sum(1 for old, new in coding_pairs if old == new)
+
+    if lower / len(pairs) < share_lower:
+        return None
+    if median_change > -min_drop:
+        return None
+    if coding_pairs and coding_same / len(coding_pairs) < share_coding:
+        return None
+
+    return {
+        "detected": True,
+        "compared": len(pairs),
+        "share_lower": round(lower / len(pairs), 3),
+        "median_change": round(median_change, 4),
+        "coding_pairs": len(coding_pairs),
+        "coding_unchanged_share": round(coding_same / len(coding_pairs), 3) if coding_pairs else None,
+        "previous_snapshot": str(
+            (previous or {}).get("generated")
+            or ((previous or {}).get("report") or {}).get("generated_at")
+            or ""
+        )[:10]
+        or None,
+        "note": (
+            "Artificial Analysis republished the Intelligence Index; the per-model "
+            "diffs describe the index, not the models, and the series is not "
+            "comparable across this snapshot."
+        ),
+    }
+
+
+def apply_quality_epoch(changes, epoch):
+    """Move per-model quality diffs under one revision banner.
+
+    The individual numbers are kept — they are true — but they stop being
+    presented as separate model regressions, which is how they would be read.
+    """
+    if not epoch:
+        return changes
+    changes["quality_epoch"] = epoch
+    changes["quality_revision"] = changes.get("quality_changed") or {}
+    changes["quality_changed"] = {}
+    return changes
+
+
 def change_counts(changes):
     """Summary counts for the dashboard's weekly change panel."""
     return {
@@ -1338,12 +1624,20 @@ def deterministic_summary(changes, max_words=100):
     """
     if changes.get("first_run"):
         return "First recorded snapshot; there is no earlier snapshot to compare against."
+    epoch = changes.get("quality_epoch") or {}
     added = changes.get("catalog_added") or []
     removed = changes.get("catalog_removed") or []
     quality = changes.get("quality_changed") or {}
     rates = changes.get("rate_changed") or {}
     blends = changes.get("observed_blend_changed") or {}
     parts = []
+    if epoch.get("detected"):
+        parts.append(
+            "AA republished the Intelligence Index: %d shared models moved down together "
+            "(median %+.0f%%) while the coding index held, so this snapshot starts a new "
+            "index series and per-model quality diffs are withheld as a revision"
+            % (epoch.get("compared", 0), (epoch.get("median_change") or 0.0) * 100.0)
+        )
     if added:
         parts.append(f"{len(added)} catalog addition(s): " + ", ".join(added))
     if removed:
