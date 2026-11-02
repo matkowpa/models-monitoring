@@ -27,8 +27,9 @@
   },
   "narrative": {
     "models": [
-      "cline-pass/glm-5.3-flash",
-      "cline-pass/deepseek-v4.1-flash"
+     "cline-pass/deepseek-v4.1-flash-1017",
+     "cline-pass/deepseek-v4.1-flash",
+     "cline-pass/glm-5.3-flash"
     ],
     "max_words": 100,
     "max_tokens": 400

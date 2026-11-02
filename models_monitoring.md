@@ -10,7 +10,7 @@ Design inputs are deliberately narrow:
 - **Price:** ClinePass per-class rates measured from the Cline billing usage API, with Cline's published ClinePass reference-rate table as a dated fallback only.
 - **OpenRouter:** optional model metadata (display name, context window, capabilities) only. Its prices are never substituted for Cline rates and never affect quality, cost, efficiency, or recommendations.
 
-The workflow's narrative model is `cline-pass/deepseek-v4.1-flash`, selected from the ClinePass catalog. It summarizes already-computed weekly changes; it does not generate benchmark scores or rates. If that model is absent from the catalog, use `cline-pass/glm-5.3-flash`, then `cline-pass/kimi-k3`; the fallback chain lives in `src/run.py`, and the report and snapshot record which model produced the summary. If every candidate fails, a deterministic change summary is used.
+The workflow's narrative model is `cline-pass/deepseek-v4.1-flash-1017`, selected from the ClinePass catalog. It summarizes already-computed weekly changes; it does not generate benchmark scores or rates. If that model is absent from the catalog, use `cline-pass/deepseek-v4.1-flash`, then `cline-pass/glm-5.3-flash`; the fallback chain lives in `data/scoring_config.json` and is honoured by `src/run.py`, and the report and snapshot record which model produced the summary. If every candidate fails, a deterministic change summary is used.
 
 ## 2. End-to-End Data Flow
 
@@ -186,7 +186,7 @@ Required credentials/configuration:
 - Optional `OPENROUTER_API_KEY` if the metadata request needs an authenticated quota.
 - Runner network access to `api.cline.bot`, `artificialanalysis.ai`, `openrouter.ai`, and GitHub.
 
-The narrative model is explicitly set to `cline-pass/deepseek-v4.1-flash` in the workflow and defaults to the same id in `src/monitor.py`. The live catalog must contain that model and permit chat completions; when it does not, the documented fallback chain applies and the report records which model was used. Offline runs use fixtures, do not access these systems, and must never be represented or published as a live evaluation.
+The narrative model is explicitly set to `cline-pass/deepseek-v4.1-flash-1017` in `data/scoring_config.json`. The live catalog must contain that model and permit chat completions; when it does not, the documented fallback chain applies and the report records which model was used. Offline runs use fixtures, do not access these systems, and must never be represented or published as a live evaluation.
 
 Repository setup (creating the GitHub repository, enabling Pages, and adding the secrets) requires an authorized credential; running the offline report and tests alone does not establish a repository, a Pages site, or a deployed artifact.
 
