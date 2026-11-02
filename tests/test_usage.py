@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from tests.support import (
     FIXTURES,
     config,
+    fixture_now,
     fixture_rows,
     ground_truth,
     load,
@@ -127,15 +128,15 @@ class DailyWindowTests(unittest.TestCase):
             monitor.daily_windows("2026-01-01", "2026-02-01"),
         )
 
-    def test_fixture_date_anchors_are_recent_relative_to_today(self):
-        # The fixtures carry fixed dates, so freshness is asserted against the
-        # rate window an offline run uses today - the newest anchor has to fall
-        # inside it - rather than against the day the fixtures were generated.
+    def test_fixture_clock_follows_the_newest_fixture_day(self):
+        # Offline runs read the clock from the fixtures (support.fixture_now), so
+        # fixture dates never have to be refreshed against the wall clock. What
+        # must hold is that the clock sits one day after the newest row and that
+        # no fixture claims a future date.
         rows, _dropped = normalized_fixture_rows()
         newest = max(date.fromisoformat(row["date"]) for row in rows)
-        window_days = int(config()["rate_window_days"])
         self.assertLessEqual(newest, date.today())
-        self.assertGreaterEqual(newest, date.today() - timedelta(days=window_days - 1))
+        self.assertEqual(newest + timedelta(days=1), fixture_now(config()).date())
 
 
 if __name__ == "__main__":
