@@ -95,11 +95,38 @@ def provenance_label(rates, rate_class):
 
 
 def has_billing_rows(model):
-    """False when the model has no billing rows at all, as opposed to unusable ones."""
-    fit = (model.get("rates") or {}).get("fit") or {}
-    if not isinstance(fit, dict) or fit.get("status") != monitor.FIT_REJECTED:
-        return True
-    return bool(fit.get("rows_in_window") or fit.get("rows"))
+    """False only when neither billing path has rows for the model.
+
+    A model Cline serves through credits has no subscription fit rows at all:
+    its only evidence is ``credits_fit``. Reading just ``fit`` made a model with
+    thousands of billed requests look like it had never been used, which hid the
+    real reason a price was missing (a rejected fit, not an absent model).
+    """
+    rates = model.get("rates") or {}
+    saw_fit = False
+    for key in ("fit", "credits_fit"):
+        fit = rates.get(key)
+        if not isinstance(fit, dict):
+            continue
+        saw_fit = True
+        if fit.get("status") != monitor.FIT_REJECTED:
+            return True
+        if fit.get("rows_in_window") or fit.get("rows"):
+            return True
+    return not saw_fit
+
+
+def change_point(model):
+    """The detected price change behind a model's rates, if there was one."""
+    rates = model.get("rates") or {}
+    for key in ("fit", "credits_fit"):
+        fit = rates.get(key)
+        if not isinstance(fit, dict):
+            continue
+        found = fit.get("change_point") or {}
+        if found.get("detected"):
+            return found
+    return None
 
 
 def model_rate_source(model):
@@ -118,6 +145,9 @@ def model_rate_source(model):
     if provenances == {monitor.PROVENANCE_MEASURED}:
         return "measured", "prov-measured"
     if provenances == {monitor.PROVENANCE_MEASURED_CREDITS}:
+        change = change_point(model)
+        if change:
+            return "measured (credits, from %s)" % change.get("date"), "prov-measured"
         return "measured (credits)", "prov-measured"
     if provenances == {monitor.PROVENANCE_REFERENCE}:
         return "reference", "prov-reference"
@@ -1476,6 +1506,7 @@ def render_methodology(snapshot, config):
 def _methodology_rates(window, reference, fit_config):
     """Section 2: the measured fit, the fallback table, and free models."""
     credits = fit_config.get("credits") or {}
+    change = fit_config.get("change_point") or {}
     return [
         "<h3>Measured rates (primary)</h3>",
         "<p>For each ClinePass model the per-class rates are recovered from this account's own billing "
@@ -1513,6 +1544,14 @@ def _methodology_rates(window, reference, fit_config):
             escape(credits.get("max_median_relative_error")),
             escape(credits.get("max_total_reconciliation_error")),
         ),
+        "<p>A model repriced inside the window is never averaged. When the whole-window fit "
+        "is rejected, the window is retried as two segments split on each usage date; the "
+        "newer segment is published only when both segments fit on their own and at least "
+        "one rate moved by %s or more, because a noisy model does not produce two "
+        "internally consistent price levels. The published rates then carry the effective "
+        "start date, the requested window start is kept in the snapshot, and the older "
+        "regime stays recorded next to the newer one.</p>"
+        % escape(change.get("min_rate_shift_ratio")),
         "<p>When a measured rate and the dated reference entry disagree by more than %sx, the run "
         "records a warning: the reference table is a snapshot, and a provider can swap the model "
         "or halve a price behind an unchanged catalog id. The measured value is what the report "

@@ -48,6 +48,11 @@
       "max_total_reconciliation_error": 0.01,
       "rms_residual_ratio": null,
       "max_median_relative_error": 0.05
+    },
+    "change_point": {
+      "enabled": true,
+      "min_rate_shift_ratio": 0.2,
+      "min_segment_share": 0.1
     }
   },
   "money_scales": {

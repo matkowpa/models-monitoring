@@ -334,5 +334,138 @@ class SiteLabelsTests(unittest.TestCase):
         self.assertEqual(1, scored["stats"]["measured_credits_rates"])
 
 
+REPRICED_OLD = TRUE_RATES
+REPRICED_NEW = (0.15, 0.96, 0.003)
+
+
+def repriced_rows(old=REPRICED_OLD, new=REPRICED_NEW, count=20):
+    """Twenty rows at the old price and twenty at the new one, split on 20 Oct."""
+    older = usage_rows(count=count, rates=old, seed=11, model="x")
+    newer = usage_rows(count=count, rates=new, seed=12, model="x")
+    for index, row in enumerate(older):
+        row["date"] = "2026-10-%02d" % (1 + index % 19)
+    for index, row in enumerate(newer):
+        row["date"] = "2026-10-%02d" % (20 + index % 11)
+    return older + newer
+
+
+class ChangePointTests(unittest.TestCase):
+    """A model repriced inside the window keeps a price for the new regime."""
+
+    def test_the_whole_window_rejects_two_price_levels(self):
+        fit = monitor.fit_rates(repriced_rows(), CREDITS, *WINDOW)
+        self.assertEqual(monitor.FIT_REJECTED, fit["status"])
+
+    def test_the_newer_regime_is_published_instead_of_no_price(self):
+        fit = monitor.fit_rates_with_change_point(
+            repriced_rows(), CREDITS, *WINDOW, change_config={"enabled": True}
+        )
+        self.assertEqual(monitor.FIT_ACCEPTED, fit["status"], fit["reason"])
+        change = fit["change_point"]
+        self.assertTrue(change["detected"])
+        self.assertEqual("2026-10-20", change["date"])
+        self.assertEqual(change["date"], fit["window_start"])
+        self.assertEqual(WINDOW[0], fit["window_requested_start"])
+        self.assertAlmostEqual(REPRICED_NEW[1], fit["rates"]["output"], delta=REPRICED_NEW[1] * 0.05)
+        self.assertAlmostEqual(REPRICED_OLD[1], change["rates_before"]["output"], delta=REPRICED_OLD[1] * 0.05)
+        self.assertAlmostEqual(0.6, change["relative_shift"]["output"], delta=0.05)
+        self.assertEqual(20, change["rows_after"])
+
+    def test_a_single_price_level_is_not_split(self):
+        rows = usage_rows(count=40, seed=5)
+        for index, row in enumerate(rows):
+            row["date"] = "2026-10-%02d" % (1 + index % 28)
+        fit = monitor.fit_rates_with_change_point(
+            rows, CREDITS, *WINDOW, change_config={"enabled": True}
+        )
+        self.assertEqual(monitor.FIT_ACCEPTED, fit["status"])
+        self.assertIsNone(fit["change_point"])
+        self.assertEqual(WINDOW[0], fit["window_start"])
+
+    def test_a_shift_below_the_threshold_is_not_published_as_a_repricing(self):
+        # 16% across the board: too wide for one level (the median error gate
+        # rejects it) but below the 20% the detector will call a repricing.
+        modest = tuple(rate * 1.16 for rate in REPRICED_OLD)
+        fit = monitor.fit_rates_with_change_point(
+            repriced_rows(new=modest), CREDITS, *WINDOW, change_config={"enabled": True}
+        )
+        self.assertEqual(monitor.FIT_REJECTED, fit["status"])
+        self.assertIn("no split of the window", fit["reason"])
+
+    def test_noise_is_still_rejected_and_the_split_is_recorded_as_attempted(self):
+        deltas = {index: 1.12 if index % 2 == 0 else 0.88 for index in range(40)}
+        rows = usage_rows(count=40, deltas=deltas, seed=9)
+        for index, row in enumerate(rows):
+            row["date"] = "2026-10-%02d" % (1 + index % 28)
+        profile = dict(CREDITS, max_total_reconciliation_error=0.05)
+        fit = monitor.fit_rates_with_change_point(
+            rows, profile, *WINDOW, change_config={"enabled": True}
+        )
+        self.assertEqual(monitor.FIT_REJECTED, fit["status"])
+        self.assertIn("no split of the window", fit["reason"])
+
+    def test_disabling_the_search_keeps_the_plain_rejection(self):
+        fit = monitor.fit_rates_with_change_point(
+            repriced_rows(), CREDITS, *WINDOW, change_config={"enabled": False}
+        )
+        self.assertEqual(monitor.FIT_REJECTED, fit["status"])
+        self.assertIsNone(fit["change_point"])
+
+    def test_the_cascade_publishes_the_repriced_credits_rate(self):
+        config = run.load_config()
+        entry = monitor.parse_recommended_models(
+            {"clinePass": [{"id": "cline-pass/x"}], "free": []}
+        )[0]
+        window = {"start": WINDOW[0], "end": WINDOW[1], "days": 30}
+        rates, fits, rejected = run.resolve_model_rates(
+            [entry], repriced_rows(), config, {}, {"source_name": "test"}, window
+        )
+        record = rates["cline-pass/x"]
+        self.assertNotIn("cline-pass/x", rejected)
+        self.assertEqual(monitor.PROVENANCE_MEASURED_CREDITS, record["output"]["provenance"])
+        self.assertAlmostEqual(REPRICED_NEW[1], record["output"]["usd_per_mtok"], delta=REPRICED_NEW[1] * 0.05)
+        self.assertEqual("2026-10-20", record["output"]["window_start"])
+        self.assertIn("x", fits)
+
+
+class RepricedModelLabelTests(unittest.TestCase):
+    def model(self, fit, credits_fit=None):
+        entry = monitor.parse_recommended_models(
+            {"clinePass": [{"id": "cline-pass/x"}], "free": []}
+        )[0]
+        rates = monitor.resolve_rates(
+            entry,
+            fit,
+            measured_provenance=monitor.PROVENANCE_MEASURED_CREDITS
+            if credits_fit
+            else monitor.PROVENANCE_MEASURED,
+            credits_fit=credits_fit,
+        )
+        return {"id": "cline-pass/x", "name": "X", "rates": rates}
+
+    def repriced_fit(self):
+        return monitor.fit_rates_with_change_point(
+            repriced_rows(), CREDITS, *WINDOW, change_config={"enabled": True}
+        )
+
+    def test_the_label_names_the_effective_start_of_the_published_regime(self):
+        fit = self.repriced_fit()
+        label, _css = site.model_rate_source(self.model(fit, credits_fit=fit))
+        self.assertEqual("measured (credits, from 2026-10-20)", label)
+
+    def test_credit_billed_rows_are_not_reported_as_no_rows(self):
+        # A rejected credits fit that still saw thousands of rows is "unavailable",
+        # not "no billing rows yet": the reader must be able to tell a missing
+        # model from a fit that was thrown away.
+        rejected = monitor.fit_rates(
+            usage_rows(deltas={index: 1.5 for index in range(0, 30, 3)}), CREDITS, *WINDOW
+        )
+        self.assertEqual(monitor.FIT_REJECTED, rejected["status"])
+        model = self.model(rejected, credits_fit=rejected)
+        label, _css = site.model_rate_source(model)
+        self.assertEqual("unavailable", label)
+        self.assertNotIn("no rows yet", site._rate_cell(model, "input", no_rows=False))
+
+
 if __name__ == "__main__":
     unittest.main()

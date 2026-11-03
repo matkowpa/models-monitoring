@@ -610,6 +610,7 @@ def resolve_model_rates(entries, rows, config, reference_models, reference_meta,
     """
     fit_config = config.get("rate_fit") or {}
     credits_config = fit_config.get("credits") or {}
+    change_config = fit_config.get("change_point") or {}
     rates_by_id = {}
     fits_by_slug = {}
     rejected = {}
@@ -618,19 +619,24 @@ def resolve_model_rates(entries, rows, config, reference_models, reference_meta,
         credits_fit = None
         measured_provenance = monitor.PROVENANCE_MEASURED
         if not entry["free"]:
-            fit = monitor.fit_rates(
+            fit = monitor.fit_rates_with_change_point(
                 monitor.rows_for_model(rows, entry),
                 fit_config,
                 window.get("start"),
                 window.get("end"),
+                change_config=change_config,
             )
             if fit.get("status") != monitor.FIT_ACCEPTED:
                 credit_rows = monitor.rows_for_model(
                     rows, entry, billing_type=monitor.BILLING_TYPE_CLINE_USAGE
                 )
                 if credit_rows:
-                    credits_fit = monitor.fit_rates(
-                        credit_rows, credits_config, window.get("start"), window.get("end")
+                    credits_fit = monitor.fit_rates_with_change_point(
+                        credit_rows,
+                        credits_config,
+                        window.get("start"),
+                        window.get("end"),
+                        change_config=change_config,
                     )
                     if credits_fit.get("status") == monitor.FIT_ACCEPTED:
                         fit = credits_fit

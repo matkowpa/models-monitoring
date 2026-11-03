@@ -690,7 +690,9 @@ def empty_fit(window_start=None, window_end=None, reason=None):
         "rows_in_window": 0,
         "dropped_rows": 0,
         "window_start": window_start,
+        "window_requested_start": window_start,
         "window_end": window_end,
+        "change_point": None,
         "condition_number": None,
         "rms_residual_usd": None,
         "allowed_rms_residual_usd": None,
@@ -861,6 +863,175 @@ def fit_rates(rows, fit_config, window_start=None, window_end=None):
     result["status"] = FIT_ACCEPTED
     result["reason"] = None
     return result
+
+
+def _change_point_rows(rows, window_start, window_end):
+    """Usable rows of one window, sorted by date, for a change-point search."""
+    dated = []
+    for row in rows or []:
+        stamp = row.get("date")
+        if not stamp:
+            continue
+        if window_start and stamp < window_start:
+            continue
+        if window_end and stamp > window_end:
+            continue
+        if not row.get("cost_usd") or not row.get("total_tokens"):
+            continue
+        dated.append(row)
+    dated.sort(key=lambda row: row["date"])
+    return dated
+
+
+def _relative_shift(before, after):
+    """Per-class relative price change between two accepted regimes."""
+    shifts = {}
+    for rate_class in FIT_CLASSES:
+        old = as_float((before or {}).get(rate_class))
+        new = as_float((after or {}).get(rate_class))
+        if old and new and old > 0:
+            shifts[rate_class] = round((new - old) / old, 6)
+    return shifts
+
+
+def _two_level_residual(rows, rates):
+    """Sum of squared relative errors of one segment under its own rates.
+
+    Used only to rank candidate break dates: a split that leaves rows of the
+    other price level inside a segment scores worse than the split at the real
+    change, even when both happen to pass the aggregate fit gates.
+    """
+    total = 0.0
+    for row in rows:
+        cost = row.get("cost_usd")
+        if not cost:
+            continue
+        predicted = (
+            row["fresh_input_tokens"] * (rates.get("input") or 0.0)
+            + row["completion_tokens"] * (rates.get("output") or 0.0)
+            + row["cached_tokens"] * (rates.get("cache_read") or 0.0)
+        ) / 1_000_000.0
+        total += ((predicted - cost) / cost) ** 2
+    return total
+
+
+def fit_rates_with_change_point(
+    rows,
+    fit_config,
+    window_start=None,
+    window_end=None,
+    change_config=None,
+):
+    """Fit the price level that applies now, tolerating one price change.
+
+    A provider can reprice a model under an unchanged catalog id, and the report
+    window is 30 days wide, so the rows then contain two price levels. A single
+    linear fit cannot reconcile both: it lands between them and is rejected on
+    reconciliation and median error, which is safe but leaves the model with no
+    price at all - exactly when a price change is the thing a reader wants to
+    see. This wrapper first tries the whole window; only when that fit is
+    rejected does it look for a split into an older and a newer segment, and it
+    publishes the newer one, which is the price that applies to new traffic.
+
+    A split is accepted only when both segments pass the same fit gates on their
+    own, each holds enough rows to be fitted, the two-level model explains the
+    window materially better than one level, and the fitted input or output rate
+    differs by at least ``min_rate_shift_ratio``. Requiring the older segment to
+    fit too is what keeps a merely noisy model rejected: noise does not produce
+    two internally consistent price levels with a clean break.
+
+    The returned record is the newer fit, with ``window_start`` moved to the
+    detected date so every published rate names the window it was measured over,
+    the requested start kept in ``window_requested_start``, and a
+    ``change_point`` block recording both regimes and the rows excluded from the
+    published one.
+    """
+    config = change_config or {}
+    fit = fit_rates(rows, fit_config, window_start, window_end)
+    if fit.get("status") == FIT_ACCEPTED or not config.get("enabled", True):
+        return fit
+
+    minimum_shift = float(config.get("min_rate_shift_ratio", 0.2))
+    minimum_share = float(config.get("min_segment_share", 0.1))
+    minimum_rows = max(1, int((fit_config or {}).get("min_rows", 12)))
+
+    dated = _change_point_rows(rows, window_start, window_end)
+    dates = sorted({row["date"] for row in dated})
+    if len(dates) < 2:
+        return fit
+
+    tried = 0
+    candidates = []
+    for split in dates[1:]:
+        older = [row for row in dated if row["date"] < split]
+        newer = [row for row in dated if row["date"] >= split]
+        if len(older) < minimum_rows or len(newer) < minimum_rows:
+            continue
+        if any(len(segment) < minimum_share * len(dated) for segment in (older, newer)):
+            continue
+        tried += 1
+        older_fit = fit_rates(
+            older,
+            fit_config,
+            window_start,
+            (date.fromisoformat(split) - timedelta(days=1)).isoformat(),
+        )
+        if older_fit.get("status") != FIT_ACCEPTED:
+            continue
+        newer_fit = fit_rates(newer, fit_config, split, window_end)
+        if newer_fit.get("status") != FIT_ACCEPTED:
+            continue
+        shifts = _relative_shift(older_fit.get("rates"), newer_fit.get("rates"))
+        # Both segments fitting on their own does not yet mean the split is the
+        # real break: a date a few days early leaves old rows inside the newer
+        # segment and still passes the aggregate gates, because they are a
+        # minority - and that contamination also inflates the apparent shift.
+        # Score every candidate on how well the two-level model explains every
+        # row of the window, then judge only the best one.
+        residual = _two_level_residual(older, older_fit["rates"]) + _two_level_residual(
+            newer, newer_fit["rates"]
+        )
+        candidates.append(
+            (residual / max(1, len(older) + len(newer)), split, older_fit, newer_fit, shifts)
+        )
+
+    best = min(candidates, key=lambda item: item[0]) if candidates else None
+    if best:
+        score, split, older_fit, newer_fit, shifts = best
+        # A split always explains at least as well as one level, so it has to
+        # explain materially better to be published; otherwise ordinary noise
+        # would be dressed up as a repricing.
+        one_level = None
+        if (fit.get("rates") or {}).get("input") and (fit.get("rates") or {}).get("output"):
+            one_level = _two_level_residual(dated, fit["rates"]) / max(1, len(dated))
+        maximum_ratio = float(config.get("max_residual_ratio", 0.5))
+        # Cache read is small and the noisiest of the three fitted classes, so
+        # the shift is judged on the two base rates only; the cache shift stays
+        # in the record for the audit trail.
+        gated = [abs(shifts[key]) for key in ("input", "output") if key in shifts]
+        publishable = bool(gated) and max(gated) >= minimum_shift
+        if one_level is not None and score > maximum_ratio * one_level:
+            publishable = False
+        if publishable:
+            newer_fit["window_requested_start"] = window_start
+            newer_fit["change_point"] = {
+                "detected": True,
+                "date": split,
+                "window_requested_start": window_start,
+                "rows_before": older_fit.get("rows"),
+                "rows_after": newer_fit.get("rows"),
+                "rates_before": dict(older_fit.get("rates") or {}),
+                "rates_after": dict(newer_fit.get("rates") or {}),
+                "relative_shift": shifts,
+            }
+            return newer_fit
+
+    if tried:
+        fit["reason"] = (
+            "%s; no split of the window yields two consistently priced segments "
+            "at least %s apart" % (fit.get("reason"), minimum_shift)
+        )
+    return fit
 
 
 def resolve_rates(

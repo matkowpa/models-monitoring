@@ -147,6 +147,11 @@ history.
 - Measured rates describe this account and this window. Peak/off-peak billing (for example
   DeepSeek V4 Pro) appears as one blended measured rate, and only models with enough
   independent token mixes can be fitted at all - the rest are labelled `reference`.
+- A model repriced inside the window is published at the **new** level, never averaged: when
+  the whole-window fit fails, the run splits the window at the detected date and keeps the
+  newer segment, labelled with that effective start date. The older regime stays in the
+  snapshot, and a change smaller than `rate_fit.change_point.min_rate_shift_ratio` is left
+  unpriced rather than called a repricing.
 - Free-model availability is a rotating promotion, and free usage is documented as unavailable
   through the Cline API, so a free model's `$0` is catalog-declared and cannot be confirmed
   from billing.

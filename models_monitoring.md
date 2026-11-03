@@ -76,6 +76,20 @@ Credit-billed rows carry a flat, rounded, or provider-dependent component per re
 
 Accepted credits rates carry the provenance `measured-credits`, never plain `measured`, and the rejected credits fit is stored next to the chosen one in the snapshot so both verdicts stay auditable.
 
+#### Price changes inside the rate window
+
+A provider can reprice a model under an unchanged catalog id. With a 30-day window the rows then hold two price levels, and a single linear fit lands between them: reconciliation and median error both blow up, the fit is rejected, and the model is published with no price at all — exactly when the change is what a reader needs to see.
+
+When the whole-window fit is rejected with `rate_fit.change_point.enabled`, the run retries the window as two segments split on each distinct usage date. A split is published only when all of these hold:
+
+- both segments have at least `min_rows` usable rows and at least `min_segment_share` (default 10%) of the window's rows;
+- each segment passes the full acceptance gates of its own profile on its own;
+- at least one fitted rate differs between the segments by `min_rate_shift_ratio` (default 20%).
+
+Requiring the older segment to fit as well is what keeps a merely noisy model rejected: noise does not produce two internally consistent price levels with a clean break. The published record is the **newer** fit — the price that applies to new traffic — with `window_start` moved to the detected date, the requested start kept in `window_requested_start`, and a `change_point` block recording both regimes, their row counts, the per-class relative shift, and the rows excluded. Rates measured this way keep their `measured` / `measured-credits` provenance; the dashboard labels them with the effective start date, and the older regime is never averaged.
+
+A model that cannot be split this way keeps its whole-window rejection, and the rejection reason records that the split was attempted.
+
 #### Reference rates (fallback source)
 
 `data/clinepass_reference_rates.json` holds a dated copy of Cline's published ClinePass reference table (input, output, cached read, cached write per 1M USD) together with its source URL and retrieval date. It is used for a model whose fit is rejected, for a model with no ClinePass usage inside $W$, and for cache write, which usage rows do not report separately. Cache write is never fitted; when the reference table has no value, cache write uses $P_{in}$.
