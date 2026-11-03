@@ -77,7 +77,11 @@ class DashboardLayoutTests(FixtureTestCase):
         self.assertIn("#models tbody tr[hidden] { display: none; }", self.css)
 
     def test_the_chart_keeps_a_usable_width_when_the_viewport_is_narrow(self):
-        self.assertIn("min-width: 700px", self.css)
+        # The SVG is laid out in a 940-unit viewBox and the labels are 11px in
+        # user units: squeezing it to 700px scaled every model name down to
+        # about 8px on a phone. The chart keeps its natural width and scrolls
+        # horizontally instead, so the labels stay at their designed size.
+        self.assertIn("min-width: 940px", self.css)
         self.assertIn("overflow-x: auto", self.css)
 
     def test_every_row_carries_the_attributes_the_script_filters_on(self):

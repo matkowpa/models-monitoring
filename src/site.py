@@ -274,8 +274,8 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
   border-radius: 8px; margin: 10px 0; }
 .chart { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px;
   overflow-x: auto; }
-.chart svg { width: 100%; min-width: 700px; height: auto; display: block; }
-.chart text { fill: var(--ink); font-size: 11px; }
+.chart svg { width: 100%; min-width: 940px; height: auto; display: block; }
+.chart text { fill: var(--ink); font-size: 11px; font-weight: 400; }
 .chart .axis { stroke: var(--line); }
 .chart .grid { stroke: var(--line); stroke-dasharray: 3 4; opacity: .7; }
 .chart .frontier { fill: none; stroke: var(--frontier); stroke-width: 2.5; }
@@ -287,9 +287,9 @@ pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 
 .chart .ring { fill: none; stroke: var(--frontier); stroke-width: 1.5; opacity: .9; }
 .chart .ring-best { stroke: var(--best); stroke-width: 2; }
 .chart .leader { stroke: var(--muted); stroke-width: 1; opacity: .55; }
-/* A card-coloured halo keeps a label readable where it crosses a grid line. */
-.chart .chart-label { paint-order: stroke; stroke: var(--card); stroke-width: 2.5;
-  stroke-linejoin: round; }
+/* Model labels are plain text: the card-coloured halo that used to outline them
+   thickened every glyph and read as bold at phone size. */
+.chart .chart-label { font-weight: 400; paint-order: normal; stroke: none; }
 .chart .band { fill: var(--bg); stroke: var(--line); stroke-dasharray: 4 4; }
 .chart .legend-box { fill: var(--card); stroke: var(--line); }
 footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
