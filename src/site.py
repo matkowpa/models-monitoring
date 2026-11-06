@@ -269,6 +269,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .prov-fallback, .prov-none, .prov-mixed { color: var(--muted); }
 .muted { color: var(--muted); }
 .small { font-size: 12px; }
+.chart-excluded { margin: 6px 0 0; line-height: 1.5; }
 .code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; }
 pre.code { overflow-x: auto; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line);
   border-radius: 8px; margin: 10px 0; }
@@ -806,7 +807,43 @@ def render_chart(report, config=None):
         )
     )
     parts.append("</svg>")
+    parts.append(_not_plotted_note(report, points, band))
     return "".join(parts)
+
+
+def _not_plotted_note(report, points, band):
+    """One line naming the models the chart leaves out, and why.
+
+    The chart only plots a model that has both a current AA score and a usable
+    cost, so a reader looking for a model in the ClinePass catalog needs to know
+    whether it is missing from the data or simply has no price yet.
+    """
+    plotted = {point.get("id") for point in list(points) + list(band)}
+    missing = []
+    for model in report.get("models") or []:
+        if model.get("id") in plotted:
+            continue
+        quality = (model.get("quality") or {}).get("intelligence_index")
+        cost = (model.get("cost_usd") or {}).get("execution")
+        route = model.get("quality_evidence") or {}
+        if quality is None and route.get("reason") == "pre-revision" and route.get("last_value") is not None:
+            reason = "no current AA score (last %.2f on %s, before the index revision on %s)" % (
+                float(route["last_value"]),
+                str(route.get("last_seen") or "?"),
+                str(route.get("revision_day") or "?"),
+            )
+        elif quality is None:
+            reason = "no current AA score"
+        elif cost is None:
+            reason = "no usable cost"
+        else:
+            reason = "no profile cost"
+        missing.append("%s (%s)" % (model.get("name") or model.get("id"), reason))
+    if not missing:
+        return ""
+    return '<p class="muted small chart-excluded" data-role="chart-excluded">Not plotted: %s</p>' % escape(
+        "; ".join(missing)
+    )
 
 
 TABLE_COLUMNS = (

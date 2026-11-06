@@ -210,5 +210,74 @@ class ChartLegendTests(unittest.TestCase):
         self.assertIn("best value", svg)
 
 
+class NotPlottedNoteTests(unittest.TestCase):
+    """A model missing from the chart must say why, not just disappear.
+
+    The chart plots a model only when it has both a current AA score and a
+    usable cost, so a ClinePass model missing from it used to look like a model
+    the monitor never found.
+    """
+
+    def snapshot(self):
+        snapshot = report([("a", "A", "glm", 50.0, 0.01)])
+        snapshot["models"] = [
+            {
+                "id": "a",
+                "name": "A",
+                "quality": {"intelligence_index": 50.0},
+                "cost_usd": {"execution": 0.01},
+                "quality_evidence": {},
+            },
+            {
+                "id": "b",
+                "name": "Kimi K3",
+                "quality": {},
+                "cost_usd": {"execution": 0.6},
+                "quality_evidence": {
+                    "reason": "pre-revision",
+                    "last_value": 43.6,
+                    "last_seen": "2026-10-26",
+                    "revision_day": "2026-10-28",
+                },
+            },
+            {
+                "id": "c",
+                "name": "Qwen3.8 Max",
+                "quality": {},
+                "cost_usd": {"execution": 0.28},
+                "quality_evidence": {"reason": "absent-from-feed"},
+            },
+            {
+                "id": "d",
+                "name": "MiniMax M3.1 Flash",
+                "quality": {"intelligence_index": 29.1},
+                "cost_usd": {"execution": None},
+                "quality_evidence": {},
+            },
+        ]
+        return snapshot
+
+    def test_every_excluded_model_is_named_with_its_reason(self):
+        svg = site.render_chart(self.snapshot(), None)
+        self.assertIn('data-role="chart-excluded"', svg)
+        self.assertIn("Kimi K3 (no current AA score (last 43.60 on 2026-10-26", svg)
+        self.assertIn("Qwen3.8 Max (no current AA score)", svg)
+        self.assertIn("MiniMax M3.1 Flash (no usable cost)", svg)
+        self.assertNotIn("Not plotted: A", svg)
+
+    def test_a_fully_plotted_report_has_no_note(self):
+        snapshot = report([("a", "A", "glm", 50.0, 0.01)])
+        snapshot["models"] = [
+            {
+                "id": "a",
+                "name": "A",
+                "quality": {"intelligence_index": 50.0},
+                "cost_usd": {"execution": 0.01},
+                "quality_evidence": {},
+            }
+        ]
+        self.assertNotIn("chart-excluded", site.render_chart(snapshot, None))
+
+
 if __name__ == "__main__":
     unittest.main()
