@@ -1,0 +1,38 @@
+name: AA catalog dump
+
+# Manual only: records the whole Artificial Analysis model list as an artifact so
+# an unmatched ClinePass model can be traced to AA's own name. The dump is never
+# committed or published; it carries no secrets and is deleted after 7 days.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v7
+
+      - name: Install Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Dump the catalog
+        env:
+          ARTIFICIAL_ANALYSIS_API_KEY: ${{ secrets.ARTIFICIAL_ANALYSIS_API_KEY }}
+        run: python scripts/aa_catalog_dump.py aa-catalog.json
+
+      - name: Upload the dump
+        uses: actions/upload-artifact@v4
+        with:
+          name: aa-catalog
+          path: aa-catalog.json
+          retention-days: 7
