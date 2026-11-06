@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report": {
-    "generated_at": "2026-11-06T12:54:16.195741+01:00",
+    "generated_at": "2026-11-06T15:45:12.753760+01:00",
     "date": "2026-11-06",
     "weekday": "Friday",
     "timezone": "Europe/Warsaw",
@@ -14,7 +14,7 @@
       "model_count": 18
     },
     "narrative": {
-      "summary": "No changes this week. There were no catalog additions or removals. Observed blend, quality, and rate metrics showed no changes. This is not the first run; previous data exists.",
+      "summary": "This week, no catalog additions/removals or observed blend changes were reported. For **cline-pass/qwen3.8-max**, quality changed from null to **33.7**, and the **cache_read** rate changed from **0.25** to **0.17** (change ratio **-0.32**).",
       "model": "cline-pass/deepseek-v4.1-flash-1017",
       "source": "narrative"
     },
@@ -27,10 +27,7 @@
       "cost_usd": 100000000,
       "credit_usd": 1000000
     },
-    "warnings": [
-      "the reference rate table was published 35 days ago (2026-10-02); catalog entries added since then have no fallback rate and are published without a price unless their own fit is estimable",
-      "4 catalog model(s) have no reference rate entry: deepseek-v4.1-flash-1017, kimi-k3.1-pro, mimo-v2.6-pro, minimax-m3.1-flash; they are priced only when their own usage fit is accepted"
-    ],
+    "warnings": [],
     "previous_snapshot": "2026-11-04.json"
   },
   "account": {
@@ -85,17 +82,17 @@
         {
           "type": "five_hour",
           "percentUsed": 2,
-          "resetsAt": "2026-11-06T11:56:01.24781925Z"
+          "resetsAt": "2026-11-06T18:15:11.993972354Z"
         },
         {
           "type": "weekly",
-          "percentUsed": 23,
-          "resetsAt": "2026-11-06T18:58:36.25211315Z"
+          "percentUsed": 24,
+          "resetsAt": "2026-11-06T18:58:35.996217944Z"
         },
         {
           "type": "monthly",
           "percentUsed": 11,
-          "resetsAt": "2026-11-29T19:22:32.25445342Z"
+          "resetsAt": "2026-11-29T19:22:31.998698534Z"
         }
       ]
     },
@@ -105,16 +102,16 @@
   "reference_rates": {
     "source_name": "Cline ClinePass reference pricing",
     "source_url": "https://docs.cline.bot/getting-started/clinepass",
-    "retrieved_at": "2026-10-02",
+    "retrieved_at": "2026-11-06",
     "currency": "USD",
     "unit": "per 1M tokens"
   },
   "observation": {
-    "rows_total": 12522,
+    "rows_total": 12722,
     "rows_dropped": 78,
-    "rows_in_window": 12490,
-    "pages": 63,
-    "rows_fetched": 12600,
+    "rows_in_window": 12611,
+    "pages": 64,
+    "rows_fetched": 12800,
     "paging_stopped_at_window_start": true,
     "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "fit_rejections": {
@@ -130,7 +127,7 @@
       "cline-pass/minimax-m3": "1 usable ClinePass rows in the window, minimum is 12 (credits: 4 usable ClinePass rows in the window, minimum is 12)",
       "cline-pass/qwen3.7-plus": "3 usable ClinePass rows in the window, minimum is 12 (credits: 5 usable ClinePass rows in the window, minimum is 12)"
     },
-    "aa_matches": 13,
+    "aa_matches": 14,
     "aa_carried": 0,
     "quality_evidence": {
       "cline-pass/mimo-v2.6-pro": {
@@ -194,11 +191,14 @@
         "revision_day": "2026-10-28"
       },
       "cline-pass/qwen3.8-max": {
-        "via": "unmatched",
-        "key": null,
-        "candidates": [],
+        "via": "identity",
+        "key": "qwen3-8-max",
+        "candidates": [
+          "Qwen3.8 Max",
+          "Qwen3.8 Max (0902)"
+        ],
         "carried_from": null,
-        "reason": "absent-from-feed",
+        "reason": null,
         "last_seen": null,
         "last_value": null,
         "revision_day": "2026-10-28"
@@ -339,8 +339,8 @@
   },
   "stats": {
     "discovered": 18,
-    "priced": 15,
-    "benchmarked": 13,
+    "priced": 18,
+    "benchmarked": 14,
     "measured_rates": 3,
     "measured_credits_rates": 1,
     "free_models": 4,
@@ -355,18 +355,18 @@
       "cost_usd": 0.0,
       "free": true
     },
-    "quality_fresh": 13,
+    "quality_fresh": 14,
     "quality_carried": 0
   },
   "medians": {
-    "planning": 0.0378,
-    "execution": 0.066
+    "planning": 0.035699999999999996,
+    "execution": 0.063
   },
   "best_value": {
     "planning": {
       "id": "cline-pass/muse-spark-1.3-contributor",
       "name": "Meta: Muse Spark 1.3 Contributor",
-      "efficiency": 49.88,
+      "efficiency": 49.46,
       "cost_usd": 0.006,
       "quality": 36.6,
       "basis": "highest_efficiency_pareto"
@@ -374,7 +374,7 @@
     "execution": {
       "id": "cline-pass/muse-spark-1.3-contributor",
       "name": "Meta: Muse Spark 1.3 Contributor",
-      "efficiency": 58.61,
+      "efficiency": 58.08,
       "cost_usd": 0.0098,
       "quality": 36.6,
       "basis": "highest_efficiency_pareto"
@@ -382,6 +382,19 @@
   },
   "chart": {
     "points": [
+      {
+        "id": "cline-pass/mimo-v2.6-pro",
+        "name": "Xiaomi: MiMo-V2.6-Pro",
+        "family": "mimo",
+        "quality": 29.9,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.032835,
+        "frontier": false
+      },
       {
         "id": "cline-pass/deepseek-v4.1-flash-1017",
         "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
@@ -393,6 +406,32 @@
           "planning"
         ],
         "cost": 0.0306,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/kimi-k3.1-pro",
+        "name": "MoonshotAI: Kimi K3.1 Pro",
+        "family": "kimi",
+        "quality": 46.5,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.275,
+        "frontier": true
+      },
+      {
+        "id": "cline-pass/minimax-m3.1-flash",
+        "name": "MiniMax: MiniMax M3.1 Flash",
+        "family": "minimax",
+        "quality": 29.1,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0189,
         "frontier": false
       },
       {
@@ -419,6 +458,19 @@
           "planning"
         ],
         "cost": 0.21846000000000002,
+        "frontier": false
+      },
+      {
+        "id": "cline-pass/qwen3.8-max",
+        "name": "cline-pass/qwen3.8-max",
+        "family": "qwen",
+        "quality": 33.7,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.22749999999999998,
         "frontier": false
       },
       {
@@ -529,20 +581,27 @@
       "openrouter_id": "xiaomi/mimo-v2.6-pro",
       "rates": {
         "input": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.435,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "output": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.87,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.0036,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.435,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
         "catalog_free": false,
         "fit": {
@@ -570,7 +629,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -601,25 +660,25 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Pro",
         "aa_slug": "mimo-v2-6-pro",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
-        "planning": null,
-        "execution": null
+        "planning": 0.02508,
+        "execution": 0.04059
       },
       "efficiency": {
-        "planning": null,
-        "execution": null
+        "planning": 32.44693363057211,
+        "execution": 34.97381990861558
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": null,
+      "blended_input_output_usd_per_mtok": 0.522,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false,
+      "priced": true,
       "quality_evidence": {
         "via": "exact",
         "key": "mimo-v2.6-pro",
@@ -647,30 +706,30 @@
           "provenance": "measured-credits",
           "window_start": "2026-10-27",
           "window_end": "2026-11-06",
-          "rows": 3045,
+          "rows": 3166,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.467
+          "condition_number": 1.472
         },
         "output": {
           "usd_per_mtok": 1.2,
           "provenance": "measured-credits",
           "window_start": "2026-10-27",
           "window_end": "2026-11-06",
-          "rows": 3045,
+          "rows": 3166,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.467
+          "condition_number": 1.472
         },
         "cache_read": {
           "usd_per_mtok": 0.006,
           "provenance": "measured-credits",
           "window_start": "2026-10-27",
           "window_end": "2026-11-06",
-          "rows": 3045,
+          "rows": 3166,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.467
+          "condition_number": 1.472
         },
         "cache_write": {
           "usd_per_mtok": 0.3,
@@ -686,8 +745,8 @@
             "output": 1.2,
             "cache_read": 0.006
           },
-          "rows": 3045,
-          "rows_in_window": 3045,
+          "rows": 3166,
+          "rows_in_window": 3166,
           "dropped_rows": 0,
           "window_start": "2026-10-27",
           "window_requested_start": "2026-10-08",
@@ -697,7 +756,7 @@
             "date": "2026-10-27",
             "window_requested_start": "2026-10-08",
             "rows_before": 3568,
-            "rows_after": 3045,
+            "rows_after": 3166,
             "rates_before": {
               "input": 0.147293,
               "output": 0.605842,
@@ -714,17 +773,17 @@
               "cache_read": 0.997337
             }
           },
-          "condition_number": 1.467,
+          "condition_number": 1.472,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
           "median_relative_error": 1e-06,
-          "p90_relative_error": 2.2e-05,
+          "p90_relative_error": 2.1e-05,
           "total_reconciliation_error": 0.0
         },
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "measured",
@@ -734,8 +793,8 @@
             "output": 1.2,
             "cache_read": 0.006
           },
-          "rows": 3045,
-          "rows_in_window": 3045,
+          "rows": 3166,
+          "rows_in_window": 3166,
           "dropped_rows": 0,
           "window_start": "2026-10-27",
           "window_requested_start": "2026-10-08",
@@ -745,7 +804,7 @@
             "date": "2026-10-27",
             "window_requested_start": "2026-10-08",
             "rows_before": 3568,
-            "rows_after": 3045,
+            "rows_after": 3166,
             "rates_before": {
               "input": 0.147293,
               "output": 0.605842,
@@ -762,11 +821,11 @@
               "cache_read": 0.997337
             }
           },
-          "condition_number": 1.467,
+          "condition_number": 1.472,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
           "median_relative_error": 1e-06,
-          "p90_relative_error": 2.2e-05,
+          "p90_relative_error": 2.1e-05,
           "total_reconciliation_error": 0.0
         }
       },
@@ -776,7 +835,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash 1017 (Max)",
         "aa_slug": "deepseek-v4-1-flash-1017",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -784,8 +843,8 @@
         "execution": 0.0384
       },
       "efficiency": {
-        "planning": 36.24676205028166,
-        "execution": 38.85087770819728
+        "planning": 35.83445124932179,
+        "execution": 38.31396414132898
       },
       "pareto": {
         "planning": false,
@@ -818,20 +877,28 @@
       "openrouter_id": "moonshotai/kimi-k3.1-pro",
       "rates": {
         "input": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 2.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "output": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 10.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 2.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "catalog_free": false,
         "fit": {
@@ -859,7 +926,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -868,25 +935,25 @@
         "coding_index_display_only": true,
         "aa_name": "Kimi K3.1 Pro",
         "aa_slug": "kimi-k3-1-pro",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
-        "planning": null,
-        "execution": null
+        "planning": 0.2,
+        "execution": 0.35
       },
       "efficiency": {
-        "planning": null,
-        "execution": null
+        "planning": 34.069979896835065,
+        "execution": 26.708550493340702
       },
       "pareto": {
-        "planning": false,
-        "execution": false
+        "planning": true,
+        "execution": true
       },
-      "blended_input_output_usd_per_mtok": null,
+      "blended_input_output_usd_per_mtok": 3.6,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false,
+      "priced": true,
       "quality_evidence": {
         "via": "exact",
         "key": "kimi-k3.1-pro",
@@ -910,20 +977,27 @@
       "openrouter_id": "minimax/minimax-m3.1-flash",
       "rates": {
         "input": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.15,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "output": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.6,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.015,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
-          "usd_per_mtok": null,
-          "provenance": null
+          "usd_per_mtok": 0.15,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
         },
         "catalog_free": false,
         "fit": {
@@ -951,7 +1025,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -960,25 +1034,25 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3.1-Flash",
         "aa_slug": "minimax-m3-1-flash",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
-        "planning": null,
-        "execution": null
+        "planning": 0.0138,
+        "execution": 0.024
       },
       "efficiency": {
-        "planning": null,
-        "execution": null
+        "planning": 35.95627903625466,
+        "execution": 40.23853938223009
       },
       "pareto": {
         "planning": false,
         "execution": false
       },
-      "blended_input_output_usd_per_mtok": null,
+      "blended_input_output_usd_per_mtok": 0.24,
       "observed_blended_usd_per_mtok": null,
       "observed_rows": 0,
-      "priced": false,
+      "priced": true,
       "quality_evidence": {
         "via": "exact",
         "key": "minimax-m3.1-flash",
@@ -1062,7 +1136,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -1071,7 +1145,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiMo-V2.6-Flash",
         "aa_slug": "mimo-v2-6-flash",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1079,8 +1153,8 @@
         "execution": 0.013719985
       },
       "efficiency": {
-        "planning": 37.54963187719122,
-        "execution": 44.82949696201379
+        "planning": 37.13732107623135,
+        "execution": 44.2925833951455
       },
       "pareto": {
         "planning": false,
@@ -1116,19 +1190,19 @@
           "usd_per_mtok": 1.4,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 4.4,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.26,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 1.4,
@@ -1161,7 +1235,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1192,7 +1266,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3 (Max)",
         "aa_slug": "glm-5-3",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1200,8 +1274,8 @@
         "execution": 0.27940000000000004
       },
       "efficiency": {
-        "planning": 21.404615616034405,
-        "execution": 15.045647270690822
+        "planning": 20.99230481507454,
+        "execution": 14.508733703822525
       },
       "pareto": {
         "planning": false,
@@ -1237,25 +1311,25 @@
           "usd_per_mtok": 2.0,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 6.0,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
-          "usd_per_mtok": 0.25,
+          "usd_per_mtok": 0.17,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 2.5,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "catalog_free": false,
         "fit": {
@@ -1283,17 +1357,25 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
-      "quality": null,
+      "quality": {
+        "intelligence_index": 33.7,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "Qwen3.8 Max (0902)",
+        "aa_slug": "qwen3-8-max",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
+        "fresh": true
+      },
       "cost_usd": {
-        "planning": 0.183,
-        "execution": 0.32
+        "planning": 0.167,
+        "execution": 0.288
       },
       "efficiency": {
-        "planning": null,
-        "execution": null
+        "planning": 22.570739383338427,
+        "execution": 16.158839376460836
       },
       "pareto": {
         "planning": false,
@@ -1304,11 +1386,14 @@
       "observed_rows": 1,
       "priced": true,
       "quality_evidence": {
-        "via": "unmatched",
-        "key": null,
-        "candidates": [],
+        "via": "identity",
+        "key": "qwen3-8-max",
+        "candidates": [
+          "Qwen3.8 Max",
+          "Qwen3.8 Max (0902)"
+        ],
         "carried_from": null,
-        "reason": "absent-from-feed",
+        "reason": null,
         "last_seen": null,
         "last_value": null,
         "revision_day": "2026-10-28"
@@ -1329,19 +1414,19 @@
           "usd_per_mtok": 1.32,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 3.96,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.044,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 1.32,
@@ -1374,7 +1459,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1405,7 +1490,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4 Pro 0813 (Max)",
         "aa_slug": "deepseek-v4-pro",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1413,8 +1498,8 @@
         "execution": 0.1562
       },
       "efficiency": {
-        "planning": 16.584092229539696,
-        "execution": 13.157147808830693
+        "planning": 16.171781428579827,
+        "execution": 12.620234241962397
       },
       "pareto": {
         "planning": false,
@@ -1450,19 +1535,19 @@
           "usd_per_mtok": 0.1,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 0.2,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.002,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 0.1,
@@ -1495,7 +1580,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1526,7 +1611,7 @@
         "coding_index_display_only": true,
         "aa_name": "Muse Spark 1.3 (Max)",
         "aa_slug": "muse-spark-1-3",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1534,8 +1619,8 @@
         "execution": 0.0098
       },
       "efficiency": {
-        "planning": 49.87675914306277,
-        "execution": 58.61289896104486
+        "planning": 49.464448342102905,
+        "execution": 58.07598539417657
       },
       "pareto": {
         "planning": true,
@@ -1571,24 +1656,25 @@
           "usd_per_mtok": 3.0,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 15.0,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.3,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 3.0,
-          "provenance": "input-fallback",
-          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
         },
         "catalog_free": false,
         "fit": {
@@ -1616,7 +1702,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1741,7 +1827,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -1750,7 +1836,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3-Flash",
         "aa_slug": "glm-5-3-flash",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1758,8 +1844,8 @@
         "execution": 0.0285
       },
       "efficiency": {
-        "planning": 34.00157164666855,
-        "execution": 37.492032841549694
+        "planning": 33.58926084570869,
+        "execution": 36.9551192746814
       },
       "pareto": {
         "planning": false,
@@ -1795,25 +1881,25 @@
           "usd_per_mtok": 2.5,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 7.5,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.5,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 3.125,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "catalog_free": false,
         "fit": {
@@ -1841,7 +1927,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1909,19 +1995,19 @@
           "usd_per_mtok": 0.3,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 1.2,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.06,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 0.3,
@@ -1954,7 +2040,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -1985,7 +2071,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3",
         "aa_slug": "minimax-m3",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1993,8 +2079,8 @@
         "execution": 0.06
       },
       "efficiency": {
-        "planning": 19.74962500721156,
-        "execution": 20.00002818999948
+        "planning": 19.337314206251694,
+        "execution": 19.463114623131183
       },
       "pareto": {
         "planning": false,
@@ -2030,25 +2116,25 @@
           "usd_per_mtok": 0.4,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "output": {
           "usd_per_mtok": 1.6,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_read": {
           "usd_per_mtok": 0.04,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "cache_write": {
           "usd_per_mtok": 0.5,
           "provenance": "reference",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "catalog_free": false,
         "fit": {
@@ -2076,7 +2162,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         },
         "credits_fit": {
           "status": "rejected",
@@ -2161,7 +2247,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -2170,7 +2256,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Super VL",
         "aa_slug": "nemotron-3-5-super-vl",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -2232,7 +2318,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": null,
@@ -2295,7 +2381,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -2304,7 +2390,7 @@
         "coding_index_display_only": true,
         "aa_name": "Beam 1.0",
         "aa_slug": "reflection-beam",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -2368,7 +2454,7 @@
         "reference_source": {
           "source_name": "Cline ClinePass reference pricing",
           "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-10-02"
+          "retrieved_at": "2026-11-06"
         }
       },
       "quality": {
@@ -2377,7 +2463,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Lightning",
         "aa_slug": "nemotron-3-5-lightning",
-        "retrieved_at": "2026-11-06T12:54:16.195741+01:00",
+        "retrieved_at": "2026-11-06T15:45:12.753760+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -2413,9 +2499,26 @@
     "first_run": false,
     "catalog_added": [],
     "catalog_removed": [],
-    "quality_changed": {},
-    "rate_changed": {},
+    "quality_changed": {
+      "cline-pass/qwen3.8-max": {
+        "name": "cline-pass/qwen3.8-max",
+        "from": null,
+        "to": 33.7
+      }
+    },
+    "rate_changed": {
+      "cline-pass/qwen3.8-max": {
+        "name": "cline-pass/qwen3.8-max",
+        "classes": {
+          "cache_read": {
+            "from": 0.25,
+            "to": 0.17,
+            "change_ratio": -0.32
+          }
+        }
+      }
+    },
     "observed_blend_changed": {}
   },
-  "summary": "No changes this week. There were no catalog additions or removals. Observed blend, quality, and rate metrics showed no changes. This is not the first run; previous data exists."
+  "summary": "This week, no catalog additions/removals or observed blend changes were reported. For **cline-pass/qwen3.8-max**, quality changed from null to **33.7**, and the **cache_read** rate changed from **0.25** to **0.17** (change ratio **-0.32**)."
 }

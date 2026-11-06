@@ -134,7 +134,7 @@ ul.links { padding-left: 18px; }
 <body>
 <div class="wrap">
 <h1>Methodology</h1>
-<p class="sub">Generated <strong>Friday, 6 November 2026, 12:54</strong> (Europe/Warsaw) in live mode. This page describes exactly how the numbers on the dashboard are produced and where each rate came from.</p>
+<p class="sub">Generated <strong>Friday, 6 November 2026, 15:45</strong> (Europe/Warsaw) in live mode. This page describes exactly how the numbers on the dashboard are produced and where each rate came from.</p>
 <h2>1. Quality</h2>
 <p>The AA Intelligence Index (Artificial Analysis) is the only quality input. It is normalized onto 0-100 with <span class="code">Q = clamp(100 * (s - min) / (max - min), 0, 100)</span>, and a model without a current matched index is published with rates and no score rather than with an estimate. The Coding Index is display-only: it never affects cost, efficiency, or selection, and there is no minimum-quality gate. Source: <a href="https://artificialanalysis.ai/">artificialanalysis.ai</a>.</p>
 <h2>2. Prices</h2>
@@ -146,7 +146,7 @@ ul.links { padding-left: 18px; }
 <p>A model repriced inside the window is never averaged. When the whole-window fit is rejected, the window is retried as two segments split on each usage date; the newer segment is published only when both segments fit on their own and at least one rate moved by 0.2 or more, because a noisy model does not produce two internally consistent price levels. The published rates then carry the effective start date, the requested window start is kept in the snapshot, and the older regime stays recorded next to the newer one.</p>
 <p>When a measured rate and the dated reference entry disagree by more than 1.5x, the run records a warning: the reference table is a snapshot, and a provider can swap the model or halve a price behind an unchanged catalog id. The measured value is what the report publishes; the warning says the table is stale for that model.</p>
 <h3>Reference rates (fallback)</h3>
-<p>Cline ClinePass reference pricing, retrieved 2026-10-02 from <a href="https://docs.cline.bot/getting-started/clinepass">https://docs.cline.bot/getting-started/clinepass</a>, fills in models whose fit cannot be estimated and the cache-write class, which usage rows do not report separately. Measured and reference classes are never mixed inside one model, and a fallback value is never described as a measured current rate.</p>
+<p>Cline ClinePass reference pricing, retrieved 2026-11-06 from <a href="https://docs.cline.bot/getting-started/clinepass">https://docs.cline.bot/getting-started/clinepass</a>, fills in models whose fit cannot be estimated and the cache-write class, which usage rows do not report separately. Measured and reference classes are never mixed inside one model, and a fallback value is never described as a measured current rate.</p>
 <h3>Free models</h3>
 <p>Models in the catalog's free list carry declared zero rates with provenance <span class="code">catalog-free</span>. Free usage is documented as unavailable through the Cline API, so no billing rows are expected and the zero price cannot be confirmed from billing; it is a rotating promotion that can disappear.</p>
 <h2>3. Task cost and efficiency</h2>
@@ -158,7 +158,7 @@ ul.links { padding-left: 18px; }
 <h2>5. Change detection</h2>
 <p>The delta compares catalog additions and removals, AA quality changes, per-class rate changes above 0.01, and observed blended-rate drift above 0.1. It does not compare every rate field, efficiency rank, or Pareto or recommendation shift. The summary is capped at 100 words and must not invent missing values; if no narrative model can be used, a deterministic summary is published instead, and the dashboard names whichever produced it.</p>
 <h2>6. This run</h2>
-<p>Catalog discovery: <span class="code">recommended-models</span>. Usage rows normalised: 12522, dropped as inconsistent: 78, inside the rate window: 12490. Models discovered: 18, priced: 15, benchmarked: 13, with measured rates: 3, free: 4.</p>
+<p>Catalog discovery: <span class="code">recommended-models</span>. Usage rows normalised: 12722, dropped as inconsistent: 78, inside the rate window: 12611. Models discovered: 18, priced: 18, benchmarked: 14, with measured rates: 3, free: 4.</p>
 <h2>7. Verification</h2>
 <p>The offline pipeline and its tests establish parser, rate-fitting, scoring, rendering, archive, and fixture behaviour only. An offline run uses fixtures, never touches Cline, Artificial Analysis, or OpenRouter, and must never be presented as a live evaluation.</p><pre class="code">python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
