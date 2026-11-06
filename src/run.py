@@ -381,7 +381,9 @@ def fetch_aa_models(config):
     ``410 Gone``). The replacement is tier-gated: the Pro list lives at
     ``/api/v2/language/models`` and answers ``403`` for a key without the Pro
     package, whose documented fallback is the ``/free`` list. Both serve the same
-    ``data`` envelope, so the tier is negotiated here rather than in the parser.
+    paginated ``data`` envelope, so the tier is negotiated here rather than in
+    the parser, and every page is walked before scoring: a single page would
+    silently publish unmatched models with no score.
     """
     aa = config.get("artificial_analysis") or {}
     api_key = os.environ.get(aa.get("api_key_env", "ARTIFICIAL_ANALYSIS_API_KEY"), "")
@@ -397,14 +399,25 @@ def fetch_aa_models(config):
     ):
         if candidate and candidate not in endpoints:
             endpoints.append(candidate)
+    headers = {aa.get("header_name", "x-api-key"): api_key}
     payload = None
     for position, endpoint in enumerate(endpoints):
         try:
-            payload = http_json(
+            payload = fetch_aa_pages(
                 endpoint,
-                headers={aa.get("header_name", "x-api-key"): api_key},
+                headers,
                 timeout=aa.get("request_timeout_seconds", 30),
                 retries=aa.get("max_retries", 2),
+                max_pages=aa.get("max_pages", 25),
+            )
+            print(
+                "AA_CATALOG: %s returned %d model(s) over %d page(s), tier=%s"
+                % (
+                    endpoint,
+                    len(payload["data"]),
+                    payload.get("pages_fetched", 1),
+                    payload.get("tier") or "unknown",
+                )
             )
             break
         except HttpError as error:
@@ -426,6 +439,58 @@ def fetch_aa_models(config):
         coding_key=aa.get("coding_index_key", "artificial_analysis_coding_index"),
         default_scale=aa.get("index_scale"),
     )
+
+
+def fetch_aa_pages(endpoint, headers, timeout=30, retries=2, max_pages=25):
+    """Walk every page of an AA model list and merge the model records.
+
+    The list endpoint paginates (``pagination.page`` / ``page_size`` /
+    ``total_pages`` / ``has_more``), so stopping at page one would drop models
+    and publish them without a score. A failure on any page raises: a partly
+    read catalog is worse than no report.
+    """
+    records = []
+    seen = set()
+    page = 1
+    tier = None
+    while True:
+        url = "%s?page=%d" % (endpoint, page)
+        payload = http_json(url, headers=headers, timeout=timeout, retries=retries)
+        if not isinstance(payload, dict):
+            raise HttpError("artificial analysis: expected an object from %s" % url)
+        tier = payload.get("tier") or tier
+        items = payload.get("data")
+        if not isinstance(items, list):
+            raise HttpError("artificial analysis: expected a list of models from %s" % url)
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            key = str(item.get("slug") or item.get("id") or "").strip()
+            if key and key in seen:
+                continue
+            if key:
+                seen.add(key)
+            records.append(item)
+        pagination = payload.get("pagination")
+        if not isinstance(pagination, dict):
+            break
+        has_more = pagination.get("has_more")
+        total_pages = pagination.get("total_pages")
+        if not has_more:
+            if total_pages and page < total_pages:
+                raise HttpError(
+                    "artificial analysis: %s stopped at page %d of %s"
+                    % (url, page, total_pages)
+                )
+            break
+        if total_pages and page >= int(total_pages):
+            break
+        if page >= max_pages:
+            raise HttpError(
+                "artificial analysis: more than %d pages from %s" % (max_pages, endpoint)
+            )
+        page += 1
+    return {"data": records, "tier": tier, "pages_fetched": page}
 
 
 # ---------------------------------------------------------------------------

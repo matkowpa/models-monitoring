@@ -214,7 +214,7 @@ class ArtificialAnalysisEndpointTests(unittest.TestCase):
 
         run.http_json = fake_http_json
         index = run.fetch_aa_models(config())
-        self.assertEqual([self.aa["endpoint"]], seen)
+        self.assertEqual(["%s?page=1" % self.aa["endpoint"]], seen)
         self.assertTrue(index)
 
     def test_a_403_tier_gate_falls_back_to_the_free_list(self):
@@ -222,14 +222,63 @@ class ArtificialAnalysisEndpointTests(unittest.TestCase):
 
         def fake_http_json(url, **kwargs):
             seen.append(url)
-            if url == self.aa["endpoint"]:
+            if url.startswith(self.aa["endpoint"] + "?"):
                 raise run.HttpError("HTTP 403 from %s" % url, status=403)
             return self.payload
 
         run.http_json = fake_http_json
         index = run.fetch_aa_models(config())
-        self.assertEqual([self.aa["endpoint"], self.aa["free_endpoint"]], seen)
+        self.assertEqual(
+            [
+                "%s?page=1" % self.aa["endpoint"],
+                "%s?page=1" % self.aa["free_endpoint"],
+            ],
+            seen,
+        )
         self.assertTrue(index)
+
+    def test_every_page_is_walked_before_scoring(self):
+        pages = {
+            1: {
+                "tier": "free",
+                "pagination": {"page": 1, "page_size": 2, "total_pages": 2, "has_more": True},
+                "data": self.payload["data"][:1],
+            },
+            2: {
+                "tier": "free",
+                "pagination": {"page": 2, "page_size": 2, "total_pages": 2, "has_more": False},
+                "data": self.payload["data"][1:],
+            },
+        }
+        seen = []
+
+        def fake_http_json(url, **kwargs):
+            seen.append(url)
+            return pages[int(url.rsplit("=", 1)[1])]
+
+        run.http_json = fake_http_json
+        index = run.fetch_aa_models(config())
+        self.assertEqual(
+            ["%s?page=1" % self.aa["endpoint"], "%s?page=2" % self.aa["endpoint"]],
+            seen,
+        )
+        second = self.payload["data"][1]["name"]
+        self.assertIn(monitor.normalize_key(second), index)
+
+    def test_a_truncated_catalog_fails_instead_of_scoring_a_subset(self):
+        page = {
+            "tier": "free",
+            "pagination": {"page": 1, "page_size": 2, "total_pages": 3, "has_more": False},
+            "data": self.payload["data"],
+        }
+
+        def fake_http_json(url, **kwargs):
+            return page
+
+        run.http_json = fake_http_json
+        with self.assertRaises(run.HttpError) as caught:
+            run.fetch_aa_models(config())
+        self.assertIn("stopped at page", str(caught.exception))
 
     def test_a_retired_path_fails_without_an_endless_fallback(self):
         seen = []
@@ -242,7 +291,7 @@ class ArtificialAnalysisEndpointTests(unittest.TestCase):
         with self.assertRaises(run.HttpError) as caught:
             run.fetch_aa_models(config())
         self.assertIn("410", str(caught.exception))
-        self.assertEqual([self.aa["endpoint"]], seen)
+        self.assertEqual(["%s?page=1" % self.aa["endpoint"]], seen)
 
     def test_config_does_not_point_at_the_retired_data_api(self):
         for key in ("endpoint", "free_endpoint"):
