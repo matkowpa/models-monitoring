@@ -65,6 +65,22 @@ class ParsingTests(unittest.TestCase):
             rates.parse_rows("# ClinePass\n\nNo prices here.\n")
 
 
+class LabelTests(unittest.TestCase):
+    def setUp(self):
+        self.rows = rates.parse_rows(FIXTURE.read_text(encoding="utf-8"))
+
+    def test_the_base_label_loses_the_variant_marker(self):
+        labels = rates.build_labels(self.rows)
+        self.assertEqual("Qwen3.7 Plus", labels["qwen3.7-plus"])
+        self.assertEqual("DeepSeek V4.1 Flash", labels["deepseek-v4.1-flash"])
+        self.assertEqual("Qwen3.8 Max", labels["qwen3.8-max"])
+
+    def test_apply_stores_the_labels_sorted(self):
+        document = rates.apply({}, {}, "2026-11-06", labels=rates.build_labels(self.rows))
+        self.assertEqual(sorted(document["labels"]), list(document["labels"]))
+        self.assertEqual("Kimi K3.1 Pro", document["labels"]["kimi-k3.1-pro"])
+
+
 class DriftTests(unittest.TestCase):
     def setUp(self):
         self.entries = rates.build_entries(rates.parse_rows(FIXTURE.read_text(encoding="utf-8")))

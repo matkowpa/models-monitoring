@@ -129,6 +129,23 @@ def build_entries(rows):
     return entries
 
 
+def build_labels(rows):
+    """Cline's published label per slug, for a catalog entry that arrives unnamed.
+
+    A brand-new ClinePass id sometimes reaches the catalog with its slug as the
+    display name ("cline-pass/qwen3.8-max"), which then labels the table row and
+    the chart annotation. The pricing page carries the human label; the shortest
+    variant of it is the base model name.
+    """
+    labels = {}
+    for label, *_rest in rows:
+        slug = slug_for(label)
+        base = re.sub(r"\s+", " ", VARIANT_PAREN_RE.sub("", label)).strip()
+        if base and (slug not in labels or len(base) < len(labels[slug])):
+            labels[slug] = base
+    return labels
+
+
 def prefer(candidate, current):
     """Whether ``candidate`` should replace ``current`` for the same slug.
 
@@ -168,7 +185,7 @@ def diff(document, entries):
     return added, changed, gone
 
 
-def apply(document, entries, today):
+def apply(document, entries, today, labels=None):
     stored = document.setdefault("models", {})
     for slug, entry in entries.items():
         existing = stored.get(slug) or {}
@@ -179,6 +196,8 @@ def apply(document, entries, today):
             if key in existing:
                 updated.setdefault(key, existing[key])
         stored[slug] = updated
+    if labels:
+        document["labels"] = dict(sorted(labels.items()))
     if document.get("retrieved_at") != today:
         document["retrieved_at"] = today
     return document
@@ -241,7 +260,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         markdown = Path(args.input).read_text(encoding="utf-8") if args.input else fetch(args.url)
-        entries = build_entries(parse_rows(markdown))
+        rows = parse_rows(markdown)
+        entries = build_entries(rows)
     except (OSError, ValueError) as error:
         print("RATES_FAILED: %s" % error, file=sys.stderr)
         return 2
@@ -265,7 +285,7 @@ def main(argv=None):
     for slug in gone:
         print("  not listed (kept): %s" % slug)
     if args.write:
-        apply(document, entries, date.today().isoformat())
+        apply(document, entries, date.today().isoformat(), labels=build_labels(rows))
         RATES_FILE.write_text(dump_document(document), encoding="utf-8")
         print("WROTE %s" % RATES_FILE)
         return 0

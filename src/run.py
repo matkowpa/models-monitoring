@@ -694,7 +694,25 @@ def load_reference_rates():
         "currency": reference.get("currency"),
         "unit": reference.get("unit"),
     }
-    return reference.get("models") or {}, meta
+    return reference.get("models") or {}, reference.get("labels") or {}, meta
+
+
+def apply_display_names(entries, labels):
+    """Give an unnamed catalog entry the label Cline publishes for it.
+
+    A brand-new ClinePass id can arrive with its slug as the display name
+    ("cline-pass/qwen3.8-max"), which labels the table row and the chart
+    annotation. Only an id-shaped name is replaced, so a real catalog name always
+    wins.
+    """
+    for entry in entries:
+        name = str(entry.get("name") or "").strip()
+        if name and name != entry["id"] and "/" not in name:
+            continue
+        label = (labels or {}).get(entry["slug"])
+        if label:
+            entry["name"] = label
+    return entries
 
 
 def collect_catalog(config):
@@ -925,7 +943,8 @@ def run_report(config, mode=monitor.MODE_LIVE, site_dir=None, history_dir=None, 
         append_bounded(
             warnings, "catalog discovery fell back to the pinned list: %s" % catalog_reason
         )
-    reference_models, reference_meta = load_reference_rates()
+    reference_models, reference_labels, reference_meta = load_reference_rates()
+    apply_display_names(entries, reference_labels)
 
     window_days = int(config.get("rate_window_days", 30))
     window = {

@@ -386,5 +386,23 @@ class ArtificialAnalysisMatchTests(unittest.TestCase):
         self.assertEqual(5.5, (record or {}).get("intelligence_index"))
 
 
+class DisplayNameTests(unittest.TestCase):
+    """A catalog entry named after its slug must not reach the chart as an id."""
+
+    def test_an_id_shaped_name_takes_the_published_label(self):
+        entries = [
+            {"id": "cline-pass/qwen3.8-max", "slug": "qwen3.8-max", "name": "cline-pass/qwen3.8-max"},
+            {"id": "cline-pass/glm-5.3", "slug": "glm-5.3", "name": "Z.ai: GLM 5.3"},
+        ]
+        run.apply_display_names(entries, {"qwen3.8-max": "Qwen3.8 Max", "glm-5.3": "GLM 5.3"})
+        self.assertEqual("Qwen3.8 Max", entries[0]["name"])
+        self.assertEqual("Z.ai: GLM 5.3", entries[1]["name"])
+
+    def test_an_entry_without_a_label_keeps_the_catalog_name(self):
+        entries = [{"id": "cline-pass/x", "slug": "x", "name": "cline-pass/x"}]
+        run.apply_display_names(entries, {})
+        self.assertEqual("cline-pass/x", entries[0]["name"])
+
+
 if __name__ == "__main__":
     unittest.main()
