@@ -14,7 +14,8 @@
     "max_retries": 2
   },
   "artificial_analysis": {
-    "endpoint": "https://artificialanalysis.ai/api/v2/data/llms/models",
+    "endpoint": "https://artificialanalysis.ai/api/v2/language/models",
+    "free_endpoint": "https://artificialanalysis.ai/api/v2/language/models/free",
     "api_key_env": "ARTIFICIAL_ANALYSIS_API_KEY",
     "header_name": "x-api-key",
     "intelligence_index_key": "artificial_analysis_intelligence_index",

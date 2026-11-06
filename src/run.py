@@ -35,7 +35,16 @@ MAX_RETRY_DELAY_SECONDS = 60.0
 
 
 class HttpError(RuntimeError):
-    """A non-retryable HTTP failure after retries."""
+    """A non-retryable HTTP failure after retries.
+
+    ``status`` carries the HTTP status when the failure came from a response, so
+    callers can tell a tier gate (403, try the free endpoint) apart from a
+    transient failure or a retired path (410, nothing to fall back to).
+    """
+
+    def __init__(self, message, status=None):
+        super().__init__(message)
+        self.status = status
 
 
 def _sleep(seconds):
@@ -103,16 +112,22 @@ def _request_json(
             if error.code == RATE_LIMITED_STATUS and rate_limited < rate_limit_retries:
                 delay = _retry_delay(error, rate_limited, rate_limit_backoff)
                 rate_limited += 1
-                last_error = HttpError("HTTP %s from %s" % (error.code, url))
+                last_error = HttpError(
+                    "HTTP %s from %s" % (error.code, url), status=error.code
+                )
                 _sleep(delay)
                 continue
             if error.code in RETRYABLE_STATUSES and attempts < retries:
                 delay = _retry_delay(error, attempts, backoff)
                 attempts += 1
-                last_error = HttpError("HTTP %s from %s" % (error.code, url))
+                last_error = HttpError(
+                    "HTTP %s from %s" % (error.code, url), status=error.code
+                )
                 _sleep(delay)
                 continue
-            raise HttpError("HTTP %s from %s" % (error.code, url)) from error
+            raise HttpError(
+                "HTTP %s from %s" % (error.code, url), status=error.code
+            ) from error
         except (urllib.error.URLError, TimeoutError, OSError) as error:
             if attempts < retries:
                 delay = _retry_delay(error, attempts, backoff)
@@ -360,7 +375,14 @@ def fetch_usage_rows(config, window_start=None):
 
 
 def fetch_aa_models(config):
-    """The Artificial Analysis feed; raises when the key is missing or it fails."""
+    """The Artificial Analysis feed; raises when the key is missing or it fails.
+
+    AA retired the legacy ``/api/v2/data/*`` paths on 2026-11-04 (they answer
+    ``410 Gone``). The replacement is tier-gated: the Pro list lives at
+    ``/api/v2/language/models`` and answers ``403`` for a key without the Pro
+    package, whose documented fallback is the ``/free`` list. Both serve the same
+    ``data`` envelope, so the tier is negotiated here rather than in the parser.
+    """
     aa = config.get("artificial_analysis") or {}
     api_key = os.environ.get(aa.get("api_key_env", "ARTIFICIAL_ANALYSIS_API_KEY"), "")
     if not api_key:
@@ -368,12 +390,36 @@ def fetch_aa_models(config):
             "%s is not set; live scored publication requires an Artificial Analysis key"
             % aa.get("api_key_env", "ARTIFICIAL_ANALYSIS_API_KEY")
         )
-    payload = http_json(
-        aa.get("endpoint", "https://artificialanalysis.ai/api/v2/data/llms/models"),
-        headers={aa.get("header_name", "x-api-key"): api_key},
-        timeout=aa.get("request_timeout_seconds", 30),
-        retries=aa.get("max_retries", 2),
-    )
+    endpoints = []
+    for candidate in (
+        aa.get("endpoint", "https://artificialanalysis.ai/api/v2/language/models"),
+        aa.get("free_endpoint", ""),
+    ):
+        if candidate and candidate not in endpoints:
+            endpoints.append(candidate)
+    payload = None
+    for position, endpoint in enumerate(endpoints):
+        try:
+            payload = http_json(
+                endpoint,
+                headers={aa.get("header_name", "x-api-key"): api_key},
+                timeout=aa.get("request_timeout_seconds", 30),
+                retries=aa.get("max_retries", 2),
+            )
+            break
+        except HttpError as error:
+            last = position == len(endpoints) - 1
+            if error.status == 403 and not last:
+                print(
+                    "AA_ENDPOINT_FALLBACK: %s answered HTTP 403 (tier gate); "
+                    "trying %s" % (endpoint, endpoints[position + 1])
+                )
+                continue
+            if not last:
+                raise
+            raise HttpError(
+                "%s (tried %s)" % (error, ", ".join(endpoints)), status=error.status
+            ) from error
     return monitor.parse_aa_models(
         payload,
         intelligence_key=aa.get("intelligence_index_key", "artificial_analysis_intelligence_index"),

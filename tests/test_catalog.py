@@ -1,5 +1,6 @@
 """Catalog discovery, mapping, and quality ingestion (section 7 step 1 and 4)."""
 
+import os
 import unittest
 
 from tests.support import config, load
@@ -187,6 +188,66 @@ class EnvelopeAndAccountTests(unittest.TestCase):
         os.environ.pop("ARTIFICIAL_ANALYSIS_API_KEY", None)
         with self.assertRaises(run.HttpError):
             run.fetch_aa_models(config())
+
+
+class ArtificialAnalysisEndpointTests(unittest.TestCase):
+    """The AA feed moved off /api/v2/data/* on 2026-11-04 (410 Gone).
+
+    The replacement list is tier-gated, so the fetch negotiates the tier instead
+    of failing a whole report when the key has no Pro package.
+    """
+
+    def setUp(self):
+        self.original = run.http_json
+        self.addCleanup(setattr, run, "http_json", self.original)
+        os.environ["ARTIFICIAL_ANALYSIS_API_KEY"] = "test-key"
+        self.addCleanup(os.environ.pop, "ARTIFICIAL_ANALYSIS_API_KEY", None)
+        self.aa = config()["artificial_analysis"]
+        self.payload = load("aa_models.json")
+
+    def test_the_configured_pro_endpoint_is_used_when_it_answers(self):
+        seen = []
+
+        def fake_http_json(url, **kwargs):
+            seen.append(url)
+            return self.payload
+
+        run.http_json = fake_http_json
+        index = run.fetch_aa_models(config())
+        self.assertEqual([self.aa["endpoint"]], seen)
+        self.assertTrue(index)
+
+    def test_a_403_tier_gate_falls_back_to_the_free_list(self):
+        seen = []
+
+        def fake_http_json(url, **kwargs):
+            seen.append(url)
+            if url == self.aa["endpoint"]:
+                raise run.HttpError("HTTP 403 from %s" % url, status=403)
+            return self.payload
+
+        run.http_json = fake_http_json
+        index = run.fetch_aa_models(config())
+        self.assertEqual([self.aa["endpoint"], self.aa["free_endpoint"]], seen)
+        self.assertTrue(index)
+
+    def test_a_retired_path_fails_without_an_endless_fallback(self):
+        seen = []
+
+        def fake_http_json(url, **kwargs):
+            seen.append(url)
+            raise run.HttpError("HTTP 410 from %s" % url, status=410)
+
+        run.http_json = fake_http_json
+        with self.assertRaises(run.HttpError) as caught:
+            run.fetch_aa_models(config())
+        self.assertIn("410", str(caught.exception))
+        self.assertEqual([self.aa["endpoint"]], seen)
+
+    def test_config_does_not_point_at_the_retired_data_api(self):
+        for key in ("endpoint", "free_endpoint"):
+            self.assertNotIn("/api/v2/data/", self.aa.get(key) or "")
+            self.assertTrue(self.aa.get(key, "").startswith("https://artificialanalysis.ai/api/v2/"))
 
 
 if __name__ == "__main__":
