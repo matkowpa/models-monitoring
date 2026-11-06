@@ -46,6 +46,13 @@ jobs:
       - name: Run offline test suite
         run: python -m unittest discover -s tests -v
 
+      - name: Check the ClinePass reference rates
+        # New ClinePass models arrive without a fallback price until this table is
+        # refreshed, and an unpriced model never reaches the chart. Report the
+        # drift in run.log; never fail the report on it.
+        continue-on-error: true
+        run: python scripts/refresh_reference_rates.py --check
+
       - name: Run the monitor
         id: monitor
         run: |

@@ -65,11 +65,13 @@ def normalize_key(value):
 
 
 VARIANT_RE = re.compile(
-    r"\((?:max|high|medium|low|reasoning|non[- ]?reasoning|thinking|non[- ]?thinking|default)\)",
+    r"\((?:max|high|medium|low|reasoning|non[- ]?reasoning|thinking|non[- ]?thinking"
+    r"|default|free|contributor)\)",
     re.IGNORECASE,
 )
 CHANNEL_TAIL_RE = re.compile(r"[-_ ](?:free|contributor)\s*$", re.IGNORECASE)
 DATE_TAIL_RE = re.compile(r"[-_ ](\d{4}|\d{6}|\d{8})\s*$")
+BRACKETED_DATE_RE = re.compile(r"\(\s*(?:\d{4}|\d{6}|\d{8})\s*\)")
 
 
 def identity_key(value):
@@ -79,12 +81,14 @@ def identity_key(value):
     ("DeepSeek V4.1 Flash 1017 (Max)") while a catalog usually carries one entry
     per billable endpoint ("deepseek-v4.1-flash"). Comparing exact keys misses
     that pair in both directions, so a second pass compares identity keys: the
-    vendor prefix, a bracketed variant suffix, a channel suffix and a trailing
-    date code are removed first.
+    vendor prefix, a bracketed variant suffix, a channel suffix and a date code
+    are removed first.
 
-    Only the trailing date code is dropped. Version numbers keep their digits,
-    and a bare tier word without brackets ("Qwen3.7 Max") stays part of the name,
-    because those distinguish real products.
+    The date code is dropped whether it trails the name bare ("... 1017") or sits
+    in brackets ("Qwen3.8 Max (0902)"), because AA uses both forms for the same
+    checkpoint. Version numbers keep their digits, and a bare tier word without
+    brackets ("Qwen3.7 Max") stays part of the name, because those distinguish
+    real products.
     """
     text = str(value or "").strip().lower()
     if ":" in text:
@@ -92,6 +96,7 @@ def identity_key(value):
         if tail.strip():
             text = tail
     text = VARIANT_RE.sub(" ", text)
+    text = BRACKETED_DATE_RE.sub(" ", text)
     while True:
         stripped = CHANNEL_TAIL_RE.sub("", text)
         if stripped == text:
@@ -313,24 +318,63 @@ def _date_code(record):
     return int(codes[-1]) if codes else None
 
 
+def checkpoint_key(value):
+    """Name key that keeps the effort variant but drops the date code.
+
+    ``identity_key`` folds both a variant suffix and a date code, so it cannot
+    tell "Kimi K3 (Low)" from "Kimi K3 (Max)" - two genuinely different
+    measurements of one model - while "Qwen3.8 Max" and "Qwen3.8 Max (0902)" are
+    the same model at two checkpoints. This key keeps the former apart and puts
+    the latter together, which is what the scored-sibling preference needs.
+    """
+    text = str(value or "").strip().lower()
+    if ":" in text:
+        _vendor, _sep, tail = text.partition(":")
+        if tail.strip():
+            text = tail
+    text = BRACKETED_DATE_RE.sub(" ", text)
+    text = DATE_TAIL_RE.sub("", text.strip())
+    return re.sub(r"[^a-z0-9]+", "", text)
+
+
+def _pick_identity_record(pool):
+    """Deterministic pick inside one identity group: newest checkpoint first."""
+    if len(pool) == 1:
+        return pool[0]
+    dated = [(code, record) for code, record in ((_date_code(r), r) for r in pool) if code]
+    if dated:
+        return max(dated, key=lambda pair: (pair[0], -pair[1].get("order", 0)))[1]
+    return min(pool, key=lambda r: r.get("order", 0))
+
+
 def resolve_identity_candidates(records):
     """Pick one record out of the records sharing an identity key.
 
-    Two situations land here. The same checkpoint listed twice under different
-    names is resolved by AA's own ordering. A model and its later checkpoint
-    ("DeepSeek V4.1 Flash" and "DeepSeek V4.1 Flash 1017") share an identity, and
-    the catalog entry is an undated endpoint, so the newest checkpoint is the one
-    it currently serves. Both rules are deterministic and are reported back to
-    the caller as an ambiguity, never applied silently.
+    The first pick follows AA's own ordering and the newest date code: the same
+    checkpoint listed twice resolves by order, and a catalog entry for an
+    undated endpoint ("DeepSeek V4.1 Flash") takes its newest checkpoint. Both
+    rules are deterministic and are reported back to the caller as an
+    ambiguity, never applied silently.
+
+    When that pick has no current Intelligence Index, a scored record of the
+    *same* checkpoint wins instead: AA publishes a model before it scores it, so
+    the unscored shell "Qwen3.8 Max" must not hide "Qwen3.8 Max (0902)". A
+    different effort variant is never substituted, because "(Low)" and "(Max)"
+    are different measurements of one model, not different checkpoints.
     """
     if not records:
         return None
-    if len(records) == 1:
-        return records[0]
-    dated = [(code, record) for code, record in ((_date_code(r), r) for r in records) if code]
-    if dated:
-        return max(dated, key=lambda pair: (pair[0], -pair[1].get("order", 0)))[1]
-    return min(records, key=lambda r: r.get("order", 0))
+    chosen = _pick_identity_record(records)
+    if chosen is not None and chosen.get("intelligence_index") is None:
+        same_checkpoint = [
+            record
+            for record in records
+            if record.get("intelligence_index") is not None
+            and checkpoint_key(record.get("name")) == checkpoint_key(chosen.get("name"))
+        ]
+        if same_checkpoint:
+            chosen = _pick_identity_record(same_checkpoint)
+    return chosen
 
 
 def match_aa_evidence(entry, aa_index, mapping):
@@ -354,20 +398,30 @@ def match_aa_evidence(entry, aa_index, mapping):
     ]
     candidates.extend(mapped.get("aliases") or [])
     seen = set()
+    unscored_exact = None
     for candidate in candidates:
         key = normalize_key(candidate)
         if not key or key in seen:
             continue
         seen.add(key)
-        if aa_index.get(key):
+        record = aa_index.get(key)
+        if not record:
+            continue
+        if record.get("intelligence_index") is not None:
             return {
-                "record": aa_index[key],
+                "record": record,
                 "key": candidate,
                 "via": "exact",
                 "candidates": [],
             }
+        # AA lists a model before it scores it, and the scored record of the same
+        # model may sit under a dated sibling ("Qwen3.8 Max (0902)"). Keep the
+        # unscored hit as a fallback and let the identity pass look for a score.
+        if unscored_exact is None:
+            unscored_exact = (record, candidate)
     identity = getattr(aa_index, "identity", {}) or {}
     seen = set()
+    unscored_identity = None
     for candidate in candidates:
         key = identity_key(candidate)
         if not key or key in seen:
@@ -375,22 +429,46 @@ def match_aa_evidence(entry, aa_index, mapping):
         seen.add(key)
         exact = normalize_key(candidate)
         if exact in aa_index and aa_index.get(exact) is None:
-            # A known duplicate stays unmatched: a heuristic tie-break must not
-            # resolve an ambiguity the exact pass deliberately refuses.
-            continue
+            # A key shared by two AA records is normally left unmatched: a
+            # heuristic tie-break must not resolve an ambiguity the exact pass
+            # deliberately refuses. Two checkpoints of one model are the
+            # exception - they collapse onto one name only after the date code
+            # is dropped, and the date code is exactly what breaks the tie.
+            group = identity.get(key) or []
+            same_checkpoint = {checkpoint_key(record.get("name")) for record in group}
+            if len(same_checkpoint) != 1 or not any(_date_code(record) for record in group):
+                continue
         records = identity.get(key) or []
         if not records:
             continue
         record = resolve_identity_candidates(records)
         if record is None:
             continue
-        return {
+        hit = {
             "record": record,
             "key": candidate,
             "via": "identity",
             "candidates": [r.get("name") for r in records if r.get("name")],
         }
-    return evidence
+        if record.get("intelligence_index") is not None:
+            if unscored_exact and checkpoint_key(record.get("name")) != checkpoint_key(
+                unscored_exact[0].get("name")
+            ):
+                # The catalog entry has its own AA record; a scored record of a
+                # different effort variant ("Kimi K3 (Low)") is a different
+                # measurement, not a better match for the same one.
+                break
+            return hit
+        if unscored_identity is None:
+            unscored_identity = hit
+    if unscored_exact:
+        return {
+            "record": unscored_exact[0],
+            "key": unscored_exact[1],
+            "via": "exact",
+            "candidates": [],
+        }
+    return unscored_identity or evidence
 
 
 def match_aa_record(entry, aa_index, mapping):

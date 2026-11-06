@@ -299,5 +299,92 @@ class ArtificialAnalysisEndpointTests(unittest.TestCase):
             self.assertTrue(self.aa.get(key, "").startswith("https://artificialanalysis.ai/api/v2/"))
 
 
+class ArtificialAnalysisMatchTests(unittest.TestCase):
+    """AA lists a model before it scores it, and dates checkpoints inconsistently.
+
+    Both shapes appear in the live feed: "Qwen3.8 Max" (unscored shell) beside
+    "Qwen3.8 Max (0902)" (scored checkpoint), and effort variants such as
+    "Kimi K3 (Low)" that must never stand in for the catalog's own endpoint.
+    """
+
+    def setUp(self):
+        self.aa = config()["artificial_analysis"]
+
+    def index(self, records):
+        return monitor.parse_aa_models(
+            {"data": records},
+            intelligence_key=self.aa["intelligence_index_key"],
+            coding_key=self.aa["coding_index_key"],
+            default_scale=self.aa["index_scale"],
+        )
+
+    def test_a_dated_checkpoint_scores_an_unscored_shell(self):
+        index = self.index(
+            [
+                {
+                    "name": "Qwen3.8 Max",
+                    "slug": "qwen3-8-max-0803",
+                    "evaluations": {"artificial_analysis_intelligence_index": None},
+                },
+                {
+                    "name": "Qwen3.8 Max (0902)",
+                    "slug": "qwen3-8-max",
+                    "evaluations": {"artificial_analysis_intelligence_index": 33.7},
+                },
+            ]
+        )
+        record, _key = monitor.match_aa_record(
+            {"slug": "qwen3.8-max", "id": "cline-pass/qwen3.8-max", "name": "cline-pass/qwen3.8-max"},
+            index,
+            {},
+        )
+        self.assertIsNotNone(record)
+        self.assertEqual("Qwen3.8 Max (0902)", record["name"])
+        self.assertEqual(33.7, record["intelligence_index"])
+
+    def test_an_effort_variant_is_never_substituted_for_the_endpoint(self):
+        index = self.index(
+            [
+                {
+                    "name": "Kimi K3",
+                    "slug": "kimi-k3",
+                    "evaluations": {"artificial_analysis_intelligence_index": None},
+                },
+                {
+                    "name": "Kimi K3 (Low)",
+                    "slug": "kimi-k3-low",
+                    "evaluations": {"artificial_analysis_intelligence_index": 17.4},
+                },
+            ]
+        )
+        record, _key = monitor.match_aa_record(
+            {"slug": "kimi-k3", "id": "cline-pass/kimi-k3", "name": "Kimi K3"}, index, {}
+        )
+        self.assertIsNotNone(record)
+        self.assertEqual("Kimi K3", record["name"])
+        self.assertIsNone(record["intelligence_index"])
+
+    def test_a_bracketed_channel_suffix_still_matches(self):
+        index = self.index(
+            [
+                {
+                    "name": "Nemotron 3.5 Lightning",
+                    "slug": "nemotron-3-5-lightning",
+                    "evaluations": {"artificial_analysis_intelligence_index": 5.5},
+                }
+            ]
+        )
+        record, _key = monitor.match_aa_record(
+            {
+                "slug": "nemotron-3.5-lightning",
+                "id": "cline-free/nemotron-3.5-lightning",
+                "name": "NVIDIA: Nemotron 3.5 Lightning (free)",
+            },
+            index,
+            {},
+        )
+        self.assertEqual(5.5, (record or {}).get("intelligence_index"))
+
+
 if __name__ == "__main__":
     unittest.main()
