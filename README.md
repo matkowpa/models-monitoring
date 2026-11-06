@@ -103,6 +103,12 @@ unaffected by it. A local live run writes the real `site/` and `data/history/<da
 The runner needs network access to `api.cline.bot`, `artificialanalysis.ai`, `openrouter.ai`,
 and GitHub.
 
+The Artificial Analysis feed is read from `/api/v2/language/models` (Pro list) and falls back to
+`/api/v2/language/models/free` when the key answers `403`, so a Free-tier key still publishes
+scored reports without the Pro-only fields. Both lists paginate; every page is read before
+scoring, and a catalog that stops short of `pagination.total_pages` fails the run instead of
+silently publishing unmatched models with no score.
+
 ## Deployment
 
 `.github/workflows/weekly-monitor.yml` runs on a GitHub-hosted runner:
