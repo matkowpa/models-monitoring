@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "report": {
-    "generated_at": "2026-11-25T14:29:40.472926+01:00",
-    "date": "2026-11-25",
-    "weekday": "Wednesday",
+    "generated_at": "2026-11-27T14:06:31.236339+01:00",
+    "date": "2026-11-27",
+    "weekday": "Friday",
     "timezone": "Europe/Warsaw",
     "mode": "live",
     "title": "ClinePass Models Monitoring",
@@ -14,23 +14,23 @@
       "model_count": 11
     },
     "narrative": {
-      "summary": "No catalog additions or removals, and no observed blend changes. Quality scores changed: DeepSeek V4.1 Flash 1017 32.6\u219232.4; GLM 5.3 31.7\u219231.6; GLM 5.3 Flash 27.8\u219227.7; Kimi K3.1 Pro 46.5\u219246.6. Rates changed for DeepSeek V4.1 Flash 1017: input and cache_write 0.291632\u21920.3 (+2.8694%); output 1.187104\u21921.2 (+1.0863%).",
+      "summary": "This week, no models were added to or removed from the catalog. No changes were recorded in observed blend, quality, or rate metrics.",
       "model": "cline-pass/deepseek-v4.1-flash-1017",
       "source": "narrative"
     },
     "rate_window": {
       "days": 30,
-      "end": "2026-11-25",
-      "start": "2026-10-27"
+      "end": "2026-11-27",
+      "start": "2026-10-29"
     },
     "money_scales": {
       "cost_usd": 100000000,
       "credit_usd": 1000000
     },
     "warnings": [
-      "the reference rate table was published 19 days ago (2026-11-06); catalog entries added since then have no fallback rate and are published without a price unless their own fit is estimable"
+      "the reference rate table was published 21 days ago (2026-11-06); catalog entries added since then have no fallback rate and are published without a price unless their own fit is estimable"
     ],
-    "previous_snapshot": "2026-11-23.json"
+    "previous_snapshot": "2026-11-25.json"
   },
   "account": {
     "user_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
@@ -85,17 +85,17 @@
         {
           "type": "five_hour",
           "percentUsed": 0,
-          "resetsAt": "2026-11-25T17:47:03.263924581Z"
+          "resetsAt": "2026-11-27T17:09:27.995737576Z"
         },
         {
           "type": "weekly",
-          "percentUsed": 2,
-          "resetsAt": "2026-11-28T10:56:27.266177252Z"
+          "percentUsed": 14,
+          "resetsAt": "2026-11-28T10:56:26.998596015Z"
         },
         {
           "type": "monthly",
-          "percentUsed": 43,
-          "resetsAt": "2026-11-29T19:22:32.268429091Z"
+          "percentUsed": 49,
+          "resetsAt": "2026-11-29T19:22:32.001528775Z"
         }
       ]
     },
@@ -110,20 +110,20 @@
     "unit": "per 1M tokens"
   },
   "observation": {
-    "rows_total": 9400,
+    "rows_total": 10200,
     "rows_dropped": 0,
-    "rows_in_window": 9372,
-    "pages": 47,
-    "rows_fetched": 9400,
+    "rows_in_window": 10111,
+    "pages": 51,
+    "rows_fetched": 10200,
     "paging_stopped_at_window_start": true,
     "account_id": "usr-01M0Z0Z010FD0Z4PV8ANKR8HSR",
     "fit_rejections": {
       "cline-pass/deepseek-v4-pro": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/glm-5.3": "0 usable ClinePass rows in the window, minimum is 12",
-      "cline-pass/glm-5.3-flash": "6 usable ClinePass rows in the window, minimum is 12",
-      "cline-pass/kimi-k3": "0 usable ClinePass rows in the window, minimum is 12",
-      "cline-pass/muse-spark-1.3-contributor": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/glm-5.3-flash": "4 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/kimi-k3.1-pro": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/muse-spark-1.3-contributor": "0 usable ClinePass rows in the window, minimum is 12",
+      "cline-pass/kimi-k3": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/qwen3.8-max": "0 usable ClinePass rows in the window, minimum is 12",
       "cline-pass/minimax-m3.1-flash": "0 usable ClinePass rows in the window, minimum is 12"
     },
@@ -170,12 +170,12 @@
         "last_value": null,
         "revision_day": null
       },
-      "cline-pass/kimi-k3": {
+      "cline-pass/kimi-k3.1-pro": {
         "via": "exact",
-        "key": "kimi-k3",
+        "key": "kimi-k3.1-pro",
         "candidates": [],
         "carried_from": null,
-        "reason": "absent-from-feed",
+        "reason": null,
         "last_seen": null,
         "last_value": null,
         "revision_day": null
@@ -190,12 +190,12 @@
         "last_value": null,
         "revision_day": null
       },
-      "cline-pass/kimi-k3.1-pro": {
+      "cline-pass/kimi-k3": {
         "via": "exact",
-        "key": "kimi-k3.1-pro",
+        "key": "kimi-k3",
         "candidates": [],
         "carried_from": null,
-        "reason": null,
+        "reason": "absent-from-feed",
         "last_seen": null,
         "last_value": null,
         "revision_day": null
@@ -249,9 +249,9 @@
       "cline-pass/deepseek-v4-pro",
       "cline-pass/glm-5.3",
       "cline-pass/glm-5.3-flash",
-      "cline-pass/kimi-k3",
-      "cline-pass/muse-spark-1.3-contributor",
       "cline-pass/kimi-k3.1-pro",
+      "cline-pass/muse-spark-1.3-contributor",
+      "cline-pass/kimi-k3",
       "cline-pass/qwen3.8-max",
       "cline-pass/minimax-m3.1-flash",
       "cline-free/nemotron-3.5-super-vl",
@@ -356,19 +356,6 @@
         "frontier": false
       },
       {
-        "id": "cline-pass/muse-spark-1.3-contributor",
-        "name": "Meta: Muse Spark 1.3 Contributor",
-        "family": "muse",
-        "quality": 36.6,
-        "free": false,
-        "profiles": [
-          "execution",
-          "planning"
-        ],
-        "cost": 0.0079,
-        "frontier": true
-      },
-      {
         "id": "cline-pass/kimi-k3.1-pro",
         "name": "MoonshotAI: Kimi K3.1 Pro",
         "family": "kimi",
@@ -379,6 +366,19 @@
           "planning"
         ],
         "cost": 0.275,
+        "frontier": true
+      },
+      {
+        "id": "cline-pass/muse-spark-1.3-contributor",
+        "name": "Meta: Muse Spark 1.3 Contributor",
+        "family": "muse",
+        "quality": 36.6,
+        "free": false,
+        "profiles": [
+          "execution",
+          "planning"
+        ],
+        "cost": 0.0079,
         "frontier": true
       },
       {
@@ -452,32 +452,32 @@
         "input": {
           "usd_per_mtok": 0.3,
           "provenance": "measured-credits",
-          "window_start": "2026-10-27",
-          "window_end": "2026-11-25",
-          "rows": 9309,
+          "window_start": "2026-10-29",
+          "window_end": "2026-11-27",
+          "rows": 10050,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.477
+          "condition_number": 1.462
         },
         "output": {
           "usd_per_mtok": 1.2,
           "provenance": "measured-credits",
-          "window_start": "2026-10-27",
-          "window_end": "2026-11-25",
-          "rows": 9309,
+          "window_start": "2026-10-29",
+          "window_end": "2026-11-27",
+          "rows": 10050,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.477
+          "condition_number": 1.462
         },
         "cache_read": {
           "usd_per_mtok": 0.006,
           "provenance": "measured-credits",
-          "window_start": "2026-10-27",
-          "window_end": "2026-11-25",
-          "rows": 9309,
+          "window_start": "2026-10-29",
+          "window_end": "2026-11-27",
+          "rows": 10050,
           "rms_residual_usd": 0.0,
           "median_relative_error": 1e-06,
-          "condition_number": 1.477
+          "condition_number": 1.462
         },
         "cache_write": {
           "usd_per_mtok": 0.3,
@@ -493,18 +493,18 @@
             "output": 1.2,
             "cache_read": 0.006
           },
-          "rows": 9309,
-          "rows_in_window": 9365,
-          "dropped_rows": 56,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "rows": 10050,
+          "rows_in_window": 10107,
+          "dropped_rows": 57,
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
-          "condition_number": 1.477,
+          "condition_number": 1.462,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
           "median_relative_error": 1e-06,
-          "p90_relative_error": 2.7e-05,
+          "p90_relative_error": 3.1e-05,
           "total_reconciliation_error": 0.0
         },
         "reference_source": {
@@ -520,18 +520,18 @@
             "output": 1.2,
             "cache_read": 0.006
           },
-          "rows": 9309,
-          "rows_in_window": 9365,
-          "dropped_rows": 56,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "rows": 10050,
+          "rows_in_window": 10107,
+          "dropped_rows": 57,
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
-          "condition_number": 1.477,
+          "condition_number": 1.462,
           "rms_residual_usd": 0.0,
           "allowed_rms_residual_usd": null,
           "median_relative_error": 1e-06,
-          "p90_relative_error": 2.7e-05,
+          "p90_relative_error": 3.1e-05,
           "total_reconciliation_error": 0.0
         }
       },
@@ -541,7 +541,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4.1 Flash 1017 (Max)",
         "aa_slug": "deepseek-v4-1-flash-1017",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -617,9 +617,9 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -640,7 +640,7 @@
         "coding_index_display_only": true,
         "aa_name": "DeepSeek V4 Pro 0813 (Max)",
         "aa_slug": "deepseek-v4-pro",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -716,9 +716,9 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -739,7 +739,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3 (Max)",
         "aa_slug": "glm-5-3",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -777,7 +777,7 @@
       "description": "Latest natively multimodal model in the GLM-5 series",
       "free": false,
       "family": "glm",
-      "context_window": 1048576,
+      "context_window": 1048575,
       "openrouter_id": "z-ai/glm-5.3-flash",
       "rates": {
         "input": {
@@ -806,18 +806,18 @@
         "catalog_free": false,
         "fit": {
           "status": "rejected",
-          "reason": "6 usable ClinePass rows in the window, minimum is 12",
+          "reason": "4 usable ClinePass rows in the window, minimum is 12",
           "rates": {
             "input": null,
             "output": null,
             "cache_read": null
           },
-          "rows": 6,
-          "rows_in_window": 6,
+          "rows": 4,
+          "rows_in_window": 4,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -838,7 +838,7 @@
         "coding_index_display_only": true,
         "aa_name": "GLM-5.3-Flash (Max)",
         "aa_slug": "glm-5-3-flash",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -854,203 +854,12 @@
         "execution": false
       },
       "blended_input_output_usd_per_mtok": 0.22,
-      "observed_blended_usd_per_mtok": 0.234664,
-      "observed_rows": 6,
+      "observed_blended_usd_per_mtok": 0.232878,
+      "observed_rows": 4,
       "priced": true,
       "quality_evidence": {
         "via": "exact",
         "key": "glm-5-3-flash",
-        "candidates": [],
-        "carried_from": null,
-        "reason": null,
-        "last_seen": null,
-        "last_value": null,
-        "revision_day": null
-      }
-    },
-    {
-      "id": "cline-pass/kimi-k3",
-      "slug": "kimi-k3",
-      "name": "MoonshotAI: Kimi K3",
-      "catalog_name": "Kimi K3",
-      "description": "Leading open weights model (reliability might be unstable and will consume usage faster than others)",
-      "free": false,
-      "family": "kimi",
-      "context_window": 1048576,
-      "openrouter_id": "moonshotai/kimi-k3",
-      "rates": {
-        "input": {
-          "usd_per_mtok": 3.0,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "output": {
-          "usd_per_mtok": 15.0,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "cache_read": {
-          "usd_per_mtok": 0.3,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "cache_write": {
-          "usd_per_mtok": 3.0,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "catalog_free": false,
-        "fit": {
-          "status": "rejected",
-          "reason": "0 usable ClinePass rows in the window, minimum is 12",
-          "rates": {
-            "input": null,
-            "output": null,
-            "cache_read": null
-          },
-          "rows": 0,
-          "rows_in_window": 0,
-          "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
-          "change_point": null,
-          "condition_number": null,
-          "rms_residual_usd": null,
-          "allowed_rms_residual_usd": null,
-          "median_relative_error": null,
-          "p90_relative_error": null,
-          "total_reconciliation_error": null
-        },
-        "reference_source": {
-          "source_name": "Cline ClinePass reference pricing",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        }
-      },
-      "quality": null,
-      "cost_usd": {
-        "planning": 0.345,
-        "execution": 0.60375
-      },
-      "efficiency": {
-        "planning": null,
-        "execution": null
-      },
-      "pareto": {
-        "planning": false,
-        "execution": false
-      },
-      "blended_input_output_usd_per_mtok": 5.4,
-      "observed_blended_usd_per_mtok": null,
-      "observed_rows": 0,
-      "priced": true,
-      "quality_evidence": {
-        "via": "exact",
-        "key": "kimi-k3",
-        "candidates": [],
-        "carried_from": null,
-        "reason": "absent-from-feed",
-        "last_seen": null,
-        "last_value": null,
-        "revision_day": null
-      }
-    },
-    {
-      "id": "cline-pass/muse-spark-1.3-contributor",
-      "slug": "muse-spark-1.3-contributor",
-      "name": "Meta: Muse Spark 1.3 Contributor",
-      "catalog_name": "Muse Spark 1.3 Contributor",
-      "description": null,
-      "free": false,
-      "family": "muse",
-      "context_window": 1048576,
-      "openrouter_id": "meta/muse-spark-1.3-contributor",
-      "rates": {
-        "input": {
-          "usd_per_mtok": 0.1,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "output": {
-          "usd_per_mtok": 0.2,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "cache_read": {
-          "usd_per_mtok": 0.002,
-          "provenance": "reference",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        },
-        "cache_write": {
-          "usd_per_mtok": 0.1,
-          "provenance": "input-fallback",
-          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
-        },
-        "catalog_free": false,
-        "fit": {
-          "status": "rejected",
-          "reason": "0 usable ClinePass rows in the window, minimum is 12",
-          "rates": {
-            "input": null,
-            "output": null,
-            "cache_read": null
-          },
-          "rows": 0,
-          "rows_in_window": 0,
-          "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
-          "change_point": null,
-          "condition_number": null,
-          "rms_residual_usd": null,
-          "allowed_rms_residual_usd": null,
-          "median_relative_error": null,
-          "p90_relative_error": null,
-          "total_reconciliation_error": null
-        },
-        "reference_source": {
-          "source_name": "Cline ClinePass reference pricing",
-          "source_url": "https://docs.cline.bot/getting-started/clinepass",
-          "retrieved_at": "2026-11-06"
-        }
-      },
-      "quality": {
-        "intelligence_index": 36.6,
-        "coding_index": null,
-        "coding_index_display_only": true,
-        "aa_name": "Muse Spark 1.3 (Max)",
-        "aa_slug": "muse-spark-1-3",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
-        "fresh": true
-      },
-      "cost_usd": {
-        "planning": 0.006,
-        "execution": 0.0098
-      },
-      "efficiency": {
-        "planning": 56.39266691352308,
-        "execution": 68.55575115221417
-      },
-      "pareto": {
-        "planning": true,
-        "execution": true
-      },
-      "blended_input_output_usd_per_mtok": 0.12000000000000002,
-      "observed_blended_usd_per_mtok": null,
-      "observed_rows": 0,
-      "priced": true,
-      "quality_evidence": {
-        "via": "exact",
-        "key": "muse-spark-1-3",
         "candidates": [],
         "carried_from": null,
         "reason": null,
@@ -1106,9 +915,9 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -1129,7 +938,7 @@
         "coding_index_display_only": true,
         "aa_name": "Kimi K3.1 Pro",
         "aa_slug": "kimi-k3-1-pro",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1154,6 +963,197 @@
         "candidates": [],
         "carried_from": null,
         "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": null
+      }
+    },
+    {
+      "id": "cline-pass/muse-spark-1.3-contributor",
+      "slug": "muse-spark-1.3-contributor",
+      "name": "Meta: Muse Spark 1.3 Contributor",
+      "catalog_name": "Muse Spark 1.3 Contributor",
+      "description": null,
+      "free": false,
+      "family": "muse",
+      "context_window": 1048576,
+      "openrouter_id": "meta/muse-spark-1.3-contributor",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 0.1,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "output": {
+          "usd_per_mtok": 0.2,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.002,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "cache_write": {
+          "usd_per_mtok": 0.1,
+          "provenance": "input-fallback",
+          "note": "usage rows do not report cache-write tokens and the reference table has no value, so cache write is charged at the input rate"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
+          "change_point": null,
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        }
+      },
+      "quality": {
+        "intelligence_index": 36.6,
+        "coding_index": null,
+        "coding_index_display_only": true,
+        "aa_name": "Muse Spark 1.3 (Max)",
+        "aa_slug": "muse-spark-1-3",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
+        "fresh": true
+      },
+      "cost_usd": {
+        "planning": 0.006,
+        "execution": 0.0098
+      },
+      "efficiency": {
+        "planning": 56.39266691352308,
+        "execution": 68.55575115221417
+      },
+      "pareto": {
+        "planning": true,
+        "execution": true
+      },
+      "blended_input_output_usd_per_mtok": 0.12000000000000002,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "muse-spark-1-3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": null,
+        "last_seen": null,
+        "last_value": null,
+        "revision_day": null
+      }
+    },
+    {
+      "id": "cline-pass/kimi-k3",
+      "slug": "kimi-k3",
+      "name": "MoonshotAI: Kimi K3",
+      "catalog_name": "Kimi K3",
+      "description": "Leading open weights model (reliability might be unstable and will consume usage faster than others)",
+      "free": false,
+      "family": "kimi",
+      "context_window": 1048576,
+      "openrouter_id": "moonshotai/kimi-k3",
+      "rates": {
+        "input": {
+          "usd_per_mtok": 3.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "output": {
+          "usd_per_mtok": 15.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "cache_read": {
+          "usd_per_mtok": 0.3,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "cache_write": {
+          "usd_per_mtok": 3.0,
+          "provenance": "reference",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        },
+        "catalog_free": false,
+        "fit": {
+          "status": "rejected",
+          "reason": "0 usable ClinePass rows in the window, minimum is 12",
+          "rates": {
+            "input": null,
+            "output": null,
+            "cache_read": null
+          },
+          "rows": 0,
+          "rows_in_window": 0,
+          "dropped_rows": 0,
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
+          "change_point": null,
+          "condition_number": null,
+          "rms_residual_usd": null,
+          "allowed_rms_residual_usd": null,
+          "median_relative_error": null,
+          "p90_relative_error": null,
+          "total_reconciliation_error": null
+        },
+        "reference_source": {
+          "source_name": "Cline ClinePass reference pricing",
+          "source_url": "https://docs.cline.bot/getting-started/clinepass",
+          "retrieved_at": "2026-11-06"
+        }
+      },
+      "quality": null,
+      "cost_usd": {
+        "planning": 0.345,
+        "execution": 0.60375
+      },
+      "efficiency": {
+        "planning": null,
+        "execution": null
+      },
+      "pareto": {
+        "planning": false,
+        "execution": false
+      },
+      "blended_input_output_usd_per_mtok": 5.4,
+      "observed_blended_usd_per_mtok": null,
+      "observed_rows": 0,
+      "priced": true,
+      "quality_evidence": {
+        "via": "exact",
+        "key": "kimi-k3",
+        "candidates": [],
+        "carried_from": null,
+        "reason": "absent-from-feed",
         "last_seen": null,
         "last_value": null,
         "revision_day": null
@@ -1206,9 +1206,9 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -1229,7 +1229,7 @@
         "coding_index_display_only": true,
         "aa_name": "Qwen3.8 Max (0902)",
         "aa_slug": "qwen3-8-max",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1308,9 +1308,9 @@
           "rows": 0,
           "rows_in_window": 0,
           "dropped_rows": 0,
-          "window_start": "2026-10-27",
-          "window_requested_start": "2026-10-27",
-          "window_end": "2026-11-25",
+          "window_start": "2026-10-29",
+          "window_requested_start": "2026-10-29",
+          "window_end": "2026-11-27",
           "change_point": null,
           "condition_number": null,
           "rms_residual_usd": null,
@@ -1331,7 +1331,7 @@
         "coding_index_display_only": true,
         "aa_name": "MiniMax-M3.1-Flash",
         "aa_slug": "minimax-m3-1-flash",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1402,7 +1402,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Super VL",
         "aa_slug": "nemotron-3-5-super-vl",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1473,7 +1473,7 @@
         "coding_index_display_only": true,
         "aa_name": "Nemotron 3.5 Lightning",
         "aa_slug": "nemotron-3-5-lightning",
-        "retrieved_at": "2026-11-25T14:29:40.472926+01:00",
+        "retrieved_at": "2026-11-27T14:06:31.236339+01:00",
         "fresh": true
       },
       "cost_usd": {
@@ -1509,51 +1509,9 @@
     "first_run": false,
     "catalog_added": [],
     "catalog_removed": [],
-    "quality_changed": {
-      "cline-pass/deepseek-v4.1-flash-1017": {
-        "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
-        "from": 32.6,
-        "to": 32.4
-      },
-      "cline-pass/glm-5.3": {
-        "name": "Z.ai: GLM 5.3",
-        "from": 31.7,
-        "to": 31.6
-      },
-      "cline-pass/glm-5.3-flash": {
-        "name": "Z.ai: GLM 5.3 Flash",
-        "from": 27.8,
-        "to": 27.7
-      },
-      "cline-pass/kimi-k3.1-pro": {
-        "name": "MoonshotAI: Kimi K3.1 Pro",
-        "from": 46.5,
-        "to": 46.6
-      }
-    },
-    "rate_changed": {
-      "cline-pass/deepseek-v4.1-flash-1017": {
-        "name": "DeepSeek: DeepSeek V4.1 Flash 1017",
-        "classes": {
-          "input": {
-            "from": 0.291632,
-            "to": 0.3,
-            "change_ratio": 0.028694
-          },
-          "output": {
-            "from": 1.187104,
-            "to": 1.2,
-            "change_ratio": 0.010863
-          },
-          "cache_write": {
-            "from": 0.291632,
-            "to": 0.3,
-            "change_ratio": 0.028694
-          }
-        }
-      }
-    },
+    "quality_changed": {},
+    "rate_changed": {},
     "observed_blend_changed": {}
   },
-  "summary": "No catalog additions or removals, and no observed blend changes. Quality scores changed: DeepSeek V4.1 Flash 1017 32.6\u219232.4; GLM 5.3 31.7\u219231.6; GLM 5.3 Flash 27.8\u219227.7; Kimi K3.1 Pro 46.5\u219246.6. Rates changed for DeepSeek V4.1 Flash 1017: input and cache_write 0.291632\u21920.3 (+2.8694%); output 1.187104\u21921.2 (+1.0863%)."
+  "summary": "This week, no models were added to or removed from the catalog. No changes were recorded in observed blend, quality, or rate metrics."
 }
